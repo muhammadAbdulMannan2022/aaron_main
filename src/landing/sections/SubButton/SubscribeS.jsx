@@ -33,7 +33,7 @@ import React from 'react'
 
 export default function SubscribeS() {
     return (
-        <div className='bg-gray-button-bg flex items-center justify-center py-10 md:py-20'>
+        <div className='bg-black/80 flex items-center justify-center py-10 md:py-20'>
             <div className='max-w-7xl w-full bg-gray-button-bg rounded-2xl text-center gap-5 flex flex-col landing-shadow p-8 md:p-16 items-center justify-center py-10 md:py-28' >
                 <h1 className='text-3xl md:text-5xl max-w-2xl font-semibold text-[#C6CED3]'> Our powerful analytics provides invaluable insights.</h1>
                 <p className='max-w-3xl text-base text-gray-400'>Unlock the power of data with our cutting-edge analytics product. Get instant insights with our user-friendly Analytics Dashboard, and take advantage of our innovative digital credit tokens to reward your customers and incentivize engagement. </p>

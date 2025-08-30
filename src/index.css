@@ -27,3 +27,10 @@
     -webkit-box-shadow: -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
     -moz-box-shadow: -1px 0px 33px -2px rgba(89, 62, 92, 0.466)
 }
+
+.gradient-text {
+    font-size: 72px;
+    background: -webkit-linear-gradient(right, #333, #eee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
