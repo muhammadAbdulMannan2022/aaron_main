@@ -21,3 +21,9 @@
     --color-user-main-color: #1460AD;
     --color-profile-text-main: #ACC0D8;
 }
+
+.landing-shadow {
+    box-shadow: -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
+    -webkit-box-shadow: -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
+    -moz-box-shadow: -1px 0px 33px -2px rgba(89, 62, 92, 0.466)
+}
