@@ -7,10 +7,8 @@ export function Hero() {
         <section className="relative bg-black flex items-center justify-center overflow-hidden md:h-[calc(100vh-70px)] h-[calc(100vh-70px)] ">
             {/* Content */}
             <div className="max-w-7xl w-full h-full flex items-center justify-center border-x border-gray-button-bg bg-[url('/illastrationHero.png')] bg-bottom bg-no-repeat flex-col relative">
-                <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight">
+                <div className="relative z-10 max-w-4xl h-fit -mt-[20%] md:-mt-[10%] mx-auto px-4 text-center">
 
-                    </h1>
                     <GradientText
                         from="from-white"
                         to="to-gray-600"
@@ -32,12 +30,12 @@ export function Hero() {
                     </div>
 
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <button className="bg-outer-button-bg hover:bg-outer-button-bg/80 hover:cursor-pointer text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors duration-200 min-w-[180px]">
+                    <div className="flex flex-row gap-4 justify-center items-center">
+                        <button className="bg-outer-button-bg hover:bg-outer-button-bg/80 hover:cursor-pointer text-white px-3 md:px-8 py-2 md:py-4 rounded-lg font-semibold text-base md:text-lg transition-colors duration-200 md:min-w-[180px]">
                             Get Started Now
                         </button>
 
-                        <button className="bg-gray-button-bg hover:bg-gray-button-bg/80 hover:cursor-pointer text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors duration-200 flex items-center gap-3 min-w-[180px] justify-center border border-gray-700">
+                        <button className="bg-gray-button-bg hover:bg-gray-button-bg/80 hover:cursor-pointer text-white px-3 md:px-8 py-2 md:py-4 rounded-lg font-semibold text-base md:text-lg transition-colors duration-200 flex items-center gap-3 md:min-w-[180px] justify-center border border-gray-700">
                             <span>
                                 <FaPlay />
                             </span>
