@@ -28,7 +28,7 @@ export function Features() {
     ];
 
     return (
-        <section className="bg-black px-4">
+        <section className="bg-black px-4 pb-10">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center border-b border-x border-gray-button-bg py-12 md:py-20">
