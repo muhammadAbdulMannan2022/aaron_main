@@ -9,6 +9,7 @@ import { Testimonials } from './sections/testimonials/Testimonials'
 import SubscribeS from './sections/SubButton/SubscribeS'
 import { FAQ } from './sections/Faq/FAQ'
 import { Footer } from './sections/footer/Footer'
+import Chatbot from './sections/bot/Landingbot'
 
 
 export default function LandingLayout() {
@@ -23,6 +24,7 @@ export default function LandingLayout() {
       <SubscribeS />
       <FAQ />
       <Footer />
+      <Chatbot />
     </div>
   )
 }

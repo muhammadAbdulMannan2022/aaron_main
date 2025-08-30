@@ -45,3 +45,7 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+.element-with-scrolling::-webkit-scrollbar {
+    display: none;
+}
