@@ -1,11 +1,12 @@
 import { createBrowserRouter } from "react-router";
 import App from "../App";
-import LandingLayout from "../landing/LandingLayout";
-import AuthLayout from "../Auth/AuthLayout";
-import Login from "../Auth/authPages/Login";
-import Signup from "../Auth/authPages/Signup";
-import ActivationCode from "../Auth/authPages/VerifyOtp";
-import ForgotPassword from "../Auth/authPages/ForgotPass";
+import LandingLayout from "../pages/landing/LandingLayout";
+import AuthLayout from "../pages/Auth/AuthLayout";
+import Login from "../pages/Auth/authPages/Login";
+import Signup from "../pages/Auth/authPages/Signup";
+import ActivationCode from "../pages/Auth/authPages/VerifyOtp";
+import ForgotPassword from "../pages/Auth/authPages/ForgotPass";
+import DashboardLayout from "../pages/Dashboard/DashboardLayout";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
             element: <ForgotPassword />
           }
         ]
+      },
+      {
+        path: "/dashboard",
+        element: <DashboardLayout />
       }
     ]
   },

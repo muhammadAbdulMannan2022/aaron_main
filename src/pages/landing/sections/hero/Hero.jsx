@@ -1,6 +1,7 @@
 import { FaPlay } from "react-icons/fa6";
-import GradientText from "../../../helpers/GradientText";
-import MarqueeSection from "./Marquee";
+import GradientText from "../../../../helpers/GradientText"
+import MarqueeSection from "./Marquee"
+
 
 export function Hero() {
     return (
