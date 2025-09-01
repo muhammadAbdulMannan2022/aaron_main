@@ -13,9 +13,9 @@ const initialMessages = [
 const ChatMessage = ({ message }) => (
     <div className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-3 group`} role="listitem">
         <div
-            className={`max-w-[70%] p-3 rounded-2xl transition-all duration-300 group-hover:scale-[1.01] ${message.isUser
+            className={`max-w-[70%] p-3 rounded-2xl transition-all border border-gray-button-bg duration-300 group-hover:scale-[1.01] ${message.isUser
                 ? 'bg-gradient-to-br from-user-message to-user-message-dark text-text-primary'
-                : 'bg-bot-message border border-border text-text-primary shadow-sm'
+                : 'bg-bot-message text-text-primary shadow-sm'
                 }`}
         >
             <p className="text-sm leading-relaxed">{message.text}</p>
@@ -133,7 +133,7 @@ export default function Chatbot() {
         `}
             </style>
             <div
-                className={`fixed bottom-5 right-5 z-50 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95 pointer-events-none'
+                className={`fixed bottom-5 shadow-md shadow-gray-100/60 right-5 z-50 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95 pointer-events-none'
                     }`}
                 aria-hidden={!isOpen}
             >
@@ -151,7 +151,7 @@ export default function Chatbot() {
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="text-gray-400 hover:text-text-primary hover:bg-border p-1.5 rounded-lg transition-all duration-200"
+                                className="text-gray-400 hover:cursor-pointer hover:text-text-primary hover:bg-border p-1.5 rounded-lg transition-all duration-200"
                                 aria-label="Close chat"
                             >
                                 <FiX className="w-4 h-4" />
@@ -184,7 +184,7 @@ export default function Chatbot() {
                             <button
                                 type="submit"
                                 disabled={!inputValue.trim() || isPending}
-                                className="bg-user-message hover:bg-user-message-dark disabled:opacity-50 disabled:cursor-not-allowed text-text-primary p-2 rounded-xl transition-all duration-200"
+                                className="bg-user-message hover:bg-user-message-dark hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-text-primary p-2 rounded-xl transition-all duration-200"
                                 aria-label="Send message"
                             >
                                 <FiSend className="w-4 h-4" />
