@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import Sidebar from "./Contents/SideBar";
+import TopBar from "./Contents/TopBar";
+import { Outlet } from "react-router";
 
 export default function DashboardLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,13 +29,13 @@ export default function DashboardLayout() {
             {/* Main content */}
             <div className="flex flex-1 h-full flex-col border">
                 {/* Topbar */}
-                <div className="h-14 bg-amber-200 flex items-center justify-between px-4">
-
+                <div className=" flex items-center justify-between ">
+                    <TopBar />
                 </div>
 
                 {/* Main area */}
-                <div className="flex flex-1 h-full overflow-y-auto flex-col p-6">
-                    {/* your main content */}
+                <div className="flex flex-1 h-full overflow-y-auto flex-col bg-[#0f0f0f]">
+                    <Outlet />
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ import Signup from "../pages/Auth/authPages/Signup";
 import ActivationCode from "../pages/Auth/authPages/VerifyOtp";
 import ForgotPassword from "../pages/Auth/authPages/ForgotPass";
 import DashboardLayout from "../pages/Dashboard/DashboardLayout";
+import Projects from "../pages/Dashboard/pages/Projects";
 
 const router = createBrowserRouter([
   {
@@ -41,7 +42,13 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        element: <DashboardLayout />
+        element: <DashboardLayout />,
+        children: [
+          {
+            path: "",
+            element: <Projects />
+          }
+        ]
       }
     ]
   },

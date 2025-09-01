@@ -53,3 +53,79 @@
 .element-with-scrolling::-webkit-scrollbar {
     display: none;
 }
+
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+
+/* calender style */
+
+/* General calendar styling */
+.flatpickr-calendar {
+    background: #171717;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Month and year header */
+.flatpickr-month {
+    color: #ffffff;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: #171717;
+    color: #ffffff;
+}
+
+.flatpickr-current-month input.cur-year {
+    background: #171717;
+    color: #ffffff;
+}
+
+/* Weekday names */
+.flatpickr-weekday {
+    color: #888888;
+    font-weight: bold;
+}
+
+/* Day styling */
+.flatpickr-day {
+    color: #dddddd;
+}
+
+.flatpickr-day:hover {
+    background: #333333;
+}
+
+/* Selected day styling */
+.flatpickr-day.selected {
+    background: #4DA6FF;
+    border-color: #4DA6FF;
+    color: #ffffff;
+}
+
+/* Today's date styling */
+.flatpickr-day.today {
+    border-color: #4DA6FF;
+}
+
+.flatpickr-day.today:hover {
+    background: #333333;
+    color: #ffffff;
+}
+
+/* Month navigation arrows */
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+    fill: #4DA6FF;
+}
+
+.flatpickr-prev-month:hover svg,
+.flatpickr-next-month:hover svg {
+    fill: #ffffff;
+}
