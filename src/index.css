@@ -39,12 +39,16 @@
 }
 
 .gradient-text {
-    font-size: 72px;
-    background: -webkit-linear-gradient(right, #333, #eee);
+    display: inline-block;
+    /* fits to text width */
+    background: linear-gradient(to right, white, #4b5563);
+    /* white → gray-600 */
     -webkit-background-clip: text;
-    background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
 }
+
 
 .element-with-scrolling::-webkit-scrollbar {
     display: none;

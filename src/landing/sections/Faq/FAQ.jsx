@@ -63,7 +63,7 @@ export function FAQ() {
     const rightColumnItems = faqData.slice(4, 8);
 
     return (
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <section id="faq" className="py-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto border-x border-b border-gray-button-bg px-5 pb-12 flex flex-col gap-10 md:gap-20">
                 {/* Header */}
                 <div className="text-center my-16">

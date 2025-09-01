@@ -137,7 +137,7 @@ export default function Chatbot() {
                     }`}
                 aria-hidden={!isOpen}
             >
-                <div className="w-96 h-[550px] bg-main-bg rounded-2xl shadow-2xl border border-border overflow-hidden font-sans flex flex-col">
+                <div className="max-w-96 w-full h-[550px] bg-main-bg rounded-2xl shadow-2xl border border-border overflow-hidden font-sans flex flex-col">
                     <div className="bg-accent p-4 border-b border-border">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -197,14 +197,12 @@ export default function Chatbot() {
             {!isOpen && (
                 <button
                     onClick={toggleChat}
-                    className="fixed bottom-5 right-5 z-50 bg-user-message hover:bg-user-message-dark text-text-primary p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 shadow-gray-50 hover:cursor-pointer"
+                    className="fixed bottom-5 right-5 z-[9999] bg-black hover:bg-user-message-dark text-text-primary p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 shadow-gray-50 hover:cursor-pointer"
                     aria-label="Open chat"
                 >
                     <FiMessageCircle className="w-6 h-6" />
-                    {hasNewMessage && (
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-[pulse_2s_infinite]" aria-hidden="true" />
-                    )}
                 </button>
+
             )}
         </>
     );

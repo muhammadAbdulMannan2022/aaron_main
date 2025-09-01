@@ -12,7 +12,7 @@ export function Hero() {
                     <GradientText
                         from="from-white"
                         to="to-gray-600"
-                        className="text-5xl font-bold leading-tight text-center"
+                        className="text-5xl md:text-[70px] font-bold leading-tight text-center"
                     >
                         Turn Process Complexity
                         <br />
