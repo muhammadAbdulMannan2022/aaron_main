@@ -4,6 +4,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/dark.css'; // Import a base theme
 import DataTable from '../Contents/ProjectTable';
 
+
 const sampleData = [
     {
         id: 1,
@@ -84,6 +85,7 @@ export default function Projects() {
     const datePickerRef = useRef(null);
     const flatpickrInstance = useRef(null);
 
+
     useEffect(() => {
         // Initialize flatpickr
         flatpickrInstance.current = flatpickr(datePickerRef.current, {
@@ -159,6 +161,7 @@ export default function Projects() {
             <div>
                 <DataTable data={sampleData} />
             </div>
+
         </div>
     );
 }

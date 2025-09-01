@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { CiCircleChevUp } from 'react-icons/ci';
-import { IoIosArrowDown } from 'react-icons/io';
+import { IoIosArrowDown, IoIosLogOut } from 'react-icons/io';
 import { TbLockPassword } from 'react-icons/tb';
 import { TfiEmail } from 'react-icons/tfi';
+import { modalContext } from '../DashboardLayout';
 
 const TopBar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const { setChangeEamilFormActive, setChangePasswordFormActive, setIsLogOut } = useContext(modalContext)
 
     const handleClickOutside = (event) => {
         if (!event.target.closest('.dropdown-container')) {
@@ -19,13 +21,6 @@ const TopBar = () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
-
-    const menuItems = [
-        { name: 'Upgrade package', icon: <CiCircleChevUp /> },
-        { name: 'Change Email', icon: <TfiEmail /> },
-        { name: 'Change password', icon: <TbLockPassword /> },
-        { name: 'Log out', icon: <IoIosLogOut /> },
-    ];
 
     return (
         <div className="w-full bg-[#0f0f0f] text-main-text flex justify-between items-center py-3 px-5 md:px-12">
@@ -50,15 +45,46 @@ const TopBar = () => {
                 </div>
                 {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg z-10">
-                        {menuItems.map((item) => (
-                            <div
-                                key={item.name}
-                                className="flex items-center p-2 text-gray-300 hover:bg-gray-700 cursor-pointer rounded-lg"
-                            >
-                                <span className="mr-2">{item.icon}</span>
-                                <span>{item.name}</span>
-                            </div>
-                        ))}
+
+                        <div
+                            className="flex items-center p-2 text-gray-300 hover:bg-gray-700 cursor-pointer rounded-lg"
+                        >
+                            <span className="mr-2"><CiCircleChevUp /></span>
+                            <span>Upgrade package</span>
+                        </div>
+                        <div onClick={() => {
+                            setChangePasswordFormActive(false)
+                            setIsLogOut(false)
+                            setChangeEamilFormActive(true)
+                        }}
+                            className="flex items-center p-2 text-gray-300 hover:bg-gray-700 cursor-pointer rounded-lg"
+                        >
+                            <span className="mr-2"><TfiEmail /></span>
+                            <span>Change Email</span>
+                        </div>
+                        <div
+                            onClick={() => {
+                                setChangeEamilFormActive(false)
+                                setIsLogOut(false)
+                                setChangePasswordFormActive(true)
+                            }}
+                            className="flex items-center p-2 text-gray-300 hover:bg-gray-700 cursor-pointer rounded-lg"
+                        >
+                            <span className="mr-2"><TbLockPassword /></span>
+                            <span>Change password</span>
+                        </div>
+                        <div
+                            onClick={() => {
+                                setChangeEamilFormActive(false)
+                                setChangePasswordFormActive(false)
+                                setIsLogOut(true)
+                            }}
+                            className="flex items-center p-2 text-gray-300 hover:bg-gray-700 cursor-pointer rounded-lg"
+                        >
+                            <span className="mr-2"><IoIosLogOut /></span>
+                            <span>Log out</span>
+                        </div>
+
                     </div>
                 )}
             </div>
