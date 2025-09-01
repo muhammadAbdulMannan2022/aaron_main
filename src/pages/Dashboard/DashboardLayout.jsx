@@ -7,6 +7,8 @@ import { Modal } from "../../helpers/Modal";
 import { ChangeEmailForm } from "./Contents/modalContent/ChangeEmailForm";
 import { ChangePasswordForm } from "./Contents/modalContent/ChangePassword";
 import { LogoutConfirmation } from "./Contents/modalContent/Logout";
+import { CsvUploadForm } from "./Contents/modalContent/UploadCsv";
+import { CsvUploadFormVariant } from "./Contents/modalContent/CsvUploadFirst";
 
 
 export const modalContext = createContext({})
@@ -17,7 +19,9 @@ export default function DashboardLayout() {
     const [changeEmailFormActive, setChangeEamilFormActive] = useState(false)
     const [changePasswordFormActive, setChangePasswordFormActive] = useState(false)
     const [isLogOut, setIsLogOut] = useState(false)
-    const constextData = { changeEmailFormActive, setChangeEamilFormActive, changePasswordFormActive, setChangePasswordFormActive, isLogOut, setIsLogOut }
+    const [uploadCsvOpen, setUploadCsvOpen] = useState(false)
+    const [uploadCsvFirst, setUploadCsvFirst] = useState(false)
+    const constextData = { changeEmailFormActive, setChangeEamilFormActive, changePasswordFormActive, setChangePasswordFormActive, isLogOut, setIsLogOut, uploadCsvOpen, setUploadCsvOpen, uploadCsvFirst, setUploadCsvFirst }
 
     return (
         <div className="flex flex-col lg:flex-row h-screen">
@@ -53,23 +57,30 @@ export default function DashboardLayout() {
                         <Outlet />
                     </div>
                 </div>
+
+                {/* modals */}
+                <Modal isOpen={changeEmailFormActive} onClose={() => {
+                    setChangeEamilFormActive(false)
+                }}>
+                    <ChangeEmailForm onClose={() => setChangeEamilFormActive(false)} />
+                </Modal>
+                <Modal isOpen={changePasswordFormActive} onClose={() => {
+                    setChangePasswordFormActive(false)
+                }}>
+                    <ChangePasswordForm onClose={() => setChangePasswordFormActive(false)} />
+                </Modal>
+                <Modal isOpen={isLogOut} onClose={() => {
+                    setIsLogOut(false)
+                }}>
+                    <LogoutConfirmation onConfirm={() => { setIsLogOut(false) }} onCancel={() => setIsLogOut(false)} />
+                </Modal>
+                <Modal isOpen={uploadCsvOpen} onClose={() => uploadCsvOpen(false)}>
+                    <CsvUploadForm onClose={() => setUploadCsvOpen(false)} />
+                </Modal>
+                <Modal isOpen={uploadCsvFirst} onClose={() => setUploadCsvFirst(false)}>
+                    <CsvUploadFormVariant onClose={() => setUploadCsvFirst(false)} />
+                </Modal>
             </modalContext.Provider>
-            {/* modals */}
-            <Modal isOpen={changeEmailFormActive} onClose={() => {
-                setChangeEamilFormActive(false)
-            }}>
-                <ChangeEmailForm onClose={() => setChangeEamilFormActive(false)} />
-            </Modal>
-            <Modal isOpen={changePasswordFormActive} onClose={() => {
-                setChangePasswordFormActive(false)
-            }}>
-                <ChangePasswordForm onClose={() => setChangePasswordFormActive(false)} />
-            </Modal>
-            <Modal isOpen={isLogOut} onClose={() => {
-                setIsLogOut(false)
-            }}>
-                <LogoutConfirmation onConfirm={() => { setIsLogOut(false) }} onCancel={() => setIsLogOut(false)} />
-            </Modal>
         </div>
     );
 }

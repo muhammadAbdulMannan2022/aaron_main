@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FiCalendar, FiSearch } from 'react-icons/fi';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/dark.css'; // Import a base theme
 import DataTable from '../Contents/ProjectTable';
+import { modalContext } from '../DashboardLayout';
 
 
 const sampleData = [
@@ -84,6 +85,7 @@ export default function Projects() {
     const [date, setDate] = useState('');
     const datePickerRef = useRef(null);
     const flatpickrInstance = useRef(null);
+    const { setUploadCsvFirst } = useContext(modalContext)
 
 
     useEffect(() => {
@@ -126,7 +128,7 @@ export default function Projects() {
             </div>
             <div className="flex flex-col md:flex-row space-x-6 py-4 rounded-xl shadow-md">
                 <div className="grow flex flex-col md:flex-row gap-3 mb-4 md:mb-0 justify-between items-center">
-                    <button className="bg-[#171717] w-full md:w-fit text-[#4DA6FF] px-6 py-2 rounded-lg hover:bg-[#333333] hover:cursor-pointer transition duration-200 font-medium">
+                    <button onClick={() => setUploadCsvFirst(true)} className="bg-[#171717] w-full md:w-fit text-[#4DA6FF] px-6 py-2 rounded-lg hover:bg-[#333333] hover:cursor-pointer transition duration-200 font-medium">
                         Project +
                     </button>
                     <div className="flex h-fit gap-4">
