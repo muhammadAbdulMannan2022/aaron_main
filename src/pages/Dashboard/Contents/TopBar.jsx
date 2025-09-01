@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { FaUserCircle, FaEnvelope, FaLock, FaSignOutAlt } from 'react-icons/fa';
+import { CiCircleChevUp } from 'react-icons/ci';
 import { IoIosArrowDown } from 'react-icons/io';
+import { TbLockPassword } from 'react-icons/tb';
+import { TfiEmail } from 'react-icons/tfi';
 
 const TopBar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,10 +21,10 @@ const TopBar = () => {
     }, []);
 
     const menuItems = [
-        { name: 'Upgrade package', icon: <FaUserCircle /> },
-        { name: 'Change Email', icon: <FaEnvelope /> },
-        { name: 'Change password', icon: <FaLock /> },
-        { name: 'Log out', icon: <FaSignOutAlt /> },
+        { name: 'Upgrade package', icon: <CiCircleChevUp /> },
+        { name: 'Change Email', icon: <TfiEmail /> },
+        { name: 'Change password', icon: <TbLockPassword /> },
+        { name: 'Log out', icon: <IoIosLogOut /> },
     ];
 
     return (
