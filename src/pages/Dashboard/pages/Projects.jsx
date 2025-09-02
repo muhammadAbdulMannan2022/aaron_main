@@ -85,7 +85,7 @@ export default function Projects() {
     const [date, setDate] = useState('');
     const datePickerRef = useRef(null);
     const flatpickrInstance = useRef(null);
-    const { setUploadCsvFirst } = useContext(modalContext)
+    const { setUploadCsvFirst, setDepartmentListOpen, setTeamListOpen } = useContext(modalContext)
 
 
     useEffect(() => {
@@ -132,10 +132,10 @@ export default function Projects() {
                         Project +
                     </button>
                     <div className="flex h-fit gap-4">
-                        <button className="text-[#4DA6FF] w-full px-6 py-2 rounded-lg hover:bg-[#333333] bg-[#171717] hover:cursor-pointer transition duration-200 font-medium whitespace-nowrap">
+                        <button onClick={() => setDepartmentListOpen(true)} className="text-[#4DA6FF] w-full px-6 py-2 rounded-lg hover:bg-[#333333] bg-[#171717] hover:cursor-pointer transition duration-200 font-medium whitespace-nowrap">
                             Departments List
                         </button>
-                        <button className="text-[#4DA6FF] w-full px-6 py-2 rounded-lg hover:bg-[#333333] bg-[#171717] hover:cursor-pointer transition duration-200 font-medium whitespace-nowrap">
+                        <button onClick={() => setTeamListOpen(true)} className="text-[#4DA6FF] w-full px-6 py-2 rounded-lg hover:bg-[#333333] bg-[#171717] hover:cursor-pointer transition duration-200 font-medium whitespace-nowrap">
                             Teams List
                         </button>
                     </div>

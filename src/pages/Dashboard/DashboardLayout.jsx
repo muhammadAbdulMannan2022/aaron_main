@@ -9,6 +9,8 @@ import { ChangePasswordForm } from "./Contents/modalContent/ChangePassword";
 import { LogoutConfirmation } from "./Contents/modalContent/Logout";
 import { CsvUploadForm } from "./Contents/modalContent/UploadCsv";
 import { CsvUploadFormVariant } from "./Contents/modalContent/CsvUploadFirst";
+import { DepartmentList } from "./Contents/modalContent/DepartmentList";
+import { TeamList } from "./Contents/modalContent/TeamList";
 
 
 export const modalContext = createContext({})
@@ -21,7 +23,9 @@ export default function DashboardLayout() {
     const [isLogOut, setIsLogOut] = useState(false)
     const [uploadCsvOpen, setUploadCsvOpen] = useState(false)
     const [uploadCsvFirst, setUploadCsvFirst] = useState(false)
-    const constextData = { changeEmailFormActive, setChangeEamilFormActive, changePasswordFormActive, setChangePasswordFormActive, isLogOut, setIsLogOut, uploadCsvOpen, setUploadCsvOpen, uploadCsvFirst, setUploadCsvFirst }
+    const [departmentListOpen, setDepartmentListOpen] = useState(false)
+    const [teamListOpen, setTeamListOpen] = useState(false)
+    const constextData = { changeEmailFormActive, setChangeEamilFormActive, changePasswordFormActive, setChangePasswordFormActive, isLogOut, setIsLogOut, uploadCsvOpen, setUploadCsvOpen, uploadCsvFirst, setUploadCsvFirst, departmentListOpen, setDepartmentListOpen, teamListOpen, setTeamListOpen }
 
     return (
         <div className="flex flex-col lg:flex-row h-screen">
@@ -79,6 +83,12 @@ export default function DashboardLayout() {
                 </Modal>
                 <Modal isOpen={uploadCsvFirst} onClose={() => setUploadCsvFirst(false)}>
                     <CsvUploadFormVariant onClose={() => setUploadCsvFirst(false)} />
+                </Modal>
+                <Modal isOpen={departmentListOpen} onClose={() => setDepartmentListOpen(false)}>
+                    <DepartmentList onClose={() => setDepartmentListOpen(false)} />
+                </Modal>
+                <Modal isOpen={teamListOpen} onClose={() => setTeamListOpen(false)}>
+                    <TeamList onClose={() => setTeamListOpen(false)} />
                 </Modal>
             </modalContext.Provider>
         </div>
