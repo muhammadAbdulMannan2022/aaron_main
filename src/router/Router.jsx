@@ -8,6 +8,8 @@ import ActivationCode from "../pages/Auth/authPages/VerifyOtp";
 import ForgotPassword from "../pages/Auth/authPages/ForgotPass";
 import DashboardLayout from "../pages/Dashboard/DashboardLayout";
 import Projects from "../pages/Dashboard/pages/Projects";
+import { ProcessEfficiencyLayout } from "../pages/Dashboard/pages/processEfficiency/ProcessEfficiencyLayout";
+import Acctual from "../pages/Dashboard/pages/processEfficiency/PARTS/Acctual";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +49,16 @@ const router = createBrowserRouter([
           {
             path: "",
             element: <Projects />
+          },
+          {
+            path: "process_efficiency",
+            element: <ProcessEfficiencyLayout />,
+            children: [
+              {
+                path: "",
+                element: <Acctual />
+              }
+            ]
           }
         ]
       }

@@ -48,7 +48,7 @@ export function Modal({ isOpen, onClose, children, className, overlayClassName, 
 
             {/* Modal Content */}
             <div
-                className={`relative w-fit max-w-4xl border border-gray-button-bg max-h-[90vh] overflow-auto bg-card flex items-center justify-center rounded-lg shadow-lg animate-in fade-in-0 zoom-in-95 duration-200 ${className || ""}`}
+                className={`relative w-fit max-w-4xl border border-gray-button-bg bg-main-bg max-h-[90vh] overflow-auto bg-card flex items-center justify-center rounded-lg shadow-lg animate-in fade-in-0 zoom-in-95 duration-200 ${className || ""}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}

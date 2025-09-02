@@ -129,3 +129,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .flatpickr-next-month:hover svg {
     fill: #ffffff;
 }
+
+
+
+
+
+
+
+/* hide package one */
+
+.react-flow__panel {
+    display: none;
+}
