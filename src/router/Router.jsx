@@ -10,6 +10,7 @@ import DashboardLayout from "../pages/Dashboard/DashboardLayout";
 import Projects from "../pages/Dashboard/pages/Projects";
 import { ProcessEfficiencyLayout } from "../pages/Dashboard/pages/processEfficiency/ProcessEfficiencyLayout";
 import Acctual from "../pages/Dashboard/pages/processEfficiency/PARTS/Acctual";
+import KpiDashboard from "../pages/Dashboard/pages/KpiDashboard/KpiDashboard";
 
 const router = createBrowserRouter([
   {
@@ -51,15 +52,20 @@ const router = createBrowserRouter([
             element: <Projects />
           },
           {
-            path: "process_efficiency",
+            path: "v1",
             element: <ProcessEfficiencyLayout />,
             children: [
               {
-                path: "",
+                path: "process_efficiency",
                 element: <Acctual />
+              },
+              {
+                path: "kpi_dashboard",
+                element: <KpiDashboard />
               }
             ]
-          }
+          },
+
         ]
       }
     ]

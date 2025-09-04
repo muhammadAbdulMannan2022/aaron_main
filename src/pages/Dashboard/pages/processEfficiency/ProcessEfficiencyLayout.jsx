@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router"; // Import useLocation
+import { Link, Outlet, useLocation } from "react-router";
 import { LuArrowLeft } from "react-icons/lu";
 import { Modal } from "../../../../helpers/Modal";
 import { HappyPathSetup } from "../../Contents/modalContent/HappyPath";
@@ -172,94 +172,90 @@ const invoiceFlowDataTemp = {
     ],
 };
 
+export const FlowContext = createContext({});
 
-export const FlowContext = createContext({})
 export function ProcessEfficiencyLayout() {
     const [invoiceFlowData] = useState(invoiceFlowDataTemp);
     const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
-    const location = useLocation(); // Get the current route
-    // context states
-    const [descriptionsToShow, setDescriptionsToShow] = useState([])
-    const [editHappyPath, setIsHappyPath] = useState(false)
-
+    const location = useLocation();
+    const [descriptionsToShow, setDescriptionsToShow] = useState([]);
+    const [editHappyPath, setIsHappyPath] = useState(false);
 
     useEffect(() => {
-        console.log(descriptionsToShow)
-    }, [descriptionsToShow])
+        console.log(descriptionsToShow);
+    }, [descriptionsToShow]);
 
     return (
         <FlowContext.Provider value={{ steps: invoiceFlowData, descriptionsToShow, setDescriptionsToShow, editHappyPath, setIsHappyPath }}>
-            <div className="h-full ">
-                <div className="flex flex-col h-full">
-                    <header className="flex flex-col items-start justify-center pt-4 gap-4 border-b border-gray-button-bg bg-background px-6">
-                        <div className="text-text-notActive flex w-full justify-between pt-5 md:pt-2">
-                            <div className="flex items-center gap-3 border border-gray-button-bg p-1 rounded-md hover:cursor-pointer px-3">
-                                <LuArrowLeft />
-                                <h1>Back</h1>
-                            </div>
-                            <button
-                                className="lg:hidden p-2 rounded-md hover:bg-accent text-foreground"
-                                onClick={() => setRightSidebarOpen(true)}
-                            >
-                                <Menu className="h-4 w-4" />
-                            </button>
+            <div className="h-full flex flex-col">
+                <header className="flex flex-col items-start justify-center pt-4 gap-4 border-b border-gray-button-bg bg-background px-6">
+                    <div className="text-text-notActive flex w-full justify-between pt-5 md:pt-2">
+                        <div className="flex items-center gap-3 border border-gray-button-bg p-1 rounded-md hover:cursor-pointer px-3">
+                            <LuArrowLeft />
+                            <h1>Back</h1>
                         </div>
-                        <div className="">
-                            <div className="flex-1">
-                                <nav className="flex space-x-4 pb-2">
-                                    <Link
-                                        to="/dashboard/process_efficiency"
-                                        className={` hover:text-[#4DA6FF]  py-2 text-xs md:text-base ${location.pathname.includes("/dashboard/process_efficiency")
-                                            ? "text-[#4DA6FF] border-b-2"
-                                            : "text-text-notActive"
-                                            }`}
-                                    >
-                                        Process Efficiency
-                                    </Link>
-                                    <Link
-                                        to="/dashboard/kpi_dashboard"
-                                        className={`hover:text-[#4DA6FF]  py-2 text-xs md:text-base ${location.pathname === "/dashboard/kpi_dashboard"
-                                            ? "text-[#4DA6FF] border-b-2"
-                                            : "text-text-notActive"
-                                            }`}
-                                    >
-                                        KPI Dashboard
-                                    </Link>
-                                    <Link
-                                        to="/dashboard/benchmarks"
-                                        className={`hover:text-[#4DA6FF]  py-2 text-xs md:text-base ${location.pathname === "/dashboard/benchmarks"
-                                            ? "text-[#4DA6FF] border-b-2"
-                                            : "text-text-notActive"
-                                            }`}
-                                    >
-                                        Benchmarks
-                                    </Link>
-                                    <Link
-                                        to="/dashboard/ai"
-                                        className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${location.pathname === "/dashboard/ai"
-                                            ? "text-[#4DA6FF] border-b-2"
-                                            : "text-text-notActive"
-                                            }`}
-                                    >
-                                        AI Support
-                                    </Link>
-                                </nav>
-                            </div>
-
-                        </div>
-                    </header>
-
-                    <div className="flex flex-1">
-                        <main className="flex-1 ">
-                            <Outlet />
-                        </main>
-
-                        {/* Right Sidebar */}
-                        <aside
-                            className={`w-80 shadow-md shadow-gray-700 bg-black border-l border-sidebar-border transform transition-transform duration-200 ease-in-out ${rightSidebarOpen ? "translate-x-0" : "translate-x-full"
-                                } lg:translate-x-0 lg:block fixed lg:relative inset-y-0 right-0 z-50 lg:z-auto`}
+                        <button
+                            className="lg:hidden p-2 rounded-md hover:bg-accent text-foreground"
+                            onClick={() => setRightSidebarOpen(true)}
                         >
-                            <div className="flex h-full flex-col">
+                            <Menu className="h-4 w-4" />
+                        </button>
+                    </div>
+                    <div>
+                        <div className="flex-1">
+                            <nav className="flex space-x-4 pb-2">
+                                <Link
+                                    to="/dashboard/v1/process_efficiency"
+                                    className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${location.pathname.includes("/dashboard/v1/process_efficiency")
+                                        ? "text-[#4DA6FF] border-b-2"
+                                        : "text-text-notActive"
+                                        }`}
+                                >
+                                    Process Efficiency
+                                </Link>
+                                <Link
+                                    to="/dashboard/v1/kpi_dashboard"
+                                    className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${location.pathname === "/dashboard/v1/kpi_dashboard"
+                                        ? "text-[#4DA6FF] border-b-2"
+                                        : "text-text-notActive"
+                                        }`}
+                                >
+                                    KPI Dashboard
+                                </Link>
+                                <Link
+                                    to="/dashboard/v1/benchmarks"
+                                    className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${location.pathname === "/dashboard/v1/benchmarks"
+                                        ? "text-[#4DA6FF] border-b-2"
+                                        : "text-text-notActive"
+                                        }`}
+                                >
+                                    Benchmarks
+                                </Link>
+                                <Link
+                                    to="/dashboard/v1/ai"
+                                    className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${location.pathname === "/dashboard/v1/ai"
+                                        ? "text-[#4DA6FF] border-b-2"
+                                        : "text-text-notActive"
+                                        }`}
+                                >
+                                    AI Support
+                                </Link>
+                            </nav>
+                        </div>
+                    </div>
+                </header>
+
+                <div className="flex-1 flex min-h-0 ">
+                    <main className="flex-1 w-full h-full min-h-0 ">
+                        <Outlet />
+                    </main>
+
+                    {
+                        location.pathname.includes("/dashboard/v1/process_efficiency") && <aside
+                            className={`w-80 shadow-md shadow-gray-700 bg-black border-l border-sidebar-border transform transition-transform duration-200 ease-in-out ${rightSidebarOpen ? "translate-x-0" : "translate-x-full"
+                                } lg:translate-x-0 lg:block fixed lg:static right-0 z-50 lg:z-auto h-auto`}
+                        >
+                            <div className="flex flex-col min-h-0">
                                 <div className="lg:hidden flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
                                     <button
                                         className="p-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground"
@@ -268,22 +264,22 @@ export function ProcessEfficiencyLayout() {
                                         <X className="h-4 w-4" />
                                     </button>
                                 </div>
-                                <div className="flex-1 p-4 flex flex-col gap-2">
-                                    {/* Add your right sidebar items here */}
-                                    {
-                                        descriptionsToShow.length > 0 && descriptionsToShow.map((data, i) => <div className="text-white border border-gray-button-bg p-2 rounded-md" key={i}>
-                                            <p>{data}</p>
-                                        </div>)
-                                    }
+                                <div className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
+                                    {descriptionsToShow.length > 0 &&
+                                        descriptionsToShow.map((data, i) => (
+                                            <div className="text-white border border-gray-button-bg p-2 rounded-md" key={i}>
+                                                <p>{data}</p>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
                         </aside>
-                    </div>
+                    }
                 </div>
 
                 {rightSidebarOpen && (
                     <div
-                        className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+                        className="fixed inset-0 z-[99] bg-black/50 lg:hidden"
                         onClick={() => setRightSidebarOpen(false)}
                     />
                 )}

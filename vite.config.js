@@ -7,5 +7,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 7006
-  }
+  },
+  optimizeDeps: {
+    include: ['@dnd-kit/core', 'react-resizable'], // Explicitly include problematic dependencies
+  },
 });
