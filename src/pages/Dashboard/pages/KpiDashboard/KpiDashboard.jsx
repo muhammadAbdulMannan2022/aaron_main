@@ -28,7 +28,7 @@ export default function KpiDashboard() {
         const widget = widgets.find((w) => w.id === active.id);
         if (widget) {
             const container = document.querySelector('.canvas-container');
-            const containerWidth = container ? container.offsetWidth : (typeof canvasSize.width === 'number' ? canvasSize.width : 1200);
+            const containerWidth = container ? container.offsetWidth : 1200;
             const containerHeight = typeof canvasSize.height === 'number' ? canvasSize.height : 800;
             const newX = Math.max(0, Math.min(containerWidth - widget.size.width, widget.position.x + delta.x));
             const newY = Math.max(0, Math.min(containerHeight - widget.size.height, widget.position.y + delta.y));
@@ -46,10 +46,10 @@ export default function KpiDashboard() {
     };
 
     return (
-        <div className="h-full flex min-h-0 bg-gray-900 text-white relative" onClick={handleOutsideClick}>
+        <div className="h-full flex min-h-0 text-white relative" onClick={handleOutsideClick}>
             <main className="flex-1 min-h-0">
-                <div className="h-full px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="flex items-center gap-3 mb-4">
+                <div className="h-auto px-4 sm:px-6 lg:px-8 py-8 mb-20">
+                    <div className="flex sticky top-0 items-center gap-3 mb-4">
                         <button
                             onClick={handleToggleSidebar}
                             className="flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 add-widget-button"
@@ -93,8 +93,8 @@ export default function KpiDashboard() {
                     ) : (
                         <DndContext onDragEnd={handleDragEnd}>
                             <div
-                                className="relative bg-gray-800 rounded-lg border border-gray-100 overflow-hidden w-full canvas-container"
-                                style={{ height: canvasSize.height, maxHeight: '100%', width: '100%' }}
+                                className="relative bg-gray-800 rounded-lg overflow-hidden w-full canvas-container"
+                                style={{ height: canvasSize.height, minHeight: '100%', width: '100%' }}
                             >
                                 <div
                                     className="absolute inset-0 opacity-20 border border-green-800"
@@ -113,7 +113,7 @@ export default function KpiDashboard() {
                                         onMove={moveWidget}
                                         onResize={resizeWidget}
                                         onBringToFront={bringToFront}
-                                        onRemove={removeWidget}
+                                        onRemove={(id) => removeWidget(id)}
                                     />
                                 ))}
                             </div>

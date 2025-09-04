@@ -57,7 +57,7 @@ export default function DashboardLayout() {
                     </div>
 
                     {/* Main area */}
-                    <div className="flex flex-1 h-full overflow-y-auto flex-col bg-[#0f0f0f]">
+                    <div className="flex flex-1 h-full overflow-y-auto flex-col bg-[#0f0f0f] element-with-scrolling-custom">
                         <Outlet />
                     </div>
                 </div>

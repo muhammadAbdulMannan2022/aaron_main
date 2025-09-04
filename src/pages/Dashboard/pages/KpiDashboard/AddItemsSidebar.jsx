@@ -1,83 +1,171 @@
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, ArrowRight, TrendingUp, PieChart, Target, BarChart3, Activity } from "lucide-react"
+import { useState } from "react"
 
 const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
-    const [title, setTitle] = useState('');
-    const [type, setType] = useState('text');
-    const [content, setContent] = useState('');
+    const [selectedName, setSelectedName] = useState("")
+    const [selectedWidget, setSelectedWidget] = useState("")
+
+    const widgetOptions = [
+        {
+            id: "line-chart",
+            name: "Line chart",
+            description: "Display trends over time",
+            icon: TrendingUp,
+        },
+        {
+            id: "pie-chart",
+            name: "Pie Chart",
+            description: "Show proportional data",
+            icon: PieChart,
+        },
+        {
+            id: "progress-tracker",
+            name: "Progress Tracker",
+            description: "Compare different categories",
+            icon: Target,
+        },
+        {
+            id: "bar-chart",
+            name: "Bar Chart",
+            description: "Display trends over time",
+            icon: BarChart3,
+        },
+        {
+            id: "key-metrics",
+            name: "Key Metrics",
+            description: "Display trends over time",
+            icon: Activity,
+        },
+    ]
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!title.trim() || !content.trim()) return;
+        e.preventDefault()
+        if (!selectedName.trim() || !selectedWidget) return
 
         onAdd({
-            title: title.trim(),
-            type,
-            content: type === 'number' ? parseFloat(content) : content,
-        });
+            title: selectedName.trim(),
+            type: selectedWidget,
+            dataSource: selectedWidget,
+        })
 
-        setTitle('');
-        setType('text');
-        setContent('');
-        onClose();
-    };
+        setSelectedName("")
+        setSelectedWidget("")
+        onClose()
+    }
 
     return (
-        <div className={`w-80 h-full z-[999] bg-gray-800 text-white shadow-md shadow-gray-700 border-l border-gray-600 transform transition-transform duration-200 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} fixed right-0 z-50 h-auto min-h-0 sidebar`}>
+        <div
+            className={`w-80 h-full z-[999] shadow-md border-l transform transition-transform duration-200 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"} fixed right-0 z-50 h-auto min-h-0 sidebar`}
+            style={{
+                backgroundColor: "var(--color-main-bg)",
+                color: "var(--color-text-primary)",
+                borderLeftColor: "var(--color-gray-button-bg)",
+                boxShadow: "0 4px 6px -1px var(--color-shadow-button-outer)",
+            }}
+        >
             <div className="flex flex-col min-h-0 relative">
-                <div onClick={onToggle} className="text-white absolute w-10 bg-amber-200 items-center justify-center -left-10 top-5 px-4 py-2 rounded-s-full">
+                <div
+                    onClick={onToggle}
+                    className="absolute w-10 items-center justify-center -left-10 top-5 px-4 py-2 rounded-s-full cursor-pointer hover:opacity-80 transition-opacity"
+                    style={{
+                        backgroundColor: "var(--color-outer-button-bg)",
+                        color: "var(--color-text-primary)",
+                    }}
+                >
                     {isopen ? <ArrowRight /> : <ArrowLeft />}
                 </div>
 
                 <div className="p-6 flex flex-col">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">Add New Widget</h2>
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-bold" style={{ color: "var(--color-text-primary)" }}>
+                            Insert KPI
+                        </h2>
                     </div>
+
                     <form onSubmit={handleSubmit} className="space-y-4 flex-1">
                         <div>
-                            <label className="block text-sm font-medium mb-1">Widget Title</label>
-                            <input
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-                                placeholder="Enter widget title..."
-                                required
-                            />
+                            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-main-text)" }}>
+                                Select name
+                            </label>
+                            <div className="relative">
+                                <select
+                                    value={selectedName}
+                                    onChange={(e) => setSelectedName(e.target.value)}
+                                    className="w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all appearance-none"
+                                    style={{
+                                        backgroundColor: "var(--color-gray-button-bg)",
+                                        borderColor: "var(--color-gray-button-bg)",
+                                        color: "var(--color-text-notActive)",
+                                        "--tw-ring-color": "var(--color-outer-button-bg)",
+                                    }}
+                                >
+                                    <option value="">Select one</option>
+                                    <option value="Revenue">Revenue</option>
+                                    <option value="Users">Users</option>
+                                    <option value="Conversion">Conversion</option>
+                                    <option value="Growth">Growth</option>
+                                </select>
+                                <ArrowRight
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none"
+                                    style={{ color: "var(--color-text-notActive)" }}
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Widget Type</label>
-                            <select
-                                value={type}
-                                onChange={(e) => setType(e.target.value)}
-                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-                            >
-                                <option value="text">Text</option>
-                                <option value="number">Number</option>
-                            </select>
+
+                        <div className="space-y-3 mt-6">
+                            {widgetOptions.map((widget) => {
+                                const IconComponent = widget.icon
+                                return (
+                                    <div
+                                        key={widget.id}
+                                        onClick={() => setSelectedWidget(widget.id)}
+                                        className={`p-4 border rounded-lg cursor-pointer transition-all hover:opacity-80 ${selectedWidget === widget.id ? "ring-2" : ""
+                                            }`}
+                                        style={{
+                                            backgroundColor: "var(--color-gray-button-bg)",
+                                            borderColor: "var(--color-gray-button-bg)",
+                                            "--tw-ring-color": selectedWidget === widget.id ? "var(--color-outer-button-bg)" : "transparent",
+                                        }}
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            <IconComponent
+                                                className="w-5 h-5 mt-0.5 flex-shrink-0"
+                                                style={{ color: "var(--color-landing-icon)" }}
+                                            />
+                                            <div className="flex-1">
+                                                <h3 className="font-medium text-sm" style={{ color: "var(--color-text-primary)" }}>
+                                                    {widget.name}
+                                                </h3>
+                                                <p className="text-xs mt-1" style={{ color: "var(--color-text-notActive)" }}>
+                                                    {widget.description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Content</label>
-                            <input
-                                type={type === 'number' ? 'number' : 'text'}
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-                                placeholder={`Enter ${type === 'number' ? 'number' : 'text'} content...`}
-                                required
-                            />
-                        </div>
-                        <div className="flex gap-2 mt-auto">
+
+                        <div className="flex gap-2 mt-8 pt-4">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 px-4 py-2 border border-gray-600 text-white rounded-lg hover:bg-gray-700"
+                                className="flex-1 px-4 py-2 border rounded-lg hover:opacity-80 transition-opacity"
+                                style={{
+                                    borderColor: "var(--color-button-outline)",
+                                    color: "var(--color-text-notActive)",
+                                    backgroundColor: "transparent",
+                                }}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                className="flex-1 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                                style={{
+                                    backgroundColor: "var(--color-auth-button-bg)",
+                                    color: "var(--color-text-primary)",
+                                }}
                             >
                                 Add Widget
                             </button>
@@ -86,6 +174,7 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
+
 export default AddWidgetSidebar

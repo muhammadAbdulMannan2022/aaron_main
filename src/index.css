@@ -62,6 +62,29 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 
+/* Dark theme custom scrollbar */
+.element-with-scrolling-custom::-webkit-scrollbar {
+    width: 5px;
+}
+
+.element-with-scrolling-custom::-webkit-scrollbar-track {
+    background: #121212;
+    border-radius: 3px;
+}
+
+.element-with-scrolling-custom::-webkit-scrollbar-thumb {
+    background: #555;
+    /* medium gray thumb */
+    border-radius: 3px;
+}
+
+.element-with-scrolling-custom::-webkit-scrollbar-thumb:hover {
+    background: #888;
+    /* lighter gray on hover */
+}
+
+
+
 /* calender style */
 
 /* General calendar styling */

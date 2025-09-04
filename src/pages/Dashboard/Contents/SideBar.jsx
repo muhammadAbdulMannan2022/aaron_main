@@ -19,7 +19,7 @@ const Sidebar = () => {
         <div className="w-full h-full text-white flex flex-col justify-between  pt-4">
             <div className="px-4">
                 <div className="flex items-center justify-center mb-8">
-                    <img src="userClogo.png" className='max-w-full' alt="" />
+                    <img src="/userClogo.png" className='max-w-full' alt="" />
                 </div>
                 {menuItems.map((item) => (
                     <div
