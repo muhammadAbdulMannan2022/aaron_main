@@ -55,7 +55,7 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
 
     return (
         <div
-            className={`w-80 h-full z-[999] shadow-md border-l transform transition-transform duration-200 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"} fixed right-0 z-50 h-auto min-h-0 sidebar`}
+            className={`w-80 h-full z-[9999] shadow-md border-l transform transition-transform duration-200 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"} fixed right-0 z-50 h-auto min-h-0 sidebar`}
             style={{
                 backgroundColor: "var(--color-main-bg)",
                 color: "var(--color-text-primary)",
@@ -91,7 +91,7 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
                                 <select
                                     value={selectedName}
                                     onChange={(e) => setSelectedName(e.target.value)}
-                                    className="w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all appearance-none"
+                                    className="w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all appearance-none hover:cursor-pointer"
                                     style={{
                                         backgroundColor: "var(--color-gray-button-bg)",
                                         borderColor: "var(--color-gray-button-bg)",
@@ -127,11 +127,13 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
                                             "--tw-ring-color": selectedWidget === widget.id ? "var(--color-outer-button-bg)" : "transparent",
                                         }}
                                     >
-                                        <div className="flex items-start gap-3">
-                                            <IconComponent
-                                                className="w-5 h-5 mt-0.5 flex-shrink-0"
-                                                style={{ color: "var(--color-landing-icon)" }}
-                                            />
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-gradient-to-bl from-gray-950 to-blue-950 h-10 w-10 flex items-center justify-center rounded-md">
+                                                <IconComponent
+                                                    className="w-6 h-6 flex-shrink-0"
+                                                    style={{ color: "var(--color-landing-icon)" }}
+                                                />
+                                            </div>
                                             <div className="flex-1">
                                                 <h3 className="font-medium text-sm" style={{ color: "var(--color-text-primary)" }}>
                                                     {widget.name}
@@ -150,7 +152,7 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 px-4 py-2 border rounded-lg hover:opacity-80 transition-opacity"
+                                className="flex-1 px-4 py-2 border rounded-lg hover:opacity-80 transition-opacity hover:cursor-pointer"
                                 style={{
                                     borderColor: "var(--color-button-outline)",
                                     color: "var(--color-text-notActive)",
@@ -161,7 +163,7 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
                             </button>
                             <button
                                 type="submit"
-                                className="flex-1 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                                className="flex-1 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity hover:cursor-pointer"
                                 style={{
                                     backgroundColor: "var(--color-auth-button-bg)",
                                     color: "var(--color-text-primary)",

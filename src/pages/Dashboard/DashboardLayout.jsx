@@ -61,7 +61,6 @@ export default function DashboardLayout() {
                         <Outlet />
                     </div>
                 </div>
-
                 {/* modals */}
                 <Modal isOpen={changeEmailFormActive} onClose={() => {
                     setChangeEamilFormActive(false)
