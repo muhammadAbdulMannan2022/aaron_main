@@ -224,7 +224,7 @@ export function ProcessEfficiencyLayout() {
                                 </Link>
                                 <Link
                                     to="/dashboard/v1/benchmarks"
-                                    className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${location.pathname === "/dashboard/v1/benchmarks"
+                                    className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${location.pathname.includes("/dashboard/v1/benchmarks")
                                         ? "text-[#4DA6FF] border-b-2"
                                         : "text-text-notActive"
                                         }`}

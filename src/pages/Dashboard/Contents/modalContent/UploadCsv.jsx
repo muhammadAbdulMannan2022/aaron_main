@@ -25,7 +25,7 @@ export function CsvUploadForm({ onClose }) {
         <div className="p-6 space-y-6 max-w-lg w-full md:w-lg" >
             <div className="text-center space-y-2">
                 <h2 className="text-2xl font-semibold" style={{ color: "var(--color-text-primary)" }}>
-                    Upload CSV file
+                    Define Colums
                 </h2>
                 <p style={{ color: "var(--color-main-text)" }}>Empowering hotels and restaurants with AI-</p>
             </div>

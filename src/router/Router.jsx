@@ -11,6 +11,8 @@ import Projects from "../pages/Dashboard/pages/Projects";
 import { ProcessEfficiencyLayout } from "../pages/Dashboard/pages/processEfficiency/ProcessEfficiencyLayout";
 import Acctual from "../pages/Dashboard/pages/processEfficiency/PARTS/Acctual";
 import KpiDashboard from "../pages/Dashboard/pages/KpiDashboard/KpiDashboard";
+import BenchmarkTable from "../pages/Dashboard/pages/benchmarks/BeanchmarkTable";
+import BeanchmarkReportPage from "../pages/Dashboard/pages/benchmarks/BeanchmarkReport";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +64,14 @@ const router = createBrowserRouter([
               {
                 path: "kpi_dashboard",
                 element: <KpiDashboard />
+              },
+              {
+                path: "benchmarks",
+                element: <BenchmarkTable />
+              },
+              {
+                path: "benchmarks/report",
+                element: <BeanchmarkReportPage />
               }
             ]
           },
