@@ -5,11 +5,15 @@ import { DndContext } from '@dnd-kit/core';
 import WidgetCard from '../../Widgets/LineChart';
 import AddWidgetSidebar from './AddItemsSidebar';
 import 'react-resizable/css/styles.css';
+import { Modal } from '../../../../helpers/Modal';
+import MainFilterDashboard from '../../Contents/modalContent/MainFilterDashboard';
 
 
 export default function KpiDashboard() {
     const [showSidebar, setShowSidebar] = useState(false);
     const { widgets, canvasSize, addWidget, moveWidget, resizeWidget, bringToFront, removeWidget, exportConfig, importConfig } = useDashboard();
+    const [mainFilterOpen, setMainFilterOpen] = useState(false)
+    const [filterOpen, setFilterOpen] = useState(false)
 
     // headers 
     const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
@@ -103,7 +107,9 @@ export default function KpiDashboard() {
                             </div>
 
                             {/* Filters button */}
-                            <button className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg hover:cursor-pointer">
+                            <button onClick={() => {
+                                setMainFilterOpen(true)
+                            }} className="flex items-center z-[1002] gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg hover:cursor-pointer">
                                 <Filter size={16} />
                                 <span>Filters</span>
                             </button>
@@ -153,7 +159,7 @@ export default function KpiDashboard() {
                                     <p className="text-gray-400 mb-4">Get started by adding your first widget.</p>
                                     <button
                                         onClick={handleToggleSidebar}
-                                        className="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 add-widget-button"
+                                        className="px-6 py-3 bg-auth-button-bg rounded-lg hover:bg-auth-button-bg/80 add-widget-button hover:cursor-pointer"
                                     >
                                         Add Your First Widget
                                     </button>
@@ -207,6 +213,9 @@ export default function KpiDashboard() {
                     onClick={() => setShowSidebar(false)}
                 />
             )}
+            <Modal isOpen={mainFilterOpen} onClose={() => setMainFilterOpen(false)}>
+                <MainFilterDashboard onClose={() => setMainFilterOpen(false)} />
+            </Modal>
         </div>
     );
 }

@@ -40,7 +40,7 @@ export function Modal({ isOpen, onClose, children, className, overlayClassName, 
 
     return createPortal(
         <div
-            className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${overlayClassName || ""}`}
+            className={`fixed inset-0 z-[100000] flex items-center justify-center p-4 ${overlayClassName || ""}`}
             onClick={onClose}
         >
             {/* Backdrop */}
@@ -48,7 +48,7 @@ export function Modal({ isOpen, onClose, children, className, overlayClassName, 
 
             {/* Modal Content */}
             <div
-                className={`relative w-fit max-w-4xl border border-gray-button-bg bg-main-bg max-h-[90vh] overflow-auto bg-card flex items-center justify-center rounded-lg shadow-lg animate-in fade-in-0 zoom-in-95 duration-200 ${className || ""}`}
+                className={`relative w-fit max-w-4xl border border-gray-button-bg bg-main-bg max-h-[90vh] overflow-auto bg-card flex items-center justify-center rounded-lg shadow-lg animate-in fade-in-0 zoom-in-95 duration-200 element-with-scrolling-custom ${className || ""}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}
