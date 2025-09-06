@@ -1,41 +1,47 @@
-
-import { useState } from 'react';
 import { AiOutlineLayout } from 'react-icons/ai';
 import { FaHeadset } from 'react-icons/fa6';
 import { HiOutlineUserCircle } from 'react-icons/hi';
 import { LuSquareDashedMousePointer } from 'react-icons/lu';
+import { Link, useLocation, useNavigate } from 'react-router';
 
 const Sidebar = () => {
-    const [activeItem, setActiveItem] = useState('Projects');
+    const location = useLocation();
+    const navigate = useNavigate()
 
     const menuItems = [
-        { name: 'Projects', icon: <AiOutlineLayout /> },
-        { name: 'Subscription Plan', icon: <LuSquareDashedMousePointer /> },
-        { name: 'Profile', icon: <HiOutlineUserCircle /> },
-
+        { name: 'Projects', icon: <AiOutlineLayout />, to: "/dashboard" },
+        { name: 'Subscription Plan', icon: <LuSquareDashedMousePointer />, to: "/dashboard/priceing" },
+        { name: 'Profile', icon: <HiOutlineUserCircle />, to: "/dashboard/profile" },
     ];
 
+    const isActive = (path) => {
+        if (path === "/dashboard/profile") {
+            return location.pathname.startsWith("/dashboard/profile");
+        }
+        return location.pathname === path;
+    };
+
     return (
-        <div className="w-full h-full text-white flex flex-col justify-between  pt-4">
+        <div className="w-full h-full text-white flex flex-col justify-between pt-4">
             <div className="px-4">
                 <div className="flex items-center justify-center mb-8">
-                    <img src="/userClogo.png" className='max-w-full' alt="" />
+                    <img src="/userClogo.png" className="max-w-full" alt="logo" />
                 </div>
+
                 {menuItems.map((item) => (
-                    <div
+                    <Link
+                        to={item.to}
                         key={item.name}
-                        className={`flex items-center p-2 my-2 rounded-lg cursor-pointer ${activeItem === item.name ? 'text-[#4DA6FF]' : 'text-[#5B6269]'
-                            }`}
-                        onClick={() => setActiveItem(item.name)}
+                        className={`flex items-center p-2 my-2 rounded-lg cursor-pointer transition 
+              ${isActive(item.to) ? "text-auth-button-bg font-bold" : "text-text-primary"}`}
                     >
                         <span className="mr-3">{item.icon}</span>
                         <span>{item.name}</span>
-                    </div>
+                    </Link>
                 ))}
-
             </div>
-            {/* { name: 'Customer Hub', icon: <FaHeadset /> }, */}
-            <button className='bg-gray-button-bg p-4 flex items-center gap-5 text-lg text-[#4DA6FF] hover:cursor-pointer'>
+
+            <button onClick={() => navigate("/dashboard/supportHub")} className="bg-gray-button-bg p-4 flex items-center gap-5 text-lg text-[#4DA6FF] hover:cursor-pointer">
                 <FaHeadset />
                 <span>Customer Hub</span>
             </button>

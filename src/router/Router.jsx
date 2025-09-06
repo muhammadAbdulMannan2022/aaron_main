@@ -14,6 +14,10 @@ import KpiDashboard from "../pages/Dashboard/pages/KpiDashboard/KpiDashboard";
 import BenchmarkTable from "../pages/Dashboard/pages/benchmarks/BeanchmarkTable";
 import BeanchmarkReportPage from "../pages/Dashboard/pages/benchmarks/BeanchmarkReport";
 import AiSupport from "../pages/Dashboard/pages/AI Support/AiSupport";
+import PricingPlan from "../pages/Priceinig/PriceingPlan";
+import Profile from "../pages/Dashboard/pages/Profile/Profile";
+import EditPrifile from "../pages/Dashboard/pages/Profile/EditProfile";
+import SupportHub from "../pages/docs/SupportHub";
 
 const router = createBrowserRouter([
   {
@@ -80,6 +84,22 @@ const router = createBrowserRouter([
               }
             ]
           },
+          {
+            path: "priceing",
+            element: <PricingPlan />
+          },
+          {
+            path: "profile",
+            element: <Profile />
+          },
+          {
+            path: "profile/edit",
+            element: <EditPrifile />
+          },
+          {
+            path: "supportHub",
+            element: <SupportHub />
+          }
 
         ]
       }
