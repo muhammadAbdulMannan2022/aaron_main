@@ -7,27 +7,27 @@ export function HowItsWorks() {
     const steps = [
         {
             title: "Visualize",
-            icon: <FaUpload className="text-purple-400 text-2xl" />,
+            icon: <FaUpload className="text-[#A39DFF] text-2xl" />,
             subTitle: "Import your data and get an instant process map.",
         },
         {
             title: "Analyze",
-            icon: <FaSearch className="text-purple-400 text-2xl" />,
+            icon: <FaSearch className="text-[#A39DFF] text-2xl" />,
             subTitle: "Detect inefficiencies, waiting times, bottlenecks and process dropouts.",
         },
         {
             title: "Simulate",
-            icon: <FaProjectDiagram className="text-purple-400 text-2xl" />,
+            icon: <FaProjectDiagram className="text-[#A39DFF] text-2xl" />,
             subTitle: "Test potential changes with “what-if” analysis. (Digital Twin)",
         },
         {
             title: "Optimize",
-            icon: <FaRocket className="text-purple-400 text-2xl" />,
+            icon: <FaRocket className="text-[#A39DFF] text-2xl" />,
             subTitle: "Apply improvements where they create the most value.",
         },
         {
             title: "Monitor",
-            icon: <FaChartLine className="text-purple-400 text-2xl" />,
+            icon: <FaChartLine className="text-[#A39DFF] text-2xl" />,
             subTitle: "Track progress and ensure lasting results.",
         },
     ];
@@ -93,7 +93,7 @@ export function HowItsWorks() {
                                     {item.icon}
                                 </div>
                                 <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                                <p className="text-gray-400 text-sm">{item.subTitle}</p>
+                                <p className="text-gray-400 text-sm line-clamp-2">{item.subTitle}</p>
                                 <div className="flex-grow"></div> {/* pushes content to equal height */}
                             </div>
                         </div>
