@@ -28,7 +28,7 @@ export default function DataTable({ data }) {
     }
 
     return (
-        <div className="bg-black rounded-lg overflow-hidden">
+        <div className="bg-[#0f0f0f] rounded-lg overflow-hidden">
             {/* Table container with horizontal scroll */}
             <div className="overflow-x-auto pb-20">
                 <table className="min-w-full">

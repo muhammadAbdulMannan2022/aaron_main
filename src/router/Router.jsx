@@ -13,6 +13,7 @@ import Acctual from "../pages/Dashboard/pages/processEfficiency/PARTS/Acctual";
 import KpiDashboard from "../pages/Dashboard/pages/KpiDashboard/KpiDashboard";
 import BenchmarkTable from "../pages/Dashboard/pages/benchmarks/BeanchmarkTable";
 import BeanchmarkReportPage from "../pages/Dashboard/pages/benchmarks/BeanchmarkReport";
+import AiSupport from "../pages/Dashboard/pages/AI Support/AiSupport";
 
 const router = createBrowserRouter([
   {
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
               {
                 path: "benchmarks/report",
                 element: <BeanchmarkReportPage />
+              },
+              {
+                path: "ai",
+                element: <AiSupport />
               }
             ]
           },

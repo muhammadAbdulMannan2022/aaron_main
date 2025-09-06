@@ -20,7 +20,7 @@ export function ChangePasswordForm({ onClose }) {
         "w-full bg-gray-800 border border-gray-700 rounded-lg pl-12 pr-12 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 
     return (
-        <div className="bg-black text-white p-8 rounded-lg max-w-md w-full md:w-md">
+        <div className="bg-[#0f0f0f] text-white p-8 rounded-lg max-w-md w-full md:w-md">
             <h2 className="text-2xl font-semibold text-center mb-8">Change Password</h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">

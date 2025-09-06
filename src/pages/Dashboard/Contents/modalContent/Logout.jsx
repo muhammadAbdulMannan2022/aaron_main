@@ -1,6 +1,6 @@
 export function LogoutConfirmation({ onConfirm, onCancel }) {
     return (
-        <div className="bg-black text-white p-8 rounded-lg max-w-sm w-full">
+        <div className="bg-[#0f0f0f] text-white p-8 rounded-lg max-w-sm w-full">
             <h2 className="text-2xl font-semibold text-center mb-6">
                 Do you want to logout?
             </h2>

@@ -116,7 +116,7 @@ export default function BenchmarkTable() {
     }
 
     return (
-        <div className="bg-black text-white min-h-screen p-6">
+        <div className="bg-[#0f0f0f] text-white min-h-screen p-6">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-xl font-medium text-text-primary">Comparison benchmarks</h1>
                 <button

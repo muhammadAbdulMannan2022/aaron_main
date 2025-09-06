@@ -15,7 +15,7 @@ export function ChangeEmailForm({ onClose }) {
     }
 
     return (
-        <div className="bg-black text-white p-8 rounded-lg max-w-md w-full md:w-md">
+        <div className="bg-[#0f0f0f] text-white p-8 rounded-lg max-w-md w-full md:w-md">
             <h2 className="text-2xl font-semibold text-center mb-8">Change Email</h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">

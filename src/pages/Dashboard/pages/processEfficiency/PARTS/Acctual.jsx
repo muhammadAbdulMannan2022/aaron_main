@@ -24,7 +24,7 @@ const CustomNode = ({ data }) => {
 
             <div className="flex justify-between w-full">
                 <div></div>
-                <div className="">
+                <div className="py-2 px-4">
                     <h1 className="text-sm font-bold">{label}</h1>
                 </div>
             </div>
