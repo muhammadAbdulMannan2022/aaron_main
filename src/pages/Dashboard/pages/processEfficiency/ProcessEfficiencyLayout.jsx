@@ -238,7 +238,7 @@ export function ProcessEfficiencyLayout() {
                                         : "text-text-notActive"
                                         }`}
                                 >
-                                    AI Support
+                                    Simulation
                                 </Link>
                             </nav>
                         </div>

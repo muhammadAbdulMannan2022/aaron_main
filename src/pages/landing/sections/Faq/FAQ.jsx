@@ -64,7 +64,7 @@ export function FAQ() {
 
     return (
         <section id="faq" className="py-16 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto border-x border-b border-gray-button-bg px-5 pb-12 flex flex-col gap-10 md:gap-20">
+            <div className="max-w-7xl mx-auto border-x px-5 pb-12 flex flex-col gap-10 md:gap-20">
                 {/* Header */}
                 <div className="text-center my-16">
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 text-balance">

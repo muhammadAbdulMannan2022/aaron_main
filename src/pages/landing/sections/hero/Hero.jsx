@@ -7,7 +7,7 @@ export function Hero() {
     return (
         <section className="relative bg-[#0f0f0f] flex items-center justify-center overflow-hidden md:h-[calc(100vh-70px)] h-[calc(100vh-70px)] ">
             {/* Content */}
-            <div className="max-w-7xl w-full h-full flex items-center justify-center border-x border-gray-button-bg bg-[url('/illastrationHero.png')] bg-bottom bg-no-repeat flex-col relative">
+            <div className="max-w-7xl w-full h-full flex items-center justify-center bg-[url('/illastrationHero.png')] bg-bottom bg-no-repeat flex-col relative">
                 <div className="relative z-10 max-w-4xl h-fit -mt-[20%] md:-mt-[10%] mx-auto px-4 text-center">
 
                     <GradientText

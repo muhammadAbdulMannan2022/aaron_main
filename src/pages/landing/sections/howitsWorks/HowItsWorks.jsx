@@ -87,7 +87,7 @@ export function HowItsWorks() {
                 {/* Steps Carousel */}
                 <Slider {...settings} className="testimonial-carousel">
                     {steps.map((item, index) => (
-                        <div key={index} className="h-[180px] px-3">
+                        <div key={index} className="h-[200px] px-3">
                             <div className="flex flex-col items-start bg-gray-900 text-white p-6 rounded-lg shadow-lg h-full">
                                 <div className="p-3 mb-4 rounded-lg flex-shrink-0 bg-gradient-to-tr from-[#090909] to-[#1F1F1F] w-fit flex items-center justify-center">
                                     {item.icon}
