@@ -1,8 +1,6 @@
 import { FaPlay } from "react-icons/fa6";
 import GradientText from "../../../../helpers/GradientText"
 import MarqueeSection from "./Marquee"
-
-
 export function Hero() {
     return (
         <section className="relative bg-[#0f0f0f] flex items-center justify-center overflow-hidden md:h-[calc(100vh-70px)] h-[calc(100vh-70px)] ">

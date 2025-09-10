@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PricingCard from './PriceingCard';
 
 
@@ -17,7 +17,7 @@ const pricingPlans = [
             "3 Months support",
         ],
         buttonText: "Choose Free plan",
-        isFeatured: false,
+        isCustomizable: false,
     },
     {
         title: "Standard",
@@ -33,31 +33,27 @@ const pricingPlans = [
             "3 Months support",
         ],
         buttonText: "Choose Standard",
-        isFeatured: false,  // Featured plan
+        isCustomizable: false,
     },
     {
         title: "Premium",
         price: "$250",
         duration: "Yearly",
-        description: "Perfect for using in a personal website or a client project.",
-        features: [
-            "Free using version",
-            "All UI design by sajib",
-            "Lifetime access",
-            "Free updates",
-            "Use on 1 (one) project",
-            "3 Months support",
-        ],
         buttonText: "Choose Premium",
-        isFeatured: false,
+        isCustomizable: true,
     },
 ];
 
-export default function Pricing() {
+const Pricing = () => {
+    const [users, setUsers] = useState(10);
+    const [processes, setProcesses] = useState(5);
+    const [inquiries, setInquiries] = useState(5000);
+
+    const premiumPrice = `$${Math.round(users * 10 + processes * 20 + inquiries * 0.01)}`;
+
     return (
         <section className="relative py-20 px-4 bg-black overflow-hidden w-full flex flex-col items-center justify-center">
             <div className="max-w-7xl flex flex-col items-center justify-center text-center">
-                {/* Header */}
                 <div className="mb-16">
                     <p className="text-[#4D81DA] text-sm font-medium mb-2">Pricing Table</p>
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Pricing Plans</h2>
@@ -66,23 +62,75 @@ export default function Pricing() {
                         some form.
                     </p>
                 </div>
-
-                {/* Pricing Cards */}
-                <div className="grid md:grid-cols-3 gap-8 w-full mx-auto">
+                <div className="flex flex-col md:flex-row items-stretch gap-8 w-full mx-auto">
                     {pricingPlans.map((plan, index) => (
-                        <PricingCard
-                            key={index}
-                            title={plan.title}
-                            price={plan.price}
-                            duration={plan.duration}
-                            description={plan.description}
-                            features={plan.features}
-                            buttonText={plan.buttonText}
-                            isFeatured={plan.isFeatured}
-                        />
+                        <div key={index} className="relative flex-1">
+                            {plan.isCustomizable ? (
+                                <div className="bg-gradient-to-bl from-[#272727] to-[#000000] border border-gray-800 rounded-lg p-8 h-full flex flex-col">
+                                    <img src="/priceing.png" alt="" className="absolute top-0 right-0" />
+                                    <div className="mb-6 text-center">
+                                        <h3 className="text-blue-400 text-lg font-semibold mb-2">{plan.title}</h3>
+                                        <div className="flex items-baseline my-5 justify-center">
+                                            <span className="text-4xl font-bold text-white">{premiumPrice}</span>
+                                            <span className="text-gray-400 ml-2">/{plan.duration}</span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4 flex-1">
+                                        <div>
+                                            <label className="block text-gray-300 text-sm">Users: {users}</label>
+                                            <input
+                                                type="range"
+                                                min="1"
+                                                max="100"
+                                                value={users}
+                                                onChange={(e) => setUsers(parseInt(e.target.value))}
+                                                className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-gray-300 text-sm">Processes: {processes}</label>
+                                            <input
+                                                type="range"
+                                                min="1"
+                                                max="50"
+                                                value={processes}
+                                                onChange={(e) => setProcesses(parseInt(e.target.value))}
+                                                className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-gray-300 text-sm">Chatbot Inquiries: {inquiries}</label>
+                                            <input
+                                                type="range"
+                                                min="1000"
+                                                max="100000"
+                                                step="1000"
+                                                value={inquiries}
+                                                onChange={(e) => setInquiries(parseInt(e.target.value))}
+                                                className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button className="w-full py-3 hover:cursor-pointer px-6 bg-transparent border border-blue-500 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-colors mt-8">
+                                        {plan.buttonText}
+                                    </button>
+                                </div>
+                            ) : (
+                                <PricingCard
+                                    title={plan.title}
+                                    price={plan.price}
+                                    duration={plan.duration}
+                                    description={plan.description}
+                                    features={plan.features}
+                                    buttonText={plan.buttonText}
+                                />
+                            )}
+                        </div>
                     ))}
                 </div>
             </div>
         </section>
     );
-}
+};
+
+export default Pricing;

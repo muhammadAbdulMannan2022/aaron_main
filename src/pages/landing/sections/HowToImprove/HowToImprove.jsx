@@ -17,10 +17,14 @@ export default function HowToImprove() {
                 {/* Content */}
                 <div className="flex flex-col items-center md:items-start justify-center w-full md:w-1/2 text-center md:text-left">
                     <h1 className="text-3xl md:text-5xl font-bold text-text-primary mb-4">
-                        How to improve your business like we did in ours (secured way)
+                        Uncover and Identify Weaknesses in Your Processes with Alevio:
+
                     </h1>
                     <p className="text-base text-[#848484] mb-6">
-                        Donec a eros justo. Fusce egestas tristique ultrices. Nam tempor, augue nec tincidunt molestie, massa nunc varius arcu, at scelerisque elit erat a magna. Donec quis erat at libero ultrices mollis. In hac habitasse platea dictumst. Vivamus vehicula leo dui, at porta nisi facilisis finibus. In euismod augue vitae nisi ultricies, non aliquet urna tincidunt. Integer in nisi eget nulla commodo faucibus efficitur quis massa.
+                        Alevio helps you visualize and understand your business processes as they truly run. By identifying
+                        inefficiencies, bottlenecks, and hidden risks, you gain the insights you need to optimize performance.
+                        With data-driven transparency, Alevio empowers you to continuously improve workflows, reduce
+                        costs, and drive measurable results across your organization.
                     </p>
                     <button className="bg-outer-button-bg text-white py-3 px-6 rounded-lg hover:bg-outer-button-bg/80 transition-colors duration-200 w-fit hover:cursor-pointer">
                         Learn More
