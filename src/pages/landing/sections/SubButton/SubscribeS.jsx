@@ -45,7 +45,7 @@ export default function SubscribeS() {
     <div className="bg-black/80 flex items-center justify-center py-10 md:py-20">
       <div className="max-w-7xl w-full bg-[#161616] rounded-2xl text-center gap-5 flex flex-col landing-shadow p-8 md:p-16 items-center justify-center py-10 md:py-28">
         <h1 className="text-3xl md:text-5xl max-w-2xl font-semibold text-[#C6CED3]">
-          Turn your process into progrss
+          Turn your process into progress
         </h1>
         <p className="max-w-3xl text-base text-gray-400">
           {" "}
