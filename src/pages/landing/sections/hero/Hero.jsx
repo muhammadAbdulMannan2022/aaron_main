@@ -1,47 +1,53 @@
 import { FaPlay } from "react-icons/fa6";
 import GradientText from "../../../../helpers/GradientText";
 import MarqueeSection from "./Marquee";
+import { useRef } from "react";
 export function Hero() {
+  const videoRef = useRef(null);
   return (
     <section className="relative bg-[#0f0f0f] flex items-center justify-center overflow-hidden md:h-[calc(100vh-70px)] h-[calc(100vh-70px)] ">
       {/* Content */}
-      <div className="max-w-7xl w-full h-full flex items-center justify-center bg-[url('/illastrationHero.png')] bg-bottom bg-no-repeat flex-col relative">
-        <div className="relative z-10 max-w-4xl h-fit -mt-[20%] md:-mt-[10%] mx-auto px-4 text-center">
+      <div className="max-w-7xl w-full h-full flex items-center justify-center bg-[url('/illastrationHero.png')] bg-bottom bg-no-repeat flex-col-reverse md:flex-row relative py-10">
+        {/* Section 1 - Text */}
+        <div className="relative z-10 max-w-3xl h-fit -mt-[10%] md:-mt-[5%] px-4 text-center md:text-start">
           <GradientText
             from="from-white"
             to="to-gray-600"
-            className="text-5xl md:text-[70px] font-bold leading-tight text-center"
+            className="text-4xl md:text-5xl font-bold leading-tight mb-4"
           >
             Process Mining for SME´s – from Data to Clarity
           </GradientText>
-          <p className="text-gray-400 hidden md:flex text-lg md:text-xl mb-12 mx-auto max-w-xl rounded-2xl my-4  flex-wrap gap-y-1">
-            Do you really know how your processes run- or just how they should
+          <p className="text-gray-400 text-base md:text-lg mb-8 max-w-lg">
+            Do you really know how your processes run — or just how they should
             run?
           </p>
 
-          {/* <div className="text-gray-400 hidden md:flex border border-gray-button-bg text-lg md:text-xl mb-12 max-w-2xl mx-auto p-4 rounded-2xl my-4  flex-wrap gap-y-1">
-                        <span>For</span> <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">Businessman</span><span>,</span> <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">Enterprise</span><span>,</span>{" "}
-                        <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">Startups</span> <span>{" "} and {" "}</span> <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">Store management</span>
-                    </div>
-                    <div className="text-gray-400 md:hidden flex border border-gray-button-bg text-lg md:text-xl mb-12 max-w-2xl mx-auto p-4 rounded-2xl my-4  flex-wrap gap-1 items-center justify-center">
-                        <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">For</span>  <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">Businessman</span><span>,</span> <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">Enterprise</span><span>,</span>{" "}
-                        <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">Startups</span> <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">{" "} and {" "}</span> <span className="text-text-primary bg-gray-button-bg p-1 rounded-md px-2">Store management</span>
-                    </div> */}
-
-          <div className="flex flex-row gap-4 justify-center items-center">
-            <button className="bg-outer-button-bg hover:bg-outer-button-bg/80 hover:cursor-pointer text-white px-3 md:px-8 py-2 md:py-4 rounded-lg font-semibold text-base md:text-lg transition-colors duration-200 md:min-w-[180px]">
+          <div className="flex flex-row gap-4 justify-center md:justify-start">
+            <button className="bg-outer-button-bg hover:bg-outer-button-bg/80 text-white px-6 py-2 md:px-8 md:py-3 rounded-lg font-semibold text-sm md:text-base transition-colors duration-200 md:min-w-[160px]">
               Get Started Now
             </button>
 
-            <button className="bg-gray-button-bg hover:bg-gray-button-bg/80 hover:cursor-pointer text-white px-3 md:px-8 py-2 md:py-4 rounded-lg font-semibold text-base md:text-lg transition-colors duration-200 flex items-center gap-3 md:min-w-[180px] justify-center border border-gray-700">
-              <span>
-                <FaPlay />
-              </span>
+            <button className="bg-gray-button-bg hover:bg-gray-button-bg/80 text-white px-6 py-2 md:px-8 md:py-3 rounded-lg font-semibold text-sm md:text-base transition-colors duration-200 flex items-center gap-2 md:min-w-[160px] justify-center border border-gray-700">
+              <FaPlay />
               Watch Demo
             </button>
           </div>
         </div>
+
+        {/* Section 2 - Video */}
+        <div className="mt-6 md:mt-0 md:ml-8 w-full max-w-lg">
+          <video
+            src="/heroa.mp4"
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-auto rounded-xl"
+          ></video>
+        </div>
       </div>
+
       <MarqueeSection />
     </section>
   );
