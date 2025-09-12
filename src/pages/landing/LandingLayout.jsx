@@ -13,7 +13,6 @@ import { Footer } from "./sections/footer/Footer";
 import Chatbot from "./sections/bot/Landingbot";
 import { HowItsWorks } from "./sections/howitsWorks/HowItsWorks";
 
-
 export default function LandingLayout() {
   const location = useLocation();
 
@@ -34,7 +33,6 @@ export default function LandingLayout() {
     <div className="bg-main-bg">
       <Navbar />
       <Hero />
-      
       <BenefitsSection />
       <HowToImprove />
       <HowItsWorks />

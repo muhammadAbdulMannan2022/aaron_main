@@ -23,7 +23,7 @@ export default function BenefitsSection() {
       icon: TestTube,
     },
     {
-      title: "Ongoing Improvement",
+      title: "Continous Improvement",
       description: "Monitor results and measure success",
       icon: TrendingUp,
     },
@@ -31,6 +31,7 @@ export default function BenefitsSection() {
 
   return (
     <section
+      id="feature"
       className="py-16 px-6"
       style={{ backgroundColor: "var(--color-main-bg)" }}
     >

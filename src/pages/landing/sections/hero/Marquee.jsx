@@ -13,7 +13,7 @@ export default function MarqueeSection() {
   ];
   const repeatedImages = [...images, ...images];
   return (
-    <div className="bg-[#131313] py-6 absolute bottom-0 max-w-full border-y border-gray-button-bg">
+    <div className="py-6 absolute bottom-0 max-w-full ">
       <div className="w-full h-full flex items-center justify-center flex-col relative">
         <div
           className="w-fit h-fit px-4 py-3 absolute -translate-y-[50px] rounded-full bg-gray-button-bg"
@@ -24,7 +24,8 @@ export default function MarqueeSection() {
           <p className="text-white font-semibold">Trusted By 300+ Companies</p>
         </div>
 
-        <div className="relative">
+        <div className="relative h-full">
+          <div className="w-10 md:w-36 h-20 absolute top-0 bg-gradient-to-r from-main-bg to-transparent z-[999]"></div>
           <Marquee
             pauseOnHover={false}
             gradient={false}
@@ -40,6 +41,7 @@ export default function MarqueeSection() {
               />
             ))}
           </Marquee>
+          <div className="w-10 md:w-36 h-20 absolute top-0 right-0 bg-gradient-to-l from-main-bg to-transparent z-[999]"></div>
         </div>
       </div>
     </div>
