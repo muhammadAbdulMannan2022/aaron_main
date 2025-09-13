@@ -50,8 +50,7 @@ const Pricing = () => {
             Pricing Plans
           </h2>
           <p className="text-text-primary max-w-2xl mx-auto">
-            There are many variations of passages of Lorem Ipsum available but
-            the majority have suffered alteration in some form.
+            Simple to start, flexible to scale
           </p>
         </div>
         <div className="flex flex-col md:flex-row items-stretch gap-8 w-full mx-auto">

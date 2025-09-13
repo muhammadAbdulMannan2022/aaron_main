@@ -7,15 +7,15 @@ export function Hero() {
   return (
     <section className="relative bg-[#0f0f0f] flex items-center justify-center overflow-hidden md:h-[calc(100vh-70px)] h-[calc(100vh-70px)] ">
       {/* Content */}
-      <div className="max-w-7xl w-full h-full flex items-center justify-center bg-[url('/illastrationHero.png')] bg-bottom bg-no-repeat flex-col-reverse md:flex-row relative py-10">
+      <div className="max-w-7xl w-full h-full flex items-center justify-center flex-col-reverse md:flex-row relative py-10">
         {/* Section 1 - Text */}
         <div className="relative z-10 max-w-3xl h-fit -mt-[10%] md:-mt-[5%] px-4 text-center md:text-start">
           <GradientText
             from="from-white"
             to="to-gray-600"
-            className="text-4xl md:text-5xl font-bold leading-tight mb-4"
+            className="text-4xl md:text-6xl font-bold leading-tight mb-4"
           >
-            Process Mining for SME´s – from Data to Clarity
+            Processmining for SME´s – from Data to Clarity
           </GradientText>
           <p className="text-gray-400 text-base md:text-lg mb-8 max-w-lg">
             Do you really know how your processes run — or just how they should
