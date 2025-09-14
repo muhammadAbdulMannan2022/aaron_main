@@ -392,7 +392,7 @@ export default function AiSupport() {
             />
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-[#574bff] text-white px-4 py-2 rounded hover:bg-[#675dfa]"
             >
               Send
             </button>

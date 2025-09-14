@@ -86,7 +86,7 @@ export function HowItsWorks() {
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-center items-start md:items-end mb-16">
           <div className="mb-8 lg:mb-0 flex flex-col justify-center">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 max-w-md text-center">
-              How It Works
+              How it Works
             </h2>
             <p className="text-gray-400 text-center">
               Line software suite that simplifies process mining

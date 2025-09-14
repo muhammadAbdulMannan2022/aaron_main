@@ -15,7 +15,7 @@ export function Hero() {
             to="to-gray-600"
             className="text-4xl md:text-6xl font-bold leading-tight mb-4"
           >
-            Processmining for SME´s – from Data to Clarity
+            Process Mining for SME’s – from Data to Clarity
           </GradientText>
           <p className="text-gray-400 text-base md:text-lg mb-8 max-w-lg">
             Do you really know how your processes run — or just how they should

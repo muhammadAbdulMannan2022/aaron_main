@@ -126,7 +126,7 @@ export default function KpiDashboard() {
                   onClick={() =>
                     setIsDashboardDropdownOpen(!isDashboardDropdownOpen)
                   }
-                  className="flex items-center gap-2 px-4 py-2 text-blue-400 border border-blue-400 rounded-lg hover:bg-blue-400/10 hover:cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-2 text-[#574bff] border border-[#574bff] rounded-lg hover:bg-blue-400/10 hover:cursor-pointer"
                 >
                   <span>Dashboard List</span>
                   <ChevronDown size={16} />
@@ -135,13 +135,13 @@ export default function KpiDashboard() {
                 {isDashboardDropdownOpen && (
                   <div className="absolute top-full left-0 mt-1 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-[10001]">
                     <div className="py-1">
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white hover:cursor-pointer">
+                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#574bff] hover:cursor-pointer">
                         Dashboard 1
                       </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white hover:cursor-pointer">
+                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#574bff] hover:cursor-pointer">
                         Dashboard 2
                       </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white hover:cursor-pointer">
+                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#574bff] hover:cursor-pointer">
                         Dashboard 3
                       </button>
                     </div>
@@ -163,7 +163,7 @@ export default function KpiDashboard() {
 
             {/* Right side - Save and Actions */}
             <div className="flex items-center gap-3">
-              <button className="px-4 py-2 text-blue-400 hover:bg-blue-400/10 rounded-lg hover:cursor-pointer">
+              <button className="px-4 py-2 text-[#574bff] hover:bg-blue-400/10 rounded-lg hover:cursor-pointer">
                 Save
               </button>
 
@@ -180,16 +180,16 @@ export default function KpiDashboard() {
                 {isActionsDropdownOpen && (
                   <div className="absolute top-full right-0 mt-1 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-[10001]">
                     <div className="py-1">
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white flex items-center gap-3 hover:cursor-pointer">
+                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
                         <Edit size={16} /> Create new
                       </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white flex items-center gap-3 hover:cursor-pointer">
+                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
                         <Plus size={16} /> Add widget
                       </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white flex items-center gap-3 hover:cursor-pointer">
+                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
                         <Edit size={16} /> Edit
                       </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white flex items-center gap-3 hover:cursor-pointer">
+                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
                         <Trash2 size={16} /> Delete
                       </button>
                     </div>
@@ -213,7 +213,7 @@ export default function KpiDashboard() {
                   </p>
                   <button
                     onClick={handleToggleSidebar}
-                    className="px-6 py-3 bg-auth-button-bg rounded-lg hover:bg-auth-button-bg/80 add-widget-button hover:cursor-pointer"
+                    className="px-6 py-3 bg-button-outline rounded-lg hover:bg-button-outline/80 add-widget-button hover:cursor-pointer"
                   >
                     Add Your First Widget
                   </button>

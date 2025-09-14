@@ -214,11 +214,11 @@ export function ProcessEfficiencyLayout() {
               <nav className="flex space-x-4 pb-2">
                 <Link
                   to="/dashboard/v1/process_efficiency"
-                  className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${
+                  className={`hover:text-[#574bff] py-2 text-xs md:text-base ${
                     location.pathname.includes(
                       "/dashboard/v1/process_efficiency"
                     )
-                      ? "text-[#4DA6FF] border-b-2"
+                      ? "text-[#574bff] border-b-2"
                       : "text-text-notActive"
                   }`}
                 >
@@ -226,9 +226,9 @@ export function ProcessEfficiencyLayout() {
                 </Link>
                 <Link
                   to="/dashboard/v1/kpi_dashboard"
-                  className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${
+                  className={`hover:text-[#574bff] py-2 text-xs md:text-base ${
                     location.pathname === "/dashboard/v1/kpi_dashboard"
-                      ? "text-[#4DA6FF] border-b-2"
+                      ? "text-[#574bff] border-b-2"
                       : "text-text-notActive"
                   }`}
                 >
@@ -236,9 +236,9 @@ export function ProcessEfficiencyLayout() {
                 </Link>
                 <Link
                   to="/dashboard/v1/benchmarks"
-                  className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${
+                  className={`hover:text-[#574bff] py-2 text-xs md:text-base ${
                     location.pathname.includes("/dashboard/v1/benchmarks")
-                      ? "text-[#4DA6FF] border-b-2"
+                      ? "text-[#574bff] border-b-2"
                       : "text-text-notActive"
                   }`}
                 >
@@ -246,9 +246,9 @@ export function ProcessEfficiencyLayout() {
                 </Link>
                 <Link
                   to="/dashboard/v1/ai"
-                  className={`hover:text-[#4DA6FF] py-2 text-xs md:text-base ${
+                  className={`hover:text-[#574bff] py-2 text-xs md:text-base ${
                     location.pathname === "/dashboard/v1/ai"
-                      ? "text-[#4DA6FF] border-b-2"
+                      ? "text-[#574bff] border-b-2"
                       : "text-text-notActive"
                   }`}
                 >

@@ -1,7 +1,42 @@
 import { Rocket, Square } from "lucide-react";
+import { useState } from "react";
 import { FaUserAlt } from "react-icons/fa";
+import PricingCard from "../landing/sections/priceing/PriceingCard";
+
+const pricingPlans = [
+  {
+    title: "Demo",
+    price: "$0",
+    duration: "30days",
+    description: "Perfect for using in a personal website or a client project.",
+    features: [
+      "Don't just watch the future-Claim your free access now",
+      "full access to all feature",
+      "Lifetime access",
+      "One user",
+      "5 diffrent process uploads",
+      "15 inquiries to ChatBot",
+    ],
+    buttonText: "Start your demo",
+    isCustomizable: false,
+  },
+  {
+    title: "Premium",
+    price: "$250",
+    duration: "Yearly",
+    buttonText: "Calculate Model Now",
+    isCustomizable: true,
+  },
+];
 
 export default function PricingPlan() {
+  const [users, setUsers] = useState(10);
+  const [processes, setProcesses] = useState(5);
+  const [inquiries, setInquiries] = useState(5000);
+
+  const premiumPrice = `$${Math.round(
+    users * 10 + processes * 20 + inquiries * 0.01
+  )}`;
   return (
     <div className="h-full flex-1 overflow-y-auto text-[var(--color-text-primary)] py-12 pt-28 md:pt-20 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-b from-[var(--color-main-bg)] to-[#1a1a33]">
       {/* Membership Section */}
@@ -19,7 +54,7 @@ export default function PricingPlan() {
               <p className="text-[var(--color-dark-text)] text-sm mb-2">
                 Membership (Freebie)
               </p>
-              <button className="bg-[var(--color-auth-button-bg)] hover:bg-[var(--color-auth-button-bg)]/80 text-white px-4 py-1 rounded transition hover:cursor-pointer">
+              <button className="bg-[#574bff] hover:bg-[#574bff]/80 text-white px-4 py-1 rounded transition hover:cursor-pointer">
                 Cancel
               </button>
             </div>
@@ -42,105 +77,120 @@ export default function PricingPlan() {
           </p>
         </div>
 
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl w-full mt-8">
-          {/* Trial Plan */}
-          <div className="bg-[#1a1a332f] backdrop-blur-md rounded-xl p-6 flex flex-col text-left shadow-lg border border-[var(--color-outer-button-bg)] hover:shadow-xl transition-shadow duration-300">
-            <div className="flex flex-col flex-grow w-full">
-              <div className="bg-[var(--color-outer-button-bg)] rounded-md px-4 py-3 mb-6 w-fit">
-                <FaUserAlt className="w-6 h-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-semibold mb-4">Trial</h2>
-              <ul className="text-[var(--color-text-notActive)] text-base space-y-3 mb-8 w-full">
-                <li className="flex items-center gap-2">
-                  <Square className="w-5 h-5 text-[var(--color-text-notActive)]" />
-                  Temporary Number (50 Customers Calls)
-                </li>
-                <li className="flex items-center gap-2">
-                  <Square className="w-5 h-5 text-[var(--color-text-notActive)]" />
-                  Basic Dashboard / No Booking Calendar Integration (Only
-                  Indur.ai platform Calendar FREE)
-                </li>
-              </ul>
-              <div className="text-4xl md:text-5xl font-bold mb-8">
-                $0
-                <span className="text-xl font-normal text-[var(--color-text-notActive)]">
-                  /Month
-                </span>
-              </div>
+        <div className="flex flex-col md:flex-row items-stretch gap-8 w-full mx-auto">
+          {pricingPlans.map((plan, index) => (
+            <div key={index} className="relative flex-1">
+              {plan.isCustomizable ? (
+                <div className="bg-gradient-to-bl from-[#272727] to-[#000000] border border-gray-800 rounded-lg p-8 h-full flex flex-col">
+                  <img
+                    src="/priceing.png"
+                    alt=""
+                    className="absolute top-0 right-0"
+                  />
+                  <div className="mb-6 text-center">
+                    <h3 className="text-[#5d52fc] text-lg font-semibold mb-2">
+                      {plan.title}
+                    </h3>
+                    <div className="flex items-baseline my-5 justify-center">
+                      <span className="text-4xl font-bold text-white">
+                        {premiumPrice}
+                      </span>
+                      <span className="text-[#5d52fc] ml-2">
+                        /{plan.duration}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-4 flex-1">
+                    <div>
+                      <label className="block text-gray-300 text-sm">
+                        Users: {users}
+                      </label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="100"
+                        value={users}
+                        onChange={(e) => setUsers(parseInt(e.target.value))}
+                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:w-4
+    [&::-webkit-slider-thumb]:h-4
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-[#5d52fc]
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-moz-range-thumb]:appearance-none
+    [&::-moz-range-thumb]:w-4
+    [&::-moz-range-thumb]:h-4
+    [&::-moz-range-thumb]:rounded-full
+    [&::-moz-range-thumb]:bg-[#5d52fc]
+    [&::-moz-range-thumb]:cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 text-sm">
+                        Processes: {processes}
+                      </label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="50"
+                        value={processes}
+                        onChange={(e) => setProcesses(parseInt(e.target.value))}
+                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:w-4
+    [&::-webkit-slider-thumb]:h-4
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-[#5d52fc]
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-moz-range-thumb]:appearance-none
+    [&::-moz-range-thumb]:w-4
+    [&::-moz-range-thumb]:h-4
+    [&::-moz-range-thumb]:rounded-full
+    [&::-moz-range-thumb]:bg-[#5d52fc]
+    [&::-moz-range-thumb]:cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 text-sm">
+                        Chatbot Inquiries: {inquiries}
+                      </label>
+                      <input
+                        type="range"
+                        min="1000"
+                        max="100000"
+                        step="1000"
+                        value={inquiries}
+                        onChange={(e) => setInquiries(parseInt(e.target.value))}
+                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:w-4
+    [&::-webkit-slider-thumb]:h-4
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-[#5d52fc]
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-moz-range-thumb]:appearance-none
+    [&::-moz-range-thumb]:w-4
+    [&::-moz-range-thumb]:h-4
+    [&::-moz-range-thumb]:rounded-full
+    [&::-moz-range-thumb]:bg-[#5d52fc]
+    [&::-moz-range-thumb]:cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                  <button className="w-full py-3 hover:cursor-pointer px-6 bg-transparent border border-[#342BAD] text-[#5d52fc] rounded-lg hover:bg-[#342BAD] hover:text-white transition-colors mt-8">
+                    {plan.buttonText}
+                  </button>
+                </div>
+              ) : (
+                <PricingCard
+                  title={plan.title}
+                  price={plan.price}
+                  duration={plan.duration}
+                  description={plan.description}
+                  features={plan.features}
+                  buttonText={plan.buttonText}
+                />
+              )}
             </div>
-            <button className="w-full py-3 px-6 bg-[var(--color-gray-button-bg)] rounded-lg text-lg font-medium hover:bg-[var(--color-outer-button-bg)] transition-colors duration-300">
-              Try Now
-            </button>
-          </div>
-
-          {/* Standard Plan */}
-          <div className="bg-[#1a1a332f] backdrop-blur-md rounded-xl flex flex-col shadow-2xl border-2 border-[#400C6F] scale-105 transition-transform duration-300 hover:scale-107 relative">
-            <div className="bg-[#400C6F] py-3 text-center text-sm md:text-lg font-semibold uppercase tracking-wider text-white">
-              MOST POPULAR
-            </div>
-            <div className="p-6 flex flex-col text-left flex-grow w-full">
-              <div className="bg-[var(--color-landing-icon)] rounded-md p-3 mb-6 w-fit">
-                <Rocket className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-semibold mb-4">Standard</h2>
-              <ul className="text-[var(--color-text-notActive)] text-base space-y-3 mb-8 w-full">
-                <li className="flex items-center gap-2">
-                  <Square className="w-5 h-5" />
-                  Personal AI Agent Number
-                </li>
-                <li className="flex items-center gap-2">
-                  <Square className="w-5 h-5" />
-                  Unlimited Customer Calls
-                </li>
-                <li className="flex items-center gap-2">
-                  <Square className="w-5 h-5" />
-                  Dashboard with Calendar Integration
-                </li>
-              </ul>
-              <div className="text-4xl md:text-5xl font-bold mb-8">
-                $100
-                <span className="text-xl font-normal text-[var(--color-text-notActive)]">
-                  /Month
-                </span>
-              </div>
-              <button className="w-full py-3 px-6 bg-gradient-to-r from-[#6A00FF] to-[#4A00FF] rounded-lg text-lg font-medium hover:from-[#7A10FF] hover:to-[#5A10FF] transition-colors duration-300">
-                Subscribe Now
-              </button>
-            </div>
-          </div>
-
-          {/* Pro Plan */}
-          <div className="bg-[#1a1a332f] backdrop-blur-md rounded-xl p-6 flex flex-col text-left shadow-lg border border-[var(--color-outer-button-bg)] hover:shadow-xl transition-shadow duration-300">
-            <div className="flex flex-col flex-grow w-full">
-              <div className="bg-[var(--color-outer-button-bg)] rounded-md px-4 py-3 mb-6 w-fit">
-                <FaUserAlt className="w-6 h-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-semibold mb-4">Pro</h2>
-              <ul className="text-[var(--color-text-notActive)] text-base space-y-3 mb-8 w-full">
-                <li className="flex items-center gap-2">
-                  <Square className="w-5 h-5" />
-                  Personal AI Agent Number
-                </li>
-                <li className="flex items-center gap-2">
-                  <Square className="w-5 h-5" />
-                  Unlimited Customer Calls
-                </li>
-                <li className="flex items-center gap-2">
-                  <Square className="w-5 h-5" />
-                  Dashboard with Calendar Integration
-                </li>
-              </ul>
-              <div className="text-4xl md:text-5xl font-bold mb-8">
-                $300
-                <span className="text-xl font-normal text-[var(--color-text-notActive)]">
-                  /Month
-                </span>
-              </div>
-            </div>
-            <button className="w-full py-3 px-6 bg-[var(--color-gray-button-bg)] rounded-lg text-lg font-medium hover:bg-[var(--color-outer-button-bg)] transition-colors duration-300">
-              Subscribe Now
-            </button>
-          </div>
+          ))}
         </div>
       </div>
     </div>

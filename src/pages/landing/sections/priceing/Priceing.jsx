@@ -13,7 +13,7 @@ const pricingPlans = [
       "Lifetime access",
       "One user",
       "5 diffrent process uploads",
-      "Xxx inquiries to ChatBot",
+      "15 inquiries to ChatBot",
     ],
     buttonText: "Start your demo",
     isCustomizable: false,
@@ -87,7 +87,18 @@ const Pricing = () => {
                         max="100"
                         value={users}
                         onChange={(e) => setUsers(parseInt(e.target.value))}
-                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:w-4
+    [&::-webkit-slider-thumb]:h-4
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-[#5d52fc]
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-moz-range-thumb]:appearance-none
+    [&::-moz-range-thumb]:w-4
+    [&::-moz-range-thumb]:h-4
+    [&::-moz-range-thumb]:rounded-full
+    [&::-moz-range-thumb]:bg-[#5d52fc]
+    [&::-moz-range-thumb]:cursor-pointer"
                       />
                     </div>
                     <div>
@@ -100,7 +111,18 @@ const Pricing = () => {
                         max="50"
                         value={processes}
                         onChange={(e) => setProcesses(parseInt(e.target.value))}
-                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:w-4
+    [&::-webkit-slider-thumb]:h-4
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-[#5d52fc]
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-moz-range-thumb]:appearance-none
+    [&::-moz-range-thumb]:w-4
+    [&::-moz-range-thumb]:h-4
+    [&::-moz-range-thumb]:rounded-full
+    [&::-moz-range-thumb]:bg-[#5d52fc]
+    [&::-moz-range-thumb]:cursor-pointer"
                       />
                     </div>
                     <div>
@@ -114,7 +136,18 @@ const Pricing = () => {
                         step="1000"
                         value={inquiries}
                         onChange={(e) => setInquiries(parseInt(e.target.value))}
-                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:w-4
+    [&::-webkit-slider-thumb]:h-4
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-[#5d52fc]
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-moz-range-thumb]:appearance-none
+    [&::-moz-range-thumb]:w-4
+    [&::-moz-range-thumb]:h-4
+    [&::-moz-range-thumb]:rounded-full
+    [&::-moz-range-thumb]:bg-[#5d52fc]
+    [&::-moz-range-thumb]:cursor-pointer"
                       />
                     </div>
                   </div>

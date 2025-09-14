@@ -130,19 +130,19 @@ export function FAQ() {
                   <div className="flex items-center justify-between gap-4 flex-1">
                     <div className="flex items-center gap-4">
                       <div className="border border-gray-button-bg bg-gradient-to-bl from-gray-800 p-3 rounded-xl to-black">
-                        <span className="text-blue-400 font-semibold text-lg flex-shrink-0">
+                        <span className="text-button-outline font-semibold text-lg flex-shrink-0">
                           {item.id.toString().padStart(2, "0")}
                         </span>
                       </div>
-                      <h3 className="text-white text-lg font-medium group-hover:text-blue-400 transition-colors duration-200">
+                      <h3 className="text-white text-lg font-medium group-hover:text-button-outline transition-colors duration-200">
                         {item.question}
                       </h3>
                     </div>
                     <div className="ml-4 flex-shrink-0">
                       {openItem === item.id ? (
-                        <FiMinus className="w-6 h-6 text-blue-400" />
+                        <FiMinus className="w-6 h-6 text-button-outline" />
                       ) : (
-                        <FiPlus className="w-6 h-6 text-gray-400 group-hover:text-blue-400 transition-colors duration-200" />
+                        <FiPlus className="w-6 h-6 text-gray-400 group-hover:text-button-outline transition-colors duration-200" />
                       )}
                     </div>
                   </div>
@@ -176,19 +176,19 @@ export function FAQ() {
                   <div className="flex items-center justify-between gap-4 flex-1">
                     <div className="flex items-center gap-4">
                       <div className="border border-gray-button-bg bg-gradient-to-bl from-gray-800 p-3 rounded-xl to-black">
-                        <span className="text-blue-400 font-semibold text-lg flex-shrink-0">
+                        <span className="text-button-outline font-semibold text-lg flex-shrink-0">
                           {item.id.toString().padStart(2, "0")}
                         </span>
                       </div>
-                      <h3 className="text-white text-lg font-medium group-hover:text-blue-400 transition-colors duration-200">
+                      <h3 className="text-white text-lg font-medium group-hover:text-button-outline transition-colors duration-200">
                         {item.question}
                       </h3>
                     </div>
                     <div className="ml-4 flex-shrink-0">
                       {openItem === item.id ? (
-                        <FiMinus className="w-6 h-6 text-blue-400" />
+                        <FiMinus className="w-6 h-6 text-button-outline" />
                       ) : (
-                        <FiPlus className="w-6 h-6 text-gray-400 group-hover:text-blue-400 transition-colors duration-200" />
+                        <FiPlus className="w-6 h-6 text-gray-400 group-hover:text-button-outline transition-colors duration-200" />
                       )}
                     </div>
                   </div>
