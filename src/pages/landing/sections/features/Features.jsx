@@ -42,7 +42,7 @@ export default function BenefitsSection() {
             className="text-3xl md:text-4xl font-bold mb-4"
             style={{ color: "var(--color-text-primary)" }}
           >
-            Benefits of Alvio Process Mining
+            Benefits of Alevio Process Mining
           </h2>
           <p
             className="text-lg"
