@@ -18,6 +18,7 @@ import PricingPlan from "../pages/Priceinig/PriceingPlan";
 import Profile from "../pages/Dashboard/pages/Profile/Profile";
 import EditPrifile from "../pages/Dashboard/pages/Profile/EditProfile";
 import SupportHub from "../pages/docs/SupportHub";
+import ChangePassword from "../pages/Auth/authPages/ChangePass";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <LandingLayout />
+        element: <LandingLayout />,
       },
       {
         path: "/auth",
@@ -34,21 +35,25 @@ const router = createBrowserRouter([
         children: [
           {
             path: "login",
-            element: <Login />
+            element: <Login />,
           },
           {
             path: "signup",
-            element: <Signup />
+            element: <Signup />,
           },
           {
             path: "otp",
-            element: <ActivationCode />
+            element: <ActivationCode />,
           },
           {
             path: "forgot",
-            element: <ForgotPassword />
-          }
-        ]
+            element: <ForgotPassword />,
+          },
+          {
+            path: "change-pass",
+            element: <ChangePassword />,
+          },
+        ],
       },
       {
         path: "/dashboard",
@@ -56,7 +61,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <Projects />
+            element: <Projects />,
           },
           {
             path: "v1",
@@ -64,46 +69,45 @@ const router = createBrowserRouter([
             children: [
               {
                 path: "process_efficiency",
-                element: <Acctual />
+                element: <Acctual />,
               },
               {
                 path: "kpi_dashboard",
-                element: <KpiDashboard />
+                element: <KpiDashboard />,
               },
               {
                 path: "benchmarks",
-                element: <BenchmarkTable />
+                element: <BenchmarkTable />,
               },
               {
                 path: "benchmarks/report",
-                element: <BeanchmarkReportPage />
+                element: <BeanchmarkReportPage />,
               },
               {
                 path: "ai",
-                element: <AiSupport />
-              }
-            ]
+                element: <AiSupport />,
+              },
+            ],
           },
           {
             path: "priceing",
-            element: <PricingPlan />
+            element: <PricingPlan />,
           },
           {
             path: "profile",
-            element: <Profile />
+            element: <Profile />,
           },
           {
             path: "profile/edit",
-            element: <EditPrifile />
+            element: <EditPrifile />,
           },
           {
             path: "supportHub",
-            element: <SupportHub />
-          }
-
-        ]
-      }
-    ]
+            element: <SupportHub />,
+          },
+        ],
+      },
+    ],
   },
 ]);
 export default router;
