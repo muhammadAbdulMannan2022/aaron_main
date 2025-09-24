@@ -2,45 +2,50 @@ import { FaQuoteLeft, FaStar } from "react-icons/fa";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import {
+  baseUrl,
+  useGetTestimonialQuery,
+} from "../../../../../redux/auth/auth";
 
 export function Testimonials() {
-  const testimonials = [
-    {
-      name: "Cameron Williamson",
-      role: "Designer",
-      image:
-        "https://i.ibb.co.com/QxXFHBB/83b6d281974dc2066cc5ac7c0dfee3d2.jpg",
-      text: "Searches for multiplexes, property comparisons, and the loan estimator. Works great. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolores.Searches for multiplexes, property comparisons, and the loan estimator. Works great. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolores.Searches for multiplexes, property comparisons, and the loan estimator. Works great. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolores.",
-    },
-    {
-      name: "Esther Howard",
-      role: "Marketing",
-      image:
-        "https://i.ibb.co.com/JRLCCtBj/alone-boy-pictures-7itzym8tc15q8y8u.jpg",
-      text: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.",
-    },
-    {
-      name: "Devon Lane",
-      role: "Developer",
-      image:
-        "https://i.ibb.co.com/QxXFHBB/83b6d281974dc2066cc5ac7c0dfee3d2.jpg",
-      text: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est",
-    },
-    {
-      name: "Jane Smith",
-      role: "Product Manager",
-      image:
-        "https://i.ibb.co.com/JRLCCtBj/alone-boy-pictures-7itzym8tc15q8y8u.jpg",
-      text: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate.",
-    },
-    {
-      name: "John Doe",
-      role: "Engineer",
-      image:
-        "https://i.ibb.co.com/QxXFHBB/83b6d281974dc2066cc5ac7c0dfee3d2.jpg",
-      text: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.",
-    },
-  ];
+  const { data: testimonials, isLoading } = useGetTestimonialQuery();
+  // const testimonials = [
+  //   {
+  //     name: "Cameron Williamson",
+  //     role: "Designer",
+  //     image:
+  //       "https://i.ibb.co.com/QxXFHBB/83b6d281974dc2066cc5ac7c0dfee3d2.jpg",
+  //     text: "Searches for multiplexes, property comparisons, and the loan estimator. Works great. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolores.Searches for multiplexes, property comparisons, and the loan estimator. Works great. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolores.Searches for multiplexes, property comparisons, and the loan estimator. Works great. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolores.",
+  //   },
+  //   {
+  //     name: "Esther Howard",
+  //     role: "Marketing",
+  //     image:
+  //       "https://i.ibb.co.com/JRLCCtBj/alone-boy-pictures-7itzym8tc15q8y8u.jpg",
+  //     text: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae.",
+  //   },
+  //   {
+  //     name: "Devon Lane",
+  //     role: "Developer",
+  //     image:
+  //       "https://i.ibb.co.com/QxXFHBB/83b6d281974dc2066cc5ac7c0dfee3d2.jpg",
+  //     text: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est",
+  //   },
+  //   {
+  //     name: "Jane Smith",
+  //     role: "Product Manager",
+  //     image:
+  //       "https://i.ibb.co.com/JRLCCtBj/alone-boy-pictures-7itzym8tc15q8y8u.jpg",
+  //     text: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate.",
+  //   },
+  //   {
+  //     name: "John Doe",
+  //     role: "Engineer",
+  //     image:
+  //       "https://i.ibb.co.com/QxXFHBB/83b6d281974dc2066cc5ac7c0dfee3d2.jpg",
+  //     text: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.",
+  //   },
+  // ];
 
   const settings = {
     dots: true,
@@ -72,6 +77,7 @@ export function Testimonials() {
 
   return (
     <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8">
+      {/* {console.log(testimonials)} */}
       <style>
         {`
                     .custom-dots li button:before {
@@ -116,36 +122,42 @@ export function Testimonials() {
 
         {/* Testimonials Carousel */}
         <Slider {...settings} className="testimonial-carousel">
-          {testimonials.map((testimonial, index) => (
-            <div key={index} className="px-4">
-              <div className="bg-gray-button-bg rounded-lg p-6 relative h-72 flex flex-col">
-                {/* Quote Icon */}
-                <div className="absolute top-4 right-4">
-                  <FaQuoteLeft className="text-gray-600 text-2xl" />
-                </div>
-
-                {/* Profile Section */}
-                <div className="flex items-center mb-4">
-                  <img
-                    src={testimonial.image || "/placeholder.svg"}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover mr-4"
-                  />
-                  <div>
-                    <h3 className="text-white font-semibold text-lg">
-                      {testimonial.name}
-                    </h3>
-                    <p className="text-gray-400 text-sm">{testimonial.role}</p>
+          {!isLoading &&
+            testimonials.map((testimonial, index) => (
+              <div key={index} className="px-4">
+                <div className="bg-gray-button-bg rounded-lg p-6 relative h-72 flex flex-col">
+                  {/* Quote Icon */}
+                  <div className="absolute top-4 right-4">
+                    <FaQuoteLeft className="text-gray-600 text-2xl" />
                   </div>
-                </div>
 
-                {/* Testimonial Text */}
-                <p className="text-gray-300 text-sm leading-relaxed line-clamp-6">
-                  {testimonial.text}
-                </p>
+                  {/* Profile Section */}
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={
+                        baseUrl + testimonial.profile_picture ||
+                        "/placeholder.svg"
+                      }
+                      alt={testimonial.name}
+                      className="w-16 h-16 rounded-full object-cover mr-4"
+                    />
+                    <div>
+                      <h3 className="text-white font-semibold text-lg">
+                        {testimonial.name}
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        {testimonial.designation}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Testimonial Text */}
+                  <p className="text-gray-300 text-sm leading-relaxed line-clamp-6">
+                    {testimonial.testimonial}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </Slider>
       </div>
     </section>

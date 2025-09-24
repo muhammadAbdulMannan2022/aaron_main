@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
+export const baseUrl = "http://10.10.13.92:8000";
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
@@ -62,6 +62,16 @@ export const authApi = createApi({
         body: data,
       }),
     }),
+    // landing page
+    getLogos: builder.query({
+      query: () => "/api/landing_page/company_logo/",
+    }),
+    getTestimonial: builder.query({
+      query: () => "/api/landing_page/testimonial/",
+    }),
+    getFaq: builder.query({
+      query: () => "/api/landing_page/faq/",
+    }),
   }),
 });
 
@@ -74,4 +84,7 @@ export const {
   useForgotPasswordMutation,
   useChangePasswordMutation,
   useVerifyForgotOtpMutation,
+  useGetFaqQuery,
+  useGetTestimonialQuery,
+  useGetLogosQuery,
 } = authApi;
