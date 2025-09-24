@@ -1,10 +1,14 @@
 import React from "react";
 import { Edit2, Phone, Mail, MapPin, User, Calendar } from "lucide-react";
 import { useLocation, useNavigate } from "react-router";
+import { useGetProfileDataQuery } from "../../../../../redux/api/api";
+import { baseUrl } from "../../../../../redux/auth/auth";
 
 function Profile() {
   const navigate = useNavigate();
+  const { data: profileData, isLoading } = useGetProfileDataQuery();
   const location = useLocation();
+  if (isLoading) return <>loading.....</>;
   return (
     <div className="flex items-center justify-center mt-0 md:mt-20">
       <div className="relative overflow-hidden max-w-7xl max-h-[80vh] overflow-y-auto">
@@ -33,8 +37,14 @@ function Profile() {
                 <div className="relative mb-6">
                   <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
                     <img
-                      src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1"
-                      alt="Jacob Jones"
+                      src={
+                        profileData.profile_picture
+                          ? baseUrl + profileData.profile_picture
+                          : "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1"
+                      }
+                      alt={
+                        profileData.first_name ? profileData.first_name : "img"
+                      }
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -42,10 +52,13 @@ function Profile() {
 
                 {/* Name and Title */}
                 <h2 className="text-3xl md:text-4xl font-bold mb-2 text-[#574bff]">
-                  JACOB JONES
+                  {profileData.first_name ||
+                    (profileData.last_name &&
+                      profileData?.first_name + " " + profileData?.last_name)}
                 </h2>
                 <p className="text-lg font-medium" style={{ color: "#ACC0D8" }}>
-                  Product Designer
+                  {profileData.profession && profileData.profession}
+                  {/* Product Designer */}
                 </p>
               </div>
             </div>
@@ -57,11 +70,15 @@ function Profile() {
                 <div className="md:w-1/2 p-2">
                   <div className="flex items-center gap-3 text- py-1">
                     <Phone size={16} style={{ color: "#ACC0D8" }} />
-                    <span className="text-[#ACC0D8]">+77 022 444 05 05</span>
+                    <span className="text-[#ACC0D8]">
+                      {profileData.phone_number && profileData?.phone_number}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm py-1">
                     <Mail size={16} style={{ color: "#ACC0D8" }} />
-                    <span className="text-[#ACC0D8]">jacob360@gmail.com</span>
+                    <span className="text-[#ACC0D8]">
+                      {profileData.email ? profileData.email : "N/A"}
+                    </span>
                   </div>
                 </div>
                 <div className="md:w-1/2 p-2">

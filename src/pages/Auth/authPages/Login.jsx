@@ -7,25 +7,35 @@ import {
   useSocialLoginMutation,
 } from "../../../../redux/auth/auth";
 import { loginWithGoogle } from "../../../utils/LoginWithGoogle";
+import Cookie from "js-cookie";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); // 👈 local error state
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
-  const navigate = useNavigate();
-
   const [socialLogin, { isLoading: isSocialLoading }] =
     useSocialLoginMutation();
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // clear old errors before new try
+    setErrorMessage("");
     try {
       const res = await login({ email, password }).unwrap();
       console.log("Login successful:", res);
+
+      // 🟢 Save tokens to cookies
+      if (res?.access) {
+        Cookie.set("access_token", res.access, { expires: 1 }); // 1 day
+      }
+      if (res?.refresh) {
+        Cookie.set("refresh_token", res.refresh, { expires: 7 }); // 7 days
+      }
+
       navigate("/dashboard");
     } catch (error) {
       setErrorMessage(error?.data?.Message || "Login failed. Try again!");
@@ -33,11 +43,20 @@ export default function Login() {
   };
 
   const handleGoogleLogin = async () => {
-    setErrorMessage(""); // clear old errors before new try
+    setErrorMessage("");
     try {
       const res = await loginWithGoogle();
       const serverRes = await socialLogin(res.email).unwrap();
       console.log("Google login successful:", serverRes);
+
+      // 🟢 Save tokens to cookies
+      if (serverRes?.access) {
+        Cookie.set("access", serverRes.access, { expires: 1 });
+      }
+      if (serverRes?.refresh) {
+        Cookie.set("refresh", serverRes.refresh, { expires: 7 });
+      }
+
       navigate("/dashboard");
     } catch (error) {
       setErrorMessage(
@@ -47,11 +66,8 @@ export default function Login() {
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
-  // 🟢 Reset error when user types
   const handleInputChange = (setter) => (e) => {
     setter(e.target.value);
     if (errorMessage) setErrorMessage("");
@@ -60,23 +76,17 @@ export default function Login() {
   return (
     <div className="w-full flex items-center justify-center p-6 lg:p-8 h-full">
       <div className="w-full max-w-md space-y-6">
-        {/* Mobile Logo */}
+        {/* Logo */}
         <div className="lg:hidden text-center mb-8 flex flex-col items-center justify-center">
-          <img
-            src="/logo.png"
-            className="h-12 w-auto"
-            height={48}
-            width={180}
-            alt=""
-          />
+          <img src="/logo.png" className="h-12 w-auto" alt="Logo" />
         </div>
 
-        {/* Error and Loading States */}
+        {/* Error */}
         {errorMessage && (
           <div className="text-red-500 text-sm text-center">{errorMessage}</div>
         )}
 
-        {/* Login Form Header */}
+        {/* Header */}
         <div className="text-center hidden md:block">
           <h1
             className="text-2xl lg:text-3xl font-bold mb-2"
@@ -89,9 +99,9 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Login Form */}
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email Field */}
+          {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -111,20 +121,19 @@ export default function Login() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={handleInputChange(setEmail)} // 👈 reset error on change
+                onChange={handleInputChange(setEmail)}
                 placeholder="user@mail.com"
                 className="w-full pl-10 pr-3 py-3 rounded-lg border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 style={{
                   backgroundColor: "var(--color-gray-button-bg)",
                   color: "var(--color-text-primary)",
-                  borderColor: "var(--color-gray-button-bg)",
                 }}
                 required
               />
             </div>
           </div>
 
-          {/* Password Field */}
+          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -144,20 +153,19 @@ export default function Login() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={handleInputChange(setPassword)} // 👈 reset error on change
+                onChange={handleInputChange(setPassword)}
                 placeholder="Enter your password"
                 className="w-full pl-10 pr-3 py-3 rounded-lg border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 style={{
                   backgroundColor: "var(--color-gray-button-bg)",
                   color: "var(--color-text-primary)",
-                  borderColor: "var(--color-gray-button-bg)",
                 }}
                 required
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:cursor-pointer hover:opacity-70 transition-opacity"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center hover:cursor-pointer hover:opacity-70"
               >
                 {showPassword ? (
                   <MdVisibilityOff
@@ -173,6 +181,8 @@ export default function Login() {
               </button>
             </div>
           </div>
+
+          {/* Forgot password */}
           <div className="text-start">
             <Link
               to="/auth/forgot"
@@ -182,18 +192,18 @@ export default function Login() {
             </Link>
           </div>
 
-          {/* Login Button */}
+          {/* Login button */}
           <button
             type="submit"
             disabled={isLoginLoading || isSocialLoading}
-            className="w-full hover:cursor-pointer py-3 px-4 rounded-lg font-medium text-white transition-all hover:opacity-90 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full py-3 px-4 rounded-lg font-medium text-white transition-all focus:ring-2 focus:ring-blue-500 focus:outline-none hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ backgroundColor: "var(--color-auth-button-bg)" }}
           >
-            {isLoginLoading || isSocialLoading ? "Logging in ..." : "Login"}
+            {isLoginLoading ? "Logging in ..." : "Login"}
           </button>
         </form>
 
-        {/* Sign Up Link */}
+        {/* Signup */}
         <div className="text-center">
           <span style={{ color: "var(--color-text-notActive)" }}>
             Need an account?{" "}
@@ -210,7 +220,7 @@ export default function Login() {
         <button
           onClick={handleGoogleLogin}
           disabled={isLoginLoading || isSocialLoading}
-          className="w-full hover:cursor-pointer py-3 px-4 rounded-lg border font-medium transition-all hover:opacity-90 focus:ring-2 focus:ring-gray-500 focus:outline-none flex items-center justify-center gap-3"
+          className="w-full py-3 px-4 rounded-lg border font-medium transition-all focus:ring-2 focus:ring-gray-500 flex items-center justify-center gap-3 hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
           style={{
             backgroundColor: "var(--color-gray-button-bg)",
             borderColor: "var(--color-gray-button-bg)",
@@ -218,11 +228,7 @@ export default function Login() {
           }}
         >
           <FcGoogle className="h-5 w-5" />
-          {isLoginLoading || isSocialLoading ? (
-            "Logging in ..."
-          ) : (
-            <>Login with Google</>
-          )}
+          {isSocialLoading ? "Logging in ..." : "Login with Google"}
         </button>
       </div>
     </div>
