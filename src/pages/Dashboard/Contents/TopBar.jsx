@@ -9,7 +9,7 @@ import { baseUrl } from "../../../../redux/auth/auth";
 const TopBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { profile, loading, error } = useContext(profileContext);
-  const { setChangeEamilFormActive, setChangePasswordFormActive, setIsLogOut } =
+  const { setChangeEmailFormActive, setChangePasswordFormActive, setIsLogOut } =
     useContext(modalContext);
 
   const handleClickOutside = (event) => {
@@ -72,9 +72,9 @@ const TopBar = () => {
             </div>
             <div
               onClick={() => {
+                setChangeEmailFormActive(true); // Fixed typo here
                 setChangePasswordFormActive(false);
                 setIsLogOut(false);
-                setChangeEamilFormActive(true);
               }}
               className="flex items-center p-2 text-gray-300 hover:bg-gray-700 cursor-pointer rounded-lg"
             >
@@ -85,7 +85,7 @@ const TopBar = () => {
             </div>
             <div
               onClick={() => {
-                setChangeEamilFormActive(false);
+                setChangeEmailFormActive(false); // Fixed typo here
                 setIsLogOut(false);
                 setChangePasswordFormActive(true);
               }}
@@ -98,7 +98,7 @@ const TopBar = () => {
             </div>
             <div
               onClick={() => {
-                setChangeEamilFormActive(false);
+                setChangeEmailFormActive(false); // Fixed typo here
                 setChangePasswordFormActive(false);
                 setIsLogOut(true);
               }}
