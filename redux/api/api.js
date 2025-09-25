@@ -40,8 +40,42 @@ export const api = createApi({
       }),
       invalidatesTags: ["Profile"],
     }),
+    // all about project
+    getDepartments: builder.query({
+      query: () => "/api/project/departments/",
+      providesTags: ["Depertments"],
+    }),
+    addDepertment: builder.mutation({
+      query: (data) => ({
+        url: "/api/project/departments/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Depertments"],
+    }),
+    updateDepertment: builder.mutation({
+      query: (data) => ({
+        url: `/api/project/departments/${data.id}/`,
+        method: "PATCH",
+        body: { name: data.name, description: data.description },
+      }),
+      invalidatesTags: ["Depertments"],
+    }),
+    deleteDepertment: builder.mutation({
+      query: (data) => ({
+        url: `/api/project/departments/${data.id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Depertments"],
+    }),
   }),
 });
-
 // 👇 these are auto-generated hooks
-export const { useGetProfileDataQuery, useUpdateProfileMutation } = api;
+export const {
+  useGetProfileDataQuery,
+  useUpdateProfileMutation,
+  useGetDepartmentsQuery,
+  useAddDepertmentMutation,
+  useUpdateDepertmentMutation,
+  useDeleteDepertmentMutation,
+} = api;

@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import {
+  useGetDepartmentsQuery,
+  useAddDepertmentMutation,
+  useUpdateDepertmentMutation,
+  useDeleteDepertmentMutation,
+} from "../../../../../redux/api/api";
+
 export function DepartmentList({ onClose }) {
-  const [departments, setDepartments] = useState([
-    { id: 1, name: "Department 1", description: "Shark hunter ai" },
-    { id: 2, name: "Department 2", description: "Shark hunter ai" },
-    { id: 3, name: "Department 3", description: "Shark hunter ai" },
-  ]);
+  const { data: departmentsData, isLoading, error } = useGetDepartmentsQuery();
+  const [addDepartment] = useAddDepertmentMutation();
+  const [updateDepartment] = useUpdateDepertmentMutation();
+  const [deleteDepartment] = useDeleteDepertmentMutation();
+
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newDepartmentName, setNewDepartmentName] = useState("");
   const [newDepartmentDescription, setNewDepartmentDescription] = useState("");
@@ -13,17 +20,21 @@ export function DepartmentList({ onClose }) {
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
-  const handleAddDepartment = () => {
+  const departments = departmentsData?.results || [];
+
+  const handleAddDepartment = async () => {
     if (newDepartmentName.trim()) {
-      const newDepartment = {
-        id: Math.max(...departments.map((d) => d.id)) + 1,
-        name: newDepartmentName.trim(),
-        description: newDepartmentDescription.trim() || "Shark hunter ai",
-      };
-      setDepartments([...departments, newDepartment]);
-      setNewDepartmentName("");
-      setNewDepartmentDescription("");
-      setIsAddingNew(false);
+      try {
+        await addDepartment({
+          name: newDepartmentName.trim(),
+          description: newDepartmentDescription.trim() || "Shark hunter ai",
+        }).unwrap();
+        setNewDepartmentName("");
+        setNewDepartmentDescription("");
+        setIsAddingNew(false);
+      } catch (err) {
+        console.error("Failed to add department:", err);
+      }
     }
   };
 
@@ -36,33 +47,43 @@ export function DepartmentList({ onClose }) {
     }
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editingId && editName.trim()) {
-      setDepartments(
-        departments.map((dept) =>
-          dept.id === editingId
-            ? {
-                ...dept,
-                name: editName.trim(),
-                description: editDescription.trim() || "Shark hunter ai",
-              }
-            : dept
-        )
-      );
-      setEditingId(null);
-      setEditName("");
-      setEditDescription("");
+      try {
+        await updateDepartment({
+          id: editingId,
+          name: editName.trim(),
+          description: editDescription.trim() || "Shark hunter ai",
+        }).unwrap();
+        setEditingId(null);
+        setEditName("");
+        setEditDescription("");
+      } catch (err) {
+        console.error("Failed to update department:", err);
+      }
     }
   };
 
-  const handleDeleteDepartment = (id) => {
-    setDepartments(departments.filter((dept) => dept.id !== id));
+  const handleDeleteDepartment = async (id) => {
+    try {
+      await deleteDepartment({ id }).unwrap();
+    } catch (err) {
+      console.error("Failed to delete department:", err);
+    }
   };
 
   const handleSubmit = () => {
     console.log("Departments submitted:", departments);
     onClose();
   };
+
+  if (isLoading) {
+    return <div>Loading departments...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading departments: {error.message}</div>;
+  }
 
   return (
     <div
@@ -94,91 +115,95 @@ export function DepartmentList({ onClose }) {
 
       {/* Department List */}
       <div className="space-y-4 mb-6">
-        {departments.map((department) => (
-          <div key={department.id} className="space-y-2">
-            {editingId === department.id ? (
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3 py-2 rounded border-0 text-sm"
-                  style={{
-                    backgroundColor: "var(--color-gray-button-bg)",
-                    color: "var(--color-text-primary)",
-                  }}
-                  placeholder="Department name"
-                />
-                <input
-                  type="text"
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full px-3 py-2 rounded border-0 text-sm"
-                  style={{
-                    backgroundColor: "var(--color-gray-button-bg)",
-                    color: "var(--color-text-primary)",
-                  }}
-                  placeholder="Description"
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleSaveEdit}
-                    className="px-3 py-1 rounded text-xs hover:cursor-pointer"
-                    style={{
-                      backgroundColor: " #574bff",
-                      color: "var(--color-text-primary)",
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => setEditingId(null)}
-                    className="px-3 py-1 rounded text-xs hover:cursor-pointer"
+        {departments.length > 0 ? (
+          departments.map((department) => (
+            <div key={department.id} className="space-y-2">
+              {editingId === department.id ? (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full px-3 py-2 rounded border-0 text-sm"
                     style={{
                       backgroundColor: "var(--color-gray-button-bg)",
                       color: "var(--color-text-primary)",
                     }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <div>
-                  <div
-                    className="font-medium"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
-                    {department.name}
+                    placeholder="Department name"
+                  />
+                  <input
+                    type="text"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="w-full px-3 py-2 rounded border-0 text-sm"
+                    style={{
+                      backgroundColor: "var(--color-gray-button-bg)",
+                      color: "var(--color-text-primary)",
+                    }}
+                    placeholder="Description"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveEdit}
+                      className="px-3 py-1 rounded text-xs hover:cursor-pointer"
+                      style={{
+                        backgroundColor: " #574bff",
+                        color: "var(--color-text-primary)",
+                      }}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="px-3 py-1 rounded text-xs hover:cursor-pointer"
+                      style={{
+                        backgroundColor: "var(--color-gray-button-bg)",
+                        color: "var(--color-text-primary)",
+                      }}
+                    >
+                      Cancel
+                    </button>
                   </div>
-                  <div
-                    className="text-sm"
-                    style={{ color: "var(--color-text-notActive)" }}
-                  >
-                    {department.description}
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div
+                      className="font-medium"
+                      style={{ color: "var(--color-text-primary)" }}
+                    >
+                      {department.name}
+                    </div>
+                    <div
+                      className="text-sm"
+                      style={{ color: "var(--color-text-notActive)" }}
+                    >
+                      {department.description}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleEditDepartment(department.id)}
+                      className="p-1 rounded hover:opacity-80 transition-opacity hover:cursor-pointer"
+                      style={{ color: " #574bff" }}
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteDepartment(department.id)}
+                      className="p-1 rounded hover:opacity-80 transition-opacity hover:cursor-pointer"
+                      style={{ color: "#ef4444" }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleEditDepartment(department.id)}
-                    className="p-1 rounded hover:opacity-80 transition-opacity hover:cursor-pointer"
-                    style={{ color: " #574bff" }}
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteDepartment(department.id)}
-                    className="p-1 rounded hover:opacity-80 transition-opacity hover:cursor-pointer"
-                    style={{ color: "#ef4444" }}
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          ))
+        ) : (
+          <h1 className="text-center text-gray-500 font-bold">No Departmnet</h1>
+        )}
 
         {/* Add New Department Form */}
         {isAddingNew && (
