@@ -84,11 +84,13 @@ export default function DataTable({ data, filter }) {
                 </td>
                 <td className="px-6 py-4">
                   <span className="text-sm text-dark-text">
-                    {item.department}
+                    {item.department.name}
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="text-sm text-dark-text">{item.team}</span>
+                  <span className="text-sm text-dark-text">
+                    {item.team.name}
+                  </span>
                 </td>
                 <td className="px-6 py-4">
                   <button
