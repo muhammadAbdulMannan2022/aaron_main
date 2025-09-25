@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FiMoreVertical, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { modalContext } from "../DashboardLayout";
+import { useDeleteProjectMutation } from "../../../../redux/api/api";
 
-export default function DataTable({ data }) {
+export default function DataTable({ data, filter }) {
   const [openActionId, setOpenActionId] = useState(null);
+  const { setUploadCsvOpen, setCurrentFileId } = useContext(modalContext);
+  const [deleteProject, { isLoading: isDeleteLoading }] =
+    useDeleteProjectMutation();
 
   const toggleAction = (id) => {
     setOpenActionId(openActionId === id ? null : id);
@@ -13,9 +18,14 @@ export default function DataTable({ data }) {
     setOpenActionId(null);
   };
 
-  const handleDelete = (item) => {
+  const handleDelete = async (item) => {
     console.log("Delete:", item);
-    setOpenActionId(null);
+    try {
+      await deleteProject(item.id);
+      setOpenActionId(null);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleView = (item) => {
@@ -23,6 +33,10 @@ export default function DataTable({ data }) {
   };
 
   const handleStart = (item) => {
+    if (!item.status) {
+      setCurrentFileId(item.id);
+      setUploadCsvOpen(true);
+    }
     console.log("Start:", item);
   };
 
@@ -89,7 +103,7 @@ export default function DataTable({ data }) {
                     onClick={() => handleStart(item)}
                     className="text-[#574bff] hover:text-[#7168f3] underline hover:cursor-pointer text-sm font-medium transition-colors"
                   >
-                    Start
+                    {item?.status ? "Start" : "Fix"}
                   </button>
                 </td>
                 <td className="px-6 py-4">

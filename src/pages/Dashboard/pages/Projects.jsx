@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { FiCalendar, FiSearch } from "react-icons/fi";
 import flatpickr from "flatpickr";
-import "flatpickr/dist/themes/dark.css"; // Import a base theme
+import "flatpickr/dist/themes/dark.css";
 import DataTable from "../Contents/ProjectTable";
-import { modalContext } from "../DashboardLayout";
+import { modalContext, profileContext } from "../DashboardLayout";
 import { useGetAllProjectsQuery } from "../../../../redux/api/api";
+import { FaX } from "react-icons/fa6";
 
 export default function Projects() {
   const [date, setDate] = useState("");
@@ -12,18 +13,19 @@ export default function Projects() {
   const flatpickrInstance = useRef(null);
   const { setUploadCsvFirst, setDepartmentListOpen, setTeamListOpen } =
     useContext(modalContext);
+  const { profile } = useContext(profileContext);
 
   const { data: projectsData, isLoading } = useGetAllProjectsQuery();
 
   useEffect(() => {
     // Initialize flatpickr
     flatpickrInstance.current = flatpickr(datePickerRef.current, {
-      dateFormat: "F j, Y", // User-friendly format
+      dateFormat: "F j, Y", // Format: September 2, 2025
       onChange: (selectedDates, dateStr) => {
         setDate(dateStr);
       },
       enableTime: false,
-      appendTo: document.body, // Ensure calendar appears above other elements
+      appendTo: document.body,
     });
 
     return () => {
@@ -41,26 +43,40 @@ export default function Projects() {
     }
   };
 
-  // Transform projectsData to match DataTable's expected format
+  // Function to format ISO date to match flatpickr format (September 2, 2025)
+  const formatDate = (isoDate) => {
+    return new Date(isoDate).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Filter and transform projectsData based on selected date
   const tableData =
-    projectsData?.results?.map((project) => ({
-      id: project.id,
-      process: project.process,
-      date: new Date(project.created_at).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }), // Format date as "2 January, 2025"
-      department: project.department, // If department is an ID, replace with name if available
-      team: project.team, // If team is an ID, replace with name if available
-      uploadFiles: "View", // Static value or use project.csv_file for a link
-      analysis: "Start", // Static value
-    })) || [];
+    projectsData?.results
+      ?.filter((project) => {
+        if (!date) return true; // If no date selected, show all projects
+        const projectDate = formatDate(project.created_at); // Convert ISO date to September 2, 2025 format
+        return projectDate === date; // Compare with selected date
+      })
+      ?.map((project) => ({
+        id: project.id,
+        process: project.process,
+        date: formatDate(project.created_at), // Use formatted date
+        department: project.department,
+        team: project.team,
+        uploadFiles: "View",
+        analysis: project.status ? "Start" : "Fix",
+        status: project.status,
+      })) || [];
 
   return (
     <div className="px-5 md:px-12">
       <div className="text-main-text flex md:items-end flex-col md:flex-row md:gap-5 py-5">
-        <h1 className="text-3xl">Welcome, Aaron.</h1>
+        <h1 className="text-3xl">
+          Welcome, {profile && profile.first_name + " " + profile.last_name}.
+        </h1>
         <p>
           {new Date().toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -105,13 +121,23 @@ export default function Projects() {
               type="text"
               value={date}
               onClick={handleInputClick}
-              readOnly // Added to fix controlled input warning
-              className="w-full pl-10 pr-10 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-[#171717] text-main-text older-gray-400 cursor-pointer"
+              readOnly
+              className="w-full pl-10 pr-10 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-[#171717] text-main-text placeholder-gray-400 cursor-pointer"
               placeholder="Select a date"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <FiSearch className="h-5 w-5 text-[#574bff]" />
-            </div>
+
+            {date ? (
+              <div
+                onClick={() => setDate("")}
+                className="absolute inset-y-0 right-0 flex items-center pr-3"
+              >
+                <FaX className="text-white hover:text-red-500" />
+              </div>
+            ) : (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <FiSearch className="h-5 w-5 text-[#574bff]" />
+              </div>
+            )}
           </div>
         </div>
       </div>

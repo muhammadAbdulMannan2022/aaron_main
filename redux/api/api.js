@@ -121,6 +121,13 @@ export const api = createApi({
       }),
       invalidatesTags: ["Projects"],
     }),
+    deleteProject: builder.mutation({
+      query: (id) => ({
+        url: `/api/project/projects/${id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Projects"],
+    }),
   }),
 });
 // 👇 these are auto-generated hooks
@@ -142,4 +149,5 @@ export const {
   useSubmitProjectDataMutation,
   useGetCollQuery,
   useSteColNameMutation,
+  useDeleteProjectMutation,
 } = api;
