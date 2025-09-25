@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Upload, ChevronDown } from "lucide-react";
+import {
+  useGetProfileDataQuery,
+  useUpdateProfileMutation,
+} from "../../../../../redux/api/api";
+import { useNavigate } from "react-router";
 
 function EditPrifile() {
+  const navigate = useNavigate();
+  const { data: profileData, isLoading: isProfileDataLoading } =
+    useGetProfileDataQuery();
+  const [update, { isLoading: isupdateLoading }] = useUpdateProfileMutation();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -21,6 +31,40 @@ function EditPrifile() {
 
   const [profileImage, setProfileImage] = useState(null);
   const [companyLogo, setCompanyLogo] = useState(null);
+
+  // Populate form data when profileData is fetched
+  useEffect(() => {
+    if (profileData) {
+      // Parse date_of_birth if it exists (format: YYYY-MM-DD)
+      let date = "";
+      let month = "";
+      let year = "";
+      if (profileData.date_of_birth) {
+        const [parsedYear, parsedMonth, parsedDate] =
+          profileData.date_of_birth.split("-");
+        date = parsedDate;
+        month = parsedMonth;
+        year = parsedYear;
+      }
+
+      setFormData({
+        firstName: profileData.first_name || "",
+        lastName: profileData.last_name || "",
+        gender: profileData.gender || "",
+        profession: profileData.profession || "",
+        dateOfBirth: {
+          date,
+          month,
+          year,
+        },
+        phone: profileData.phone_number || "",
+        location: profileData.location || "",
+        personalEmail: profileData.email || "",
+        aboutYourself: profileData.about_yourself || "",
+        professionalBackground: profileData.professional_background || "",
+      });
+    }
+  }, [profileData]);
 
   const handleInputChange = (field, value) => {
     if (field.includes(".")) {
@@ -54,9 +98,53 @@ function EditPrifile() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", { formData, profileImage, companyLogo });
+
+    // Create a FormData object
+    const formDataToSend = new FormData();
+
+    // Append text fields to FormData (excluding email)
+    formDataToSend.append("first_name", formData.firstName || "");
+    formDataToSend.append("last_name", formData.lastName || "");
+    formDataToSend.append("gender", formData.gender || "");
+    formDataToSend.append("profession", formData.profession || "");
+    formDataToSend.append("phone_number", formData.phone || "");
+    formDataToSend.append("location", formData.location || "");
+    formDataToSend.append("about_yourself", formData.aboutYourself || "");
+    formDataToSend.append(
+      "professional_background",
+      formData.professionalBackground || ""
+    );
+
+    // Construct date_of_birth in the format expected by the backend (e.g., "YYYY-MM-DD")
+    const { date, month, year } = formData.dateOfBirth;
+    if (year && month && date) {
+      const formattedDate = `${year}-${month.padStart(2, "0")}-${date.padStart(
+        2,
+        "0"
+      )}`;
+      formDataToSend.append("date_of_birth", formattedDate);
+    }
+
+    // Append file fields if they exist
+    if (profileImage) {
+      formDataToSend.append("profile_picture", profileImage);
+    }
+    if (companyLogo) {
+      formDataToSend.append("upload_logo", companyLogo);
+    }
+
+    try {
+      // Call the update mutation
+      await update(formDataToSend).unwrap();
+      console.log("Profile updated successfully!");
+      navigate("/dashboard/profile/");
+      // Optionally, redirect or show a success message
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      // Optionally, show an error message to the user
+    }
   };
 
   const months = [
@@ -75,6 +163,10 @@ function EditPrifile() {
   ];
 
   const dates = Array.from({ length: 31 }, (_, i) => i + 1);
+
+  if (isProfileDataLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen">
@@ -95,7 +187,7 @@ function EditPrifile() {
             Edit Profile Details
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8 px-2">
             {/* Basic Information */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <div>
@@ -310,10 +402,8 @@ function EditPrifile() {
                   type="email"
                   placeholder="Enter here"
                   value={formData.personalEmail}
-                  onChange={(e) =>
-                    handleInputChange("personalEmail", e.target.value)
-                  }
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  disabled
+                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/10 text-gray-400 placeholder-gray-400 cursor-not-allowed"
                 />
               </div>
             </div>
@@ -411,9 +501,12 @@ function EditPrifile() {
             <div className="flex justify-center pt-6 sm:pt-8">
               <button
                 type="submit"
-                className="w-full sm:w-auto bg-[#574bff] hover:cursor-pointer px-8 sm:px-12 py-3 rounded-lg font-medium text-white transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+                disabled={isupdateLoading}
+                className={`w-full sm:w-auto bg-[#574bff] hover:cursor-pointer px-8 sm:px-12 py-3 rounded-lg font-medium text-white transition-all duration-200 shadow-lg hover:shadow-xl ${
+                  isupdateLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                Done
+                {isupdateLoading ? "Updating..." : "Done"}
               </button>
             </div>
           </form>

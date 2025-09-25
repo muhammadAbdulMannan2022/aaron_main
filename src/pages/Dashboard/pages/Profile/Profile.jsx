@@ -8,6 +8,7 @@ function Profile() {
   const navigate = useNavigate();
   const { data: profileData, isLoading } = useGetProfileDataQuery();
   const location = useLocation();
+  const getValue = (val) => (val ? val : "N/A");
   if (isLoading) return <>loading.....</>;
   return (
     <div className="flex items-center justify-center mt-0 md:mt-20">
@@ -52,9 +53,9 @@ function Profile() {
 
                 {/* Name and Title */}
                 <h2 className="text-3xl md:text-4xl font-bold mb-2 text-[#574bff]">
-                  {profileData.first_name ||
-                    (profileData.last_name &&
-                      profileData?.first_name + " " + profileData?.last_name)}
+                  {getValue(
+                    profileData?.first_name + " " + profileData?.last_name
+                  )}
                 </h2>
                 <p className="text-lg font-medium" style={{ color: "#ACC0D8" }}>
                   {profileData.profession && profileData.profession}
@@ -71,54 +72,59 @@ function Profile() {
                   <div className="flex items-center gap-3 text- py-1">
                     <Phone size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">
-                      {profileData.phone_number && profileData?.phone_number}
+                      {getValue(profileData?.phone_number)}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm py-1">
                     <Mail size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">
-                      {profileData.email ? profileData.email : "N/A"}
+                      {getValue(profileData.email)}
                     </span>
                   </div>
                 </div>
                 <div className="md:w-1/2 p-2">
                   <div className="flex items-center gap-3 text-sm py-1">
                     <Calendar size={16} style={{ color: "#ACC0D8" }} />
-                    <span className="text-[#ACC0D8]">25 yrs</span>
+                    <span className="text-[#ACC0D8]">
+                      {getValue(profileData.age)} {profileData.age && "yrs"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm py-1">
                     <User size={16} style={{ color: "#ACC0D8" }} />
-                    <span className="text-[#ACC0D8]">Male</span>
+                    <span className="text-[#ACC0D8]">
+                      {getValue(profileData.gender)}
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-3 text-sm lg:col-span-1 sm:col-span-2 py-1">
                     <MapPin size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">
-                      United Kingdom, London
+                      {getValue(profileData.location)},
+                      {profileData.country && profileData.country}
                     </span>
                   </div>
                 </div>
               </div>
               {/* About Section */}
-              <div className="h-fit backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300">
+              <div className="h-fit backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300 md:min-w-2xl">
                 <h3 className="text-xl font-bold mb-4 text-[#574bff]">ABOUT</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  My name is <span className="text-[#574bff]">Jacob Jones</span>
-                  . I am a web designer & developer, and I'm very passionate and
-                  dedicated to my work, dedicated to my work, dedicated to my
-                  work.
+                  My name is{" "}
+                  <span className="text-[#574bff]">
+                    {getValue(profileData.first_name)}{" "}
+                    {getValue(profileData.last_name)}
+                  </span>
+                  . {getValue(profileData.about_yourself)}
                 </p>
               </div>
 
               {/* Professional Background Section */}
-              <div className="h-fit backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300">
+              <div className="h-fit backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10 hover:bg-white/10 transition-all duration-300 md:min-w-2xl">
                 <h3 className="text-xl font-bold mb-4 text-[#574bff]">
                   PROFESSIONAL BACKGROUND
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
-                  With 10+ years experience as a professional a graphic
-                  designer, I have acquired the skills and knowledge necessary
-                  to make your project a success.
+                  {getValue(profileData.professional_background)}
                 </p>
               </div>
             </div>
