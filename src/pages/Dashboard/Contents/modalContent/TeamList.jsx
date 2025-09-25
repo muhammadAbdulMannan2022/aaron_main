@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import {
+  useGetTeamsQuery,
+  useAddTeamMutation,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
+} from "../../../../../redux/api/api";
 
 export function TeamList({ onClose }) {
-  const [teams, setTeams] = useState([
-    { id: 1, name: "Team 1", description: "Collaborative task force" },
-    { id: 2, name: "Team 2", description: "Collaborative task force" },
-    { id: 3, name: "Team 3", description: "Collaborative task force" },
-  ]);
+  const { data: teamsData, isLoading, error } = useGetTeamsQuery();
+  const [addTeam] = useAddTeamMutation();
+  const [updateTeam] = useUpdateTeamMutation();
+  const [deleteTeam] = useDeleteTeamMutation();
+
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
   const [newTeamDescription, setNewTeamDescription] = useState("");
@@ -14,17 +20,21 @@ export function TeamList({ onClose }) {
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
-  const handleAddTeam = () => {
+  const teams = teamsData?.results || [];
+
+  const handleAddTeam = async () => {
     if (newTeamName.trim()) {
-      const newTeam = {
-        id: Math.max(...teams.map((t) => t.id)) + 1,
-        name: newTeamName.trim(),
-        description: newTeamDescription.trim() || "Collaborative task force",
-      };
-      setTeams([...teams, newTeam]);
-      setNewTeamName("");
-      setNewTeamDescription("");
-      setIsAddingNew(false);
+      try {
+        await addTeam({
+          name: newTeamName.trim(),
+          description: newTeamDescription.trim() || "Collaborative task force",
+        }).unwrap();
+        setNewTeamName("");
+        setNewTeamDescription("");
+        setIsAddingNew(false);
+      } catch (err) {
+        console.error("Failed to add team:", err);
+      }
     }
   };
 
@@ -37,34 +47,44 @@ export function TeamList({ onClose }) {
     }
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
+    console.log(editingId, editName, editDescription);
     if (editingId && editName.trim()) {
-      setTeams(
-        teams.map((team) =>
-          team.id === editingId
-            ? {
-                ...team,
-                name: editName.trim(),
-                description:
-                  editDescription.trim() || "Collaborative task force",
-              }
-            : team
-        )
-      );
-      setEditingId(null);
-      setEditName("");
-      setEditDescription("");
+      try {
+        await updateTeam({
+          id: editingId,
+          name: editName.trim(),
+          description: editDescription.trim() || "Collaborative task force",
+        }).unwrap();
+        setEditingId(null);
+        setEditName("");
+        setEditDescription("");
+      } catch (err) {
+        console.error("Failed to update team:", err);
+      }
     }
   };
 
-  const handleDeleteTeam = (id) => {
-    setTeams(teams.filter((team) => team.id !== id));
+  const handleDeleteTeam = async (id) => {
+    try {
+      await deleteTeam({ id }).unwrap();
+    } catch (err) {
+      console.error("Failed to delete team:", err);
+    }
   };
 
   const handleSubmit = () => {
     console.log("Teams submitted:", teams);
     onClose();
   };
+
+  if (isLoading) {
+    return <div>Loading teams...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading teams: {error.message}</div>;
+  }
 
   return (
     <div
