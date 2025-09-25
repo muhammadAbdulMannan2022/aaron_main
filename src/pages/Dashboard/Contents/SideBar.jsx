@@ -1,12 +1,16 @@
+import { useContext } from "react";
 import { AiOutlineLayout } from "react-icons/ai";
 import { FaHeadset } from "react-icons/fa6";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { LuSquareDashedMousePointer } from "react-icons/lu";
 import { Link, useLocation, useNavigate } from "react-router";
+import { profileContext } from "../DashboardLayout";
+import { baseUrl } from "../../../../redux/auth/auth";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { profile, loading, error } = useContext(profileContext);
 
   const menuItems = [
     { name: "Projects", icon: <AiOutlineLayout />, to: "/dashboard" },
@@ -33,7 +37,11 @@ const Sidebar = () => {
     <div className="w-full h-full text-white flex flex-col justify-between pt-4">
       <div className="px-4">
         <div className="flex items-center justify-center mb-8">
-          <img src="/userClogo.png" className="max-w-full" alt="logo" />
+          <img
+            src={!loading ? baseUrl + profile.upload_logo : ""}
+            className="max-w-full max-h-40"
+            alt={!loading ? profile.first_name : ""}
+          />
         </div>
 
         {menuItems.map((item) => (
