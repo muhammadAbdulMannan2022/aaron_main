@@ -4,81 +4,7 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/themes/dark.css"; // Import a base theme
 import DataTable from "../Contents/ProjectTable";
 import { modalContext } from "../DashboardLayout";
-
-const sampleData = [
-  {
-    id: 1,
-    process: "2 January, 2025",
-    date: "2 January, 2025",
-    department: "Customer Support",
-    team: "Carolina Panthers",
-    uploadFiles: "View",
-    analysis: "Start",
-  },
-  {
-    id: 2,
-    process: "2 January, 2025",
-    date: "2 January, 2025",
-    department: "User Interface",
-    team: "New Orleans Saints",
-    uploadFiles: "View",
-    analysis: "Start",
-  },
-  {
-    id: 3,
-    process: "3 January, 2025",
-    date: "3 January, 2025",
-    department: "Development",
-    team: "San Francisco 49ers",
-    uploadFiles: "View",
-    analysis: "Start",
-  },
-  {
-    id: 4,
-    process: "4 January, 2025",
-    date: "4 January, 2025",
-    department: "Production",
-    team: "Los Angeles Rams",
-    uploadFiles: "View",
-    analysis: "Start",
-  },
-  {
-    id: 5,
-    process: "5 January, 2025",
-    date: "5 January, 2025",
-    department: "Project Management",
-    team: "Dallas Cowboys",
-    uploadFiles: "View",
-    analysis: "Start",
-  },
-  {
-    id: 6,
-    process: "6 January, 2025",
-    date: "6 January, 2025",
-    department: "Automation Testing",
-    team: "Green Bay Packers",
-    uploadFiles: "View",
-    analysis: "Start",
-  },
-  {
-    id: 7,
-    process: "7 January, 2025",
-    date: "7 January, 2025",
-    department: "Automation Testing",
-    team: "Minnesota Vikings",
-    uploadFiles: "View",
-    analysis: "Start",
-  },
-  {
-    id: 8,
-    process: "8 January, 2025",
-    date: "8 January, 2025",
-    department: "User Interface",
-    team: "Atlanta Falcons",
-    uploadFiles: "View",
-    analysis: "Start",
-  },
-];
+import { useGetAllProjectsQuery } from "../../../../redux/api/api";
 
 export default function Projects() {
   const [date, setDate] = useState("");
@@ -86,6 +12,8 @@ export default function Projects() {
   const flatpickrInstance = useRef(null);
   const { setUploadCsvFirst, setDepartmentListOpen, setTeamListOpen } =
     useContext(modalContext);
+
+  const { data: projectsData, isLoading } = useGetAllProjectsQuery();
 
   useEffect(() => {
     // Initialize flatpickr
@@ -112,6 +40,22 @@ export default function Projects() {
       flatpickrInstance.current.open();
     }
   };
+
+  // Transform projectsData to match DataTable's expected format
+  const tableData =
+    projectsData?.results?.map((project) => ({
+      id: project.id,
+      process: project.process,
+      date: new Date(project.created_at).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }), // Format date as "2 January, 2025"
+      department: project.department, // If department is an ID, replace with name if available
+      team: project.team, // If team is an ID, replace with name if available
+      uploadFiles: "View", // Static value or use project.csv_file for a link
+      analysis: "Start", // Static value
+    })) || [];
 
   return (
     <div className="px-5 md:px-12">
@@ -161,6 +105,7 @@ export default function Projects() {
               type="text"
               value={date}
               onClick={handleInputClick}
+              readOnly // Added to fix controlled input warning
               className="w-full pl-10 pr-10 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-[#171717] text-main-text older-gray-400 cursor-pointer"
               placeholder="Select a date"
             />
@@ -171,7 +116,7 @@ export default function Projects() {
         </div>
       </div>
       <div>
-        <DataTable data={sampleData} />
+        {isLoading ? <p>Loading...</p> : <DataTable data={tableData} />}
       </div>
     </div>
   );

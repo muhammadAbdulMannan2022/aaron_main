@@ -21,7 +21,7 @@ export default function DashboardLayout() {
   // profile data
   const { data: profileData, isLoading, error } = useGetProfileDataQuery();
   // modals state
-  const [changeEmailFormActive, setChangeEamilFormActive] = useState(false);
+  const [changeEmailFormActive, setChangeEmailFormActive] = useState(false); // Fixed typo
   const [changePasswordFormActive, setChangePasswordFormActive] =
     useState(false);
   const [isLogOut, setIsLogOut] = useState(false);
@@ -29,9 +29,11 @@ export default function DashboardLayout() {
   const [uploadCsvFirst, setUploadCsvFirst] = useState(false);
   const [departmentListOpen, setDepartmentListOpen] = useState(false);
   const [teamListOpen, setTeamListOpen] = useState(false);
-  const constextData = {
+  const [currentFileId, setCurrentFileId] = useState("");
+  const contextData = {
+    // Renamed for clarity
     changeEmailFormActive,
-    setChangeEamilFormActive,
+    setChangeEmailFormActive,
     changePasswordFormActive,
     setChangePasswordFormActive,
     isLogOut,
@@ -44,6 +46,8 @@ export default function DashboardLayout() {
     setDepartmentListOpen,
     teamListOpen,
     setTeamListOpen,
+    currentFileId,
+    setCurrentFileId,
   };
   const profileValue = {
     profile: profileData || null,
@@ -53,7 +57,7 @@ export default function DashboardLayout() {
   return (
     <div className="flex flex-col lg:flex-row h-screen">
       <profileContext.Provider value={profileValue}>
-        <modalContext.Provider value={constextData}>
+        <modalContext.Provider value={contextData}>
           {/* Left Sidebar */}
           <div
             className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#050505] transform transition-transform duration-300 lg:relative lg:translate-x-0 ${
@@ -94,10 +98,10 @@ export default function DashboardLayout() {
           <Modal
             isOpen={changeEmailFormActive}
             onClose={() => {
-              setChangeEamilFormActive(false);
+              setChangeEmailFormActive(false);
             }}
           >
-            <ChangeEmailForm onClose={() => setChangeEamilFormActive(false)} />
+            <ChangeEmailForm onClose={() => setChangeEmailFormActive(false)} />
           </Modal>
           <Modal
             isOpen={changePasswordFormActive}
@@ -122,12 +126,14 @@ export default function DashboardLayout() {
               onCancel={() => setIsLogOut(false)}
             />
           </Modal>
-          <Modal isOpen={uploadCsvOpen} onClose={() => uploadCsvOpen(false)}>
+          <Modal isOpen={uploadCsvOpen} onClose={() => setUploadCsvOpen(false)}>
+            {" "}
+            {/* Fixed: Added set */}
             <CsvUploadForm onClose={() => setUploadCsvOpen(false)} />
           </Modal>
           <Modal
             isOpen={uploadCsvFirst}
-            onClose={() => setUploadCsvFirst(false)}
+            onClose={() => setUploadCsvFirst(false)} // Fixed: Already correct, but consistent
           >
             <CsvUploadFormVariant onClose={() => setUploadCsvFirst(false)} />
           </Modal>

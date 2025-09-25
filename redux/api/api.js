@@ -97,6 +97,30 @@ export const api = createApi({
       }),
       invalidatesTags: ["Team"],
     }),
+    // project
+    getAllProjects: builder.query({
+      query: () => "/api/project/projects/",
+      providesTags: ["Projects"],
+    }),
+    submitProjectData: builder.mutation({
+      query: (data) => ({
+        url: "/api/project/projects/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Projects"],
+    }),
+    getColl: builder.query({
+      query: (id) => `/api/project/columns/${id}/`,
+    }),
+    steColName: builder.mutation({
+      query: (data) => ({
+        url: "/api/project/define-columns/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Projects"],
+    }),
   }),
 });
 // 👇 these are auto-generated hooks
@@ -113,4 +137,9 @@ export const {
   useAddTeamMutation,
   useUpdateTeamMutation,
   useDeleteTeamMutation,
+  // upload file
+  useGetAllProjectsQuery,
+  useSubmitProjectDataMutation,
+  useGetCollQuery,
+  useSteColNameMutation,
 } = api;
