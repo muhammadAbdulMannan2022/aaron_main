@@ -14,12 +14,15 @@ function Profile() {
     <div className="flex items-center justify-center mt-0 md:mt-20">
       <div className="relative overflow-hidden max-w-7xl max-h-[80vh] overflow-y-auto">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
+        {/* <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-600/20 to-transparent"></div>
-        </div>
+        </div> */}
         <div className="relative z-10 container mx-auto px-6 py-8">
           {/* Header */}
-          <div className="flex justify-end items-center mb-12">
+          <div className="flex justify-between items-center mb-12">
+            <h1 className="text-2xl md:text-4xl font-bold text-main-text">
+              Profile Details
+            </h1>
             <button
               onClick={() => navigate("/dashboard/profile/edit")}
               className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl hover:cursor-pointer border border-[#574bff] text-[#574bff]"

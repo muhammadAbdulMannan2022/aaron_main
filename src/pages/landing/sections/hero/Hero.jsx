@@ -43,7 +43,7 @@ export function Hero() {
             loop
             muted
             playsInline
-            className="w-full h-auto rounded-xl mix-blend-difference"
+            className="w-full h-auto rounded-xl mix-blend-difference scale-150"
           ></video>
         </div>
       </div>

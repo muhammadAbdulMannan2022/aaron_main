@@ -189,7 +189,6 @@ import { buildEdges, buildNodes } from "../../../../utils/aiCustomDimantion";
 //     descriptions: ["Payment received successfully."],
 //   },
 // ];
-
 const rawInvoiceFlowData = [
   {
     id: "1",

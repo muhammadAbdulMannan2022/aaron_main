@@ -1,9 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-export const baseUrl = "http://10.10.13.92:8000";
+export const baseUrl = "https://key-humpback-scarcely.ngrok-free.app";
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://10.10.13.92:8000",
+    baseUrl: "https://key-humpback-scarcely.ngrok-free.app",
+    headers: {
+      "ngrok-skip-browser-warning": "true",
+    },
   }),
   endpoints: (builder) => ({
     signup: builder.mutation({

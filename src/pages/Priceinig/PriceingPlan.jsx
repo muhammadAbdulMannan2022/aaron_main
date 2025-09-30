@@ -58,9 +58,9 @@ export default function PricingPlan() {
                 Cancel
               </button>
             </div>
-            <div className="p-4">
+            <div className="p-4 flex flex-col items-end">
               <p className="text-[var(--color-dark-text)] text-sm mb-2">
-                Date of End
+                Renewal Date
               </p>
               <p className="font-medium">12 July, 2025</p>
             </div>
