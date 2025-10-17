@@ -12,9 +12,39 @@ import { FlowContext } from "../ProcessEfficiencyLayout";
 import { FaAngleRight } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 
-// ✅ Custom Node
-const CustomNode = ({ data }) => {
-  const { label } = data;
+// ✅ Custom Node with Problem Highlighting
+const CustomNode = ({ data, filter, isActualPath = true }) => {
+  const { label, step } = data;
+  // Determine highlight styles for bottlenecks, dropouts, and loops
+  const highlightStyles = useMemo(() => {
+    if (!isActualPath || !step)
+      return { border: "border-[#342BAD]", bg: "bg-[#0F0F0F]" };
+    if (filter === "actual" || filter === "happy_path") {
+      // Highlight all problems for actual path in both actual and happy_path filters
+      if (step.isBottleneck)
+        return { border: "border-red-500", bg: "bg-red-900" }; // Red for bottlenecks
+      if (step.isDropout)
+        return { border: "border-yellow-500", bg: "bg-yellow-900" }; // Yellow for dropouts
+      if (step.hasLoop)
+        return { border: "border-purple-500", bg: "bg-purple-900" }; // Purple for loops
+    } else {
+      // Highlight based on specific filter
+      const isHighlighted =
+        (filter === "bottlenecks" && step.isBottleneck) ||
+        (filter === "dropouts" && step.isDropout) ||
+        (filter === "loops" && step.hasLoop);
+      if (isHighlighted) {
+        if (filter === "bottlenecks")
+          return { border: "border-red-500", bg: "bg-red-900" };
+        if (filter === "dropouts")
+          return { border: "border-yellow-500", bg: "bg-yellow-900" };
+        if (filter === "loops")
+          return { border: "border-purple-500", bg: "bg-purple-900" };
+      }
+    }
+    return { border: "border-[#342BAD]", bg: "bg-[#0F0F0F]" };
+  }, [filter, step, isActualPath]);
+
   return (
     <div className="min-w-64 min-h-5 text-gray-200 flex justify-between hover:cursor-pointer z-20">
       <Handle
@@ -41,8 +71,9 @@ const CustomNode = ({ data }) => {
         id="right"
         style={{ background: "#555" }}
       />
-
-      <div className="flex justify-center w-full bg-[#0F0F0F] mx-5 rounded-md drop-shadow-2xl shadow-[#5A595921] border-2 border-[#342BAD]">
+      <div
+        className={`flex justify-center w-full mx-5 rounded-md drop-shadow-2xl shadow-[#5A595921] border-2 ${highlightStyles.border} ${highlightStyles.bg}`}
+      >
         <div className="py-2 px-4">
           <h1 className="text-sm font-bold">{label}</h1>
         </div>
@@ -50,21 +81,23 @@ const CustomNode = ({ data }) => {
     </div>
   );
 };
-const nodeTypes = { custom: CustomNode };
 
 // 🔹 Utility to build nodes
-const buildNodes = (steps, prefix = "") =>
+const buildNodes = (steps, prefix = "", isActualPath = true) =>
   steps.map((step, index) => ({
-    id: `${prefix}${step.id}`,
-    position: { x: 100, y: index * 200 },
+    id: `${prefix}${step.id || step.serial_number}`,
+    position: { x: 50, y: index * 200 }, // Center nodes within each canvas
     data: {
-      label: step.label,
-      value: step.value,
+      label: step.label || step.activity_name,
+      value: step.value || step.average_time_minutes,
       extra: {
         status: step.status || "active",
         owner: step.owner || "System",
       },
-      step,
+      step: {
+        ...step,
+        descriptions: step.descriptions || ["No descriptions available"], // Fallback for missing descriptions
+      },
     },
     type: "custom",
   }));
@@ -74,14 +107,19 @@ const buildEdges = (steps, filter, prefix = "", color = "#6b7280") => {
   const edges = [];
   for (let i = 0; i < steps.length - 1; i++) {
     edges.push({
-      id: `${prefix}${filter}-e${steps[i].id}-${steps[i + 1].id}`,
-      source: `${prefix}${steps[i].id}`,
-      target: `${prefix}${steps[i + 1].id}`,
+      id: `${prefix}${filter}-e${steps[i].id || steps[i].serial_number}-${
+        steps[i + 1].id || steps[i + 1].serial_number
+      }`,
+      source: `${prefix}${steps[i].id || steps[i].serial_number}`,
+      target: `${prefix}${steps[i + 1].id || steps[i + 1].serial_number}`,
       style: { stroke: color, strokeWidth: 2 },
       markerEnd: { type: "arrowclosed", color },
     });
   }
-  if (filter === "loops") {
+  if (
+    (filter === "loops" || filter === "actual" || filter === "happy_path") &&
+    prefix !== "ideal-"
+  ) {
     steps.forEach((step) => {
       if (step.hasLoop && step.loopConnections) {
         edges.push({
@@ -101,66 +139,164 @@ const buildEdges = (steps, filter, prefix = "", color = "#6b7280") => {
 };
 
 export default function InvoiceFlow() {
-  const { steps, setDescriptionsToShow, setIsHappyPath } =
-    useContext(FlowContext);
-  const [filter, setFilter] = useState("loops");
-  const [showactual, setShowactual] = useState(false);
+  const {
+    idealPathData,
+    orginalPathData,
+    isLoadingIdeal,
+    isErrorIdeal,
+    isLoadingOriginal,
+    isErrorOriginal,
+    setDescriptionsToShow,
+    setIsHappyPath,
+  } = useContext(FlowContext);
+  const [idealPath, setIdealPath] = useState([]);
+  const [orginalPath, setOrginalPath] = useState([]);
+  const [filter, setFilter] = useState("actual");
+  const [showactual, setShowactual] = useState(false); // State for toggling actual path
 
-  const filteredSteps = useMemo(() => {
-    switch (filter) {
-      case "happy_path":
-        return steps.happy_path;
-      case "bottlenecks":
-        return steps.bottlenecks;
-      case "dropouts":
-        return steps.actual.filter((step) => step.status === "pending");
-      case "loops":
-        return steps.loops;
-      case "actual":
-      default:
-        return steps.actual;
+  // Mock data for testing (remove once API provides data)
+  const mockHappyPath = [
+    {
+      id: "1",
+      label: "Invoice Created",
+      average_time_minutes: 30,
+      status: "active",
+      owner: "System",
+      descriptions: ["Step 1: Invoice created in system"],
+    },
+    {
+      id: "2",
+      label: "Invoice Sent",
+      average_time_minutes: 15,
+      status: "active",
+      owner: "System",
+      descriptions: ["Step 2: Invoice sent to client"],
+    },
+    {
+      id: "3",
+      label: "Payment Received",
+      average_time_minutes: 10,
+      status: "active",
+      owner: "System",
+      descriptions: ["Step 3: Payment received and processed"],
+    },
+  ];
+
+  // Log data for debugging
+  useEffect(() => {
+    console.log("orginalPathData:", orginalPathData);
+    console.log("idealPathData:", idealPathData);
+    console.log("orginalPath:", orginalPath);
+    console.log("idealPath:", idealPath);
+  }, [orginalPathData, idealPathData, orginalPath, idealPath]);
+
+  // Set ideal and original paths when data is available
+  useEffect(() => {
+    // if (idealPathData?.ideal_path) {
+    if (false) {
+      setIdealPath(idealPathData.ideal_path);
+    } else {
+      setIdealPath(mockHappyPath); // Use mock data as fallback
     }
-  }, [filter, steps]);
+    if (orginalPathData?.process_flow_nodes) {
+      setOrginalPath(orginalPathData.process_flow_nodes);
+    }
+  }, [idealPathData, orginalPathData]);
 
-  // ✅ Build data for main flow
-  const mainNodes = useMemo(() => buildNodes(filteredSteps), [filteredSteps]);
-  const mainEdges = useMemo(
-    () => buildEdges(filteredSteps, filter),
-    [filteredSteps, filter]
-  );
-
-  // ✅ Build data for actual path (only when happy_path filter is on)
+  // Build nodes and edges for actual path (always shown in non-happy_path or in right canvas)
   const actualNodes = useMemo(
-    () => (filter === "happy_path" ? buildNodes(steps.actual, "a-") : []),
-    [filter, steps]
+    () => buildNodes(orginalPath, "", true),
+    [orginalPath]
   );
   const actualEdges = useMemo(
-    () =>
-      filter === "happy_path" ? buildEdges(steps.actual, "actual", "a-") : [],
-    [filter, steps]
+    () => buildEdges(orginalPath, filter, "", "#6b7280"),
+    [orginalPath, filter]
   );
 
-  // ✅ ReactFlow state
-  const [nodes, setNodes, onNodesChange] = useNodesState(mainNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(mainEdges);
+  // Build nodes and edges for ideal path (shown in left canvas for happy_path)
+  const idealNodes = useMemo(
+    () => buildNodes(idealPath, "ideal-", false),
+    [idealPath]
+  );
+  const idealEdges = useMemo(
+    () => buildEdges(idealPath, "happy_path", "ideal-", "#00ff00"),
+    [idealPath]
+  );
+
+  // Nodes and edges for main canvas (actual path for non-happy_path, ideal path for happy_path)
+  const nodes = useMemo(
+    () => (filter === "happy_path" ? idealNodes : actualNodes),
+    [filter, idealNodes, actualNodes]
+  );
+  const edges = useMemo(
+    () => (filter === "happy_path" ? idealEdges : actualEdges),
+    [filter, idealEdges, actualEdges]
+  );
+
+  // ReactFlow state for main canvas
+  const [flowNodes, setNodes, onNodesChange] = useNodesState(nodes);
+  const [flowEdges, setEdges, onEdgesChange] = useEdgesState(edges);
 
   useEffect(() => {
-    setNodes(mainNodes);
-    setEdges(mainEdges);
-  }, [mainNodes, mainEdges, setNodes, setEdges]);
+    setNodes(nodes);
+    setEdges(edges);
+  }, [nodes, edges, setNodes, setEdges]);
 
   const [selectedNode, setSelectedNode] = useState(null);
 
-  const onNodeClick = useCallback((_, node) => {
-    setSelectedNode(node.data);
-    setDescriptionsToShow(node.data.step.descriptions);
-  }, []);
+  // Memoize nodeTypes to prevent React Flow warning
+  const nodeTypes = useMemo(
+    () => ({
+      custom: (props) => (
+        <CustomNode
+          {...props}
+          filter={filter}
+          isActualPath={!props.id.startsWith("ideal-")}
+        />
+      ),
+    }),
+    [filter]
+  );
 
-  const handleFilterChange = useCallback((event) => {
-    setFilter(event.target.value);
-    setDescriptionsToShow([]);
-    setShowactual(true);
-  }, []);
+  const onNodeClick = useCallback(
+    (_, node) => {
+      console.log("Node clicked:", node.data);
+      setSelectedNode(node.data);
+      setDescriptionsToShow(
+        node.data.step.descriptions || ["No descriptions available"]
+      );
+    },
+    [setDescriptionsToShow]
+  );
+
+  const handleFilterChange = useCallback(
+    (event) => {
+      const newFilter = event.target.value;
+      setFilter(newFilter);
+      setDescriptionsToShow([]);
+      setShowactual(newFilter === "happy_path"); // Show actual path by default in happy_path
+    },
+    [setDescriptionsToShow]
+  );
+
+  // Handle loading and error states
+  if (isLoadingIdeal || isLoadingOriginal) {
+    return <div className="text-white p-4">Loading process flow...</div>;
+  }
+
+  if (isErrorIdeal || isErrorOriginal || (!idealPathData && !orginalPathData)) {
+    return (
+      <div className="text-red-500 p-4">
+        Error loading process flow data. Please try again.
+      </div>
+    );
+  }
+
+  if (!orginalPath.length) {
+    return (
+      <div className="text-white p-4">No process flow data available.</div>
+    );
+  }
 
   return (
     <div className="flex w-full h-full relative">
@@ -192,16 +328,18 @@ export default function InvoiceFlow() {
 
       {/* Flows */}
       <div className="flex flex-1 flex-col md:flex-row gap-4 p-4">
-        {/* Main flow */}
+        {/* Main flow (happy path for happy_path filter, actual path otherwise) */}
         <div className="flex-1 border rounded bg-main-bg relative">
           <ReactFlow
-            nodes={nodes}
-            edges={edges}
+            nodes={flowNodes}
+            edges={flowEdges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
             nodeTypes={nodeTypes}
             fitView
+            minZoom={0.5}
+            defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
           >
             <Background color="#414040" />
             <Controls />
@@ -216,19 +354,21 @@ export default function InvoiceFlow() {
           )}
         </div>
 
-        {/* Show actual path side-by-side only for happy_path */}
+        {/* Actual path canvas for happy_path filter */}
         {filter === "happy_path" && (
           <div
-            className={`flex-1 border rounded transition-all delay-1000 bg-gray-900 ${
+            className={`flex-1 border rounded transition-all duration-1000 bg-main-bg ${
               showactual ? "block" : "hidden"
             }`}
           >
             <ReactFlow
-              onNodeClick={onNodeClick}
               nodes={actualNodes}
               edges={actualEdges}
-              fitView
+              onNodeClick={onNodeClick}
               nodeTypes={nodeTypes}
+              fitView
+              minZoom={0.5}
+              defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
             >
               <Background color="#414040" />
               <Controls />

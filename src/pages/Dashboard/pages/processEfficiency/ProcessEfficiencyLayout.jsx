@@ -4,194 +4,47 @@ import { Link, Outlet, useLocation } from "react-router";
 import { LuArrowLeft } from "react-icons/lu";
 import { Modal } from "../../../../helpers/Modal";
 import { HappyPathSetup } from "../../Contents/modalContent/HappyPath";
-
-const invoiceFlowDataTemp = {
-  actual: [
-    {
-      id: "1",
-      label: "Invoice created",
-      value: "3000",
-      status: "completed",
-      owner: "Finance Team",
-      descriptions: [
-        "The invoice is generated in the system.",
-        "Finance team ensures all details are correct.",
-      ],
-    },
-    {
-      id: "2",
-      label: "Invoice sent",
-      value: "1500",
-      status: "in-progress",
-      owner: "Sales Team",
-      descriptions: [
-        "The invoice is forwarded to the client.",
-        "Sales team is responsible for sharing and tracking.",
-      ],
-    },
-    {
-      id: "3",
-      label: "Payment Monitoring",
-      value: "1200",
-      status: "active",
-      owner: "Finance Team",
-      descriptions: [
-        "Finance team monitors incoming payments.",
-        "System checks overdue or pending payments.",
-      ],
-    },
-    {
-      id: "4",
-      label: "Payment Received",
-      value: "1500",
-      status: "pending",
-      owner: "Finance Team",
-      descriptions: [
-        "The client payment is received.",
-        "Pending confirmation in the financial system.",
-      ],
-    },
-    {
-      id: "5",
-      label: "Receipt reconciled",
-      value: "3000",
-      status: "final",
-      owner: "Finance Team",
-      descriptions: [
-        "The receipt is reconciled with the payment records.",
-        "Marks the completion of the invoice cycle.",
-      ],
-    },
-  ],
-  happy_path: [
-    {
-      id: "1",
-      label: "Invoice created",
-      value: "2000",
-      status: "completed",
-      owner: "Finance Team",
-      descriptions: ["Invoice drafted and validated by Finance."],
-    },
-    {
-      id: "2",
-      label: "Invoice sent",
-      value: "1000",
-      status: "completed",
-      owner: "Sales Team",
-      descriptions: ["Invoice successfully delivered to client."],
-    },
-    {
-      id: "3",
-      label: "Payment Received",
-      value: "1000",
-      status: "completed",
-      owner: "Finance Team",
-      descriptions: ["Client payment confirmed by Finance."],
-    },
-    {
-      id: "4",
-      label: "Receipt reconciled",
-      value: "2000",
-      status: "final",
-      owner: "Finance Team",
-      descriptions: ["Final step — records reconciled with receipt."],
-    },
-  ],
-  bottlenecks: [
-    {
-      id: "1",
-      label: "Invoice created",
-      value: "3000",
-      status: "completed",
-      owner: "Finance Team",
-      descriptions: ["Standard invoice creation without issues."],
-    },
-    {
-      id: "2",
-      label: "Invoice approval",
-      value: "2500",
-      status: "in-progress",
-      owner: "Management Team",
-      descriptions: [
-        "Management approval required before sending invoice.",
-        "Often a bottleneck due to long review times.",
-      ],
-    },
-    {
-      id: "3",
-      label: "Receipt reconciled",
-      value: "3200",
-      status: "final",
-      owner: "Finance Team",
-      descriptions: ["Delayed reconciliation due to approval backlog."],
-    },
-  ],
-  loops: [
-    {
-      id: "1",
-      label: "Invoice created",
-      value: "2000",
-      status: "completed",
-      owner: "Finance Team",
-      descriptions: ["Invoice created as the starting point."],
-    },
-    {
-      id: "2",
-      label: "Invoice sent",
-      value: "1500",
-      status: "in-progress",
-      owner: "Sales Team",
-      hasLoop: true,
-      loopConnections: { from: "2", to: "3" },
-      descriptions: [
-        "Invoice sent to client.",
-        "May loop back if payment not received on time.",
-      ],
-    },
-    {
-      id: "3",
-      label: "Payment Monitoring",
-      value: "1200",
-      status: "active",
-      owner: "Finance Team",
-      // hasLoop: true,
-      // loopConnections: { from: "3", to: "2" },
-      descriptions: [
-        "Finance monitors client’s payment status.",
-        "If overdue, loops back to Sales for follow-up.",
-      ],
-    },
-    {
-      id: "4",
-      label: "Payment Received",
-      value: "1500",
-      status: "pending",
-      owner: "Finance Team",
-      descriptions: ["Payment received successfully."],
-    },
-  ],
-};
+import {
+  useGetIdealPathQuery,
+  useGetOrginalPathQuery,
+} from "../../../../../redux/api/dashboard";
 
 export const FlowContext = createContext({});
 
 export function ProcessEfficiencyLayout() {
-  const [invoiceFlowData] = useState(invoiceFlowDataTemp);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   const location = useLocation();
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(true); // Default to true for testing
   const [descriptionsToShow, setDescriptionsToShow] = useState([]);
   const [editHappyPath, setIsHappyPath] = useState(false);
+  const id = localStorage.getItem("currentProjectId");
+
+  // Fetch data using RTK Query
+  const {
+    data: idealPathData,
+    isLoading: isLoadingIdeal,
+    isError: isErrorIdeal,
+  } = useGetIdealPathQuery(id, { skip: !id });
+  const {
+    data: orginalPathData,
+    isLoading: isLoadingOriginal,
+    isError: isErrorOriginal,
+  } = useGetOrginalPathQuery(id, { skip: !id });
 
   useEffect(() => {
-    console.log(descriptionsToShow);
-  }, [descriptionsToShow]);
+    console.log("Current pathname:", location.pathname);
+    console.log("descriptionsToShow updated:", descriptionsToShow);
+  }, [location.pathname, descriptionsToShow]);
 
   return (
     <FlowContext.Provider
       value={{
-        steps: invoiceFlowData,
-        descriptionsToShow,
+        idealPathData,
+        orginalPathData,
+        isLoadingIdeal,
+        isErrorIdeal,
+        isLoadingOriginal,
+        isErrorOriginal,
         setDescriptionsToShow,
-        editHappyPath,
         setIsHappyPath,
       }}
     >
@@ -259,8 +112,8 @@ export function ProcessEfficiencyLayout() {
           </div>
         </header>
 
-        <div className="flex-1 flex min-h-0 ">
-          <main className="flex-1 w-full h-full min-h-0 ">
+        <div className="flex-1 flex min-h-0">
+          <main className="flex-1 w-full h-full min-h-0">
             <Outlet />
           </main>
 
@@ -280,7 +133,7 @@ export function ProcessEfficiencyLayout() {
                   </button>
                 </div>
                 <div className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
-                  {descriptionsToShow.length > 0 &&
+                  {descriptionsToShow.length > 0 ? (
                     descriptionsToShow.map((data, i) => (
                       <div
                         className="text-white border border-gray-button-bg p-2 rounded-md"
@@ -288,7 +141,12 @@ export function ProcessEfficiencyLayout() {
                       >
                         <p>{data}</p>
                       </div>
-                    ))}
+                    ))
+                  ) : (
+                    <div className="text-white p-2">
+                      No descriptions available. Click a step to view details.
+                    </div>
+                  )}
                 </div>
               </div>
             </aside>

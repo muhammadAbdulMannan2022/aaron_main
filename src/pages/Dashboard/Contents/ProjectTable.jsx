@@ -2,9 +2,11 @@ import { useContext, useState } from "react";
 import { FiMoreVertical, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { modalContext } from "../DashboardLayout";
 import { useDeleteProjectMutation } from "../../../../redux/api/api";
+import { useNavigate } from "react-router";
 
 export default function DataTable({ data, filter }) {
   const [openActionId, setOpenActionId] = useState(null);
+  const navigate = useNavigate();
   const { setUploadCsvOpen, setCurrentFileId } = useContext(modalContext);
   const [deleteProject, { isLoading: isDeleteLoading }] =
     useDeleteProjectMutation();
@@ -36,8 +38,12 @@ export default function DataTable({ data, filter }) {
     if (!item.status) {
       setCurrentFileId(item.id);
       setUploadCsvOpen(true);
+    } else {
+      console.log(item.id);
+      localStorage.setItem("currentProjectId", item.id);
+      navigate("/dashboard/v1/process_efficiency");
+      console.log("Start:", item);
     }
-    console.log("Start:", item);
   };
 
   return (

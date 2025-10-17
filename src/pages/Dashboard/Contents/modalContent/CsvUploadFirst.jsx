@@ -50,8 +50,8 @@ export function CsvUploadFormVariant({ onClose }) {
 
     const dataToSend = new FormData();
     dataToSend.append("process", processName);
-    dataToSend.append("department", department);
-    dataToSend.append("team", team);
+    dataToSend.append("department_id", department);
+    dataToSend.append("team_id", team);
     dataToSend.append("csv_file", selectedFile);
 
     try {
