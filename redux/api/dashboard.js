@@ -34,6 +34,20 @@ export const dashboard = createApi({
     getOrginalPath: builder.query({
       query: (id) => `/api/project/actual-path-data-with-connections/${id}/`,
     }),
+    // dashboard
+    getDashboards: builder.query({
+      query: () => "/api/project/dashboard/",
+    }),
+    getOneDashboard: builder.query({
+      query: (id) => `/api/project/dashboard/${id}/`,
+    }),
+    createNewDashboard: builder.mutation({
+      query: (data) => ({
+        url: "/api/project/dashboard/",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -41,4 +55,8 @@ export const {
   useGetKpiListQuery,
   useGetIdealPathQuery,
   useGetOrginalPathQuery,
+  // dashboard
+  useGetDashboardsQuery,
+  useGetOneDashboardQuery,
+  useCreateNewDashboardMutation,
 } = dashboard;

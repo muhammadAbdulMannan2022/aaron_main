@@ -52,7 +52,9 @@ const TopBar = () => {
             className="flex items-center gap-1 hover:cursor-pointer"
           >
             <div className="w-8 h-8 bg-main-text rounded-full mr-2 overflow-hidden">
+              {console.log(profile)}
               <img
+                className="w-full h-full object-cover"
                 src={!loading ? baseUrl + profile.upload_logo : ""}
                 alt={!loading ? profile.first_name : ""}
               />

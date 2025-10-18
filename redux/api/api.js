@@ -98,6 +98,7 @@ export const api = createApi({
       }),
       invalidatesTags: ["Team"],
     }),
+
     // project
     getAllProjects: builder.query({
       query: () => "/api/project/projects/",
@@ -105,7 +106,7 @@ export const api = createApi({
     }),
     submitProjectData: builder.mutation({
       query: (data) => ({
-        url: "/api/project/projects/",
+        url: "/api/project/project-view/",
         method: "POST",
         body: data,
       }),

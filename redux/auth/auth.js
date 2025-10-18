@@ -75,6 +75,14 @@ export const authApi = createApi({
     getFaq: builder.query({
       query: () => "/api/landing_page/faq/",
     }),
+    // bot
+    getBotResponse: builder.mutation({
+      query: (data) => ({
+        url: "/api/landing_page/chatbot/",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -90,4 +98,5 @@ export const {
   useGetFaqQuery,
   useGetTestimonialQuery,
   useGetLogosQuery,
+  useGetBotResponseMutation,
 } = authApi;

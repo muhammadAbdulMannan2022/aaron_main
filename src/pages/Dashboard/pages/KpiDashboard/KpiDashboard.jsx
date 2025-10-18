@@ -8,6 +8,8 @@ import {
   MoreHorizontal,
   Edit,
   Trash2,
+  Layout,
+  X,
 } from "lucide-react";
 import { useDashboard } from "../../../../hooks/useDashboard";
 import { DndContext } from "@dnd-kit/core";
@@ -16,6 +18,10 @@ import AddWidgetSidebar from "./AddItemsSidebar";
 import "react-resizable/css/styles.css";
 import { Modal } from "../../../../helpers/Modal";
 import MainFilterDashboard from "../../Contents/modalContent/MainFilterDashboard";
+import {
+  useCreateNewDashboardMutation,
+  useGetDashboardsQuery,
+} from "../../../../../redux/api/dashboard";
 
 export default function KpiDashboard() {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -32,6 +38,13 @@ export default function KpiDashboard() {
   } = useDashboard();
   const [mainFilterOpen, setMainFilterOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [addDashboardModalOpen, setAddDashboardModalOpen] = useState(false);
+  const [dashboardName, setDashboardName] = useState("");
+
+  // rtks
+  const { data: dashboards, isLoading: isDashboardsLoading } =
+    useGetDashboardsQuery();
+  const [createNewDashboard, isLoading] = useCreateNewDashboardMutation();
 
   // headers
   const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false);
@@ -64,15 +77,15 @@ export default function KpiDashboard() {
   // end headers
 
   const handleImportConfig = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const content = event.target?.result;
-        importConfig(content);
-      };
-      reader.readAsText(file);
-    }
+    // const file = e.target.files?.[0];
+    // if (file) {
+    //   const reader = new FileReader();
+    //   reader.onload = (event) => {
+    //     const content = event.target?.result;
+    //     importConfig(content);
+    //   };
+    //   reader.readAsText(file);
+    // }
   };
 
   const handleDragEnd = (event) => {
@@ -180,8 +193,11 @@ export default function KpiDashboard() {
                 {isActionsDropdownOpen && (
                   <div className="absolute top-full right-0 mt-1 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-[10001]">
                     <div className="py-1">
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
-                        <Edit size={16} /> Create new
+                      <button
+                        onClick={() => setAddDashboardModalOpen(true)}
+                        className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer"
+                      >
+                        <Layout size={16} /> Create new
                       </button>
                       <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
                         <Plus size={16} /> Add widget
@@ -274,6 +290,44 @@ export default function KpiDashboard() {
       )}
       <Modal isOpen={mainFilterOpen} onClose={() => setMainFilterOpen(false)}>
         <MainFilterDashboard onClose={() => setMainFilterOpen(false)} />
+      </Modal>
+      <Modal
+        isOpen={addDashboardModalOpen}
+        onClose={() => setAddDashboardModalOpen(false)}
+      >
+        <div className="p-6 w-[350px] space-y-5  text-white">
+          {/* Input Field */}
+          <div className="space-y-2">
+            <label
+              htmlFor="dashboardName"
+              className="text-sm font-medium text-gray-300"
+            >
+              Dashboard Name
+            </label>
+            <input
+              id="dashboardName"
+              type="text"
+              placeholder="Enter dashboard name"
+              value={dashboardName}
+              onChange={(e) => setDashboardName(e.target.value)}
+              className="w-full bg-transparent border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gray-400 transition-colors"
+            />
+          </div>
+
+          {/* Button */}
+          <button
+            onClick={() => {}}
+            disabled={!dashboardName.trim()}
+            className={`w-full flex items-center justify-center gap-2 rounded-lg py-2 font-medium transition-colors ${
+              dashboardName.trim()
+                ? "bg-auth-button-bg hover:bg-opacity-90 text-white hover:cursor-pointer"
+                : "bg-gray-700 text-gray-400 cursor-not-allowed"
+            }`}
+            style={{ backgroundColor: "var(--color-auth-button-bg)" }}
+          >
+            Create
+          </button>
+        </div>
       </Modal>
     </div>
   );
