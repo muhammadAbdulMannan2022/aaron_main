@@ -59,6 +59,10 @@ export const dashboard = createApi({
       }),
       invalidatesTags: ["Dashboard"],
     }),
+    // KPIs
+    getAbailableKpis: builder.query({
+      query: () => "/api/project/kpi-list/",
+    }),
   }),
 });
 
@@ -71,4 +75,6 @@ export const {
   useGetOneDashboardQuery,
   useCreateNewDashboardMutation,
   useUpdateDashboardMutation,
+  // KPIs
+  useGetAbailableKpisQuery,
 } = dashboard;

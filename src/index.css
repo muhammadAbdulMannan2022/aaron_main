@@ -1,166 +1,152 @@
 @import "tailwindcss";
 
 @theme {
-    --color-text-primary: #E6E6E6;
-    --color-main-bg: #0f0f0f;
-    --color-gray-button-bg: #262626;
-    --color-outer-button-bg: #342BAD;
-    --color-shadow-button-outer: #BB9BFF26;
-    --color-text-notActive: #87899B;
-    --color-auth-button-bg: #1460AD;
-    --color-button-outline: #473DCB;
-    --color-landing-icon: #A39DFF;
-    --color-main-icon: #939597;
-    --color-main-text: #BBD0E8;
-    --color-dark-text: #9DA3B8;
-    /* */
-    --color-modal-button-bg: #004893;
-    --color-chart-main: #4841A8;
-    --color-chart-2nd: #FF928A;
-    --color-chart-thard: #3CC3DF;
-    --color-user-main-color: #1460AD;
-    --color-profile-text-main: #ACC0D8;
+  --color-text-primary: #e6e6e6;
+  --color-main-bg: #0f0f0f;
+  --color-gray-button-bg: #262626;
+  --color-outer-button-bg: #342bad;
+  --color-shadow-button-outer: #bb9bff26;
+  --color-text-notActive: #87899b;
+  --color-auth-button-bg: #1460ad;
+  --color-button-outline: #473dcb;
+  --color-landing-icon: #a39dff;
+  --color-main-icon: #939597;
+  --color-main-text: #bbd0e8;
+  --color-dark-text: #9da3b8;
+  /* */
+  --color-modal-button-bg: #004893;
+  --color-chart-main: #4841a8;
+  --color-chart-2nd: #ff928a;
+  --color-chart-thard: #3cc3df;
+  --color-user-main-color: #1460ad;
+  --color-profile-text-main: #acc0d8;
 }
 
 .landing-shadow {
-    box-shadow: inset 0 0 0.5px rgba(255, 255, 255, 0.5),
-        -2px 0 40px rgba(187, 155, 255, 0.15),
-        0 -2px 10px rgba(250, 248, 255, 0.3),
-        -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
-    -webkit-box-shadow: inset 0 0 0.5px rgba(255, 255, 255, 0.5),
-        -2px 0 40px rgba(187, 155, 255, 0.15),
-        0 -2px 10px rgba(250, 248, 255, 0.3),
-        -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
-    -moz-box-shadow: inset 0 0 0.5px rgba(255, 255, 255, 0.5),
-        -2px 0 40px rgba(187, 155, 255, 0.15),
-        0 -2px 10px rgba(250, 248, 255, 0.3),
-        -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
-    border-top: 0.8px solid gray;
+  box-shadow: inset 0 0 0.5px rgba(255, 255, 255, 0.5),
+    -2px 0 40px rgba(187, 155, 255, 0.15), 0 -2px 10px rgba(250, 248, 255, 0.3),
+    -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
+  -webkit-box-shadow: inset 0 0 0.5px rgba(255, 255, 255, 0.5),
+    -2px 0 40px rgba(187, 155, 255, 0.15), 0 -2px 10px rgba(250, 248, 255, 0.3),
+    -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
+  -moz-box-shadow: inset 0 0 0.5px rgba(255, 255, 255, 0.5),
+    -2px 0 40px rgba(187, 155, 255, 0.15), 0 -2px 10px rgba(250, 248, 255, 0.3),
+    -1px 0px 33px -2px rgba(89, 62, 92, 0.466);
+  border-top: 0.8px solid gray;
 }
 
 .gradient-text {
-    display: inline-block;
-    /* fits to text width */
-    background: linear-gradient(to right, white, #4b5563);
-    /* white → gray-600 */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
+  display: inline-block;
+  /* fits to text width */
+  background: linear-gradient(to right, white, #4b5563);
+  /* white → gray-600 */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
-
 
 .element-with-scrolling::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
-
 
 input[type="date"]::-webkit-inner-spin-button,
 input[type="date"]::-webkit-calendar-picker-indicator {
-    display: none;
-    -webkit-appearance: none;
+  display: none;
+  -webkit-appearance: none;
 }
-
 
 /* Dark theme custom scrollbar */
 .element-with-scrolling-custom::-webkit-scrollbar {
-    width: 5px;
+  width: 5px;
 }
 
 .element-with-scrolling-custom::-webkit-scrollbar-track {
-    background: #121212;
-    border-radius: 3px;
+  background: #121212;
+  border-radius: 3px;
 }
 
 .element-with-scrolling-custom::-webkit-scrollbar-thumb {
-    background: #555;
-    /* medium gray thumb */
-    border-radius: 3px;
+  background: #555;
+  /* medium gray thumb */
+  border-radius: 3px;
 }
 
 .element-with-scrolling-custom::-webkit-scrollbar-thumb:hover {
-    background: #888;
-    /* lighter gray on hover */
+  background: #888;
+  /* lighter gray on hover */
 }
-
-
 
 /* calender style */
 
 /* General calendar styling */
 .flatpickr-calendar {
-    background: #171717;
-    border: 1px solid #333333;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: #171717;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Month and year header */
 .flatpickr-month {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .flatpickr-current-month .flatpickr-monthDropdown-months {
-    background: #171717;
-    color: #ffffff;
+  background: #171717;
+  color: #ffffff;
 }
 
 .flatpickr-current-month input.cur-year {
-    background: #171717;
-    color: #ffffff;
+  background: #171717;
+  color: #ffffff;
 }
 
 /* Weekday names */
 .flatpickr-weekday {
-    color: #888888;
-    font-weight: bold;
+  color: #888888;
+  font-weight: bold;
 }
 
 /* Day styling */
 .flatpickr-day {
-    color: #dddddd;
+  color: #dddddd;
 }
 
 .flatpickr-day:hover {
-    background: #333333;
+  background: #333333;
 }
 
 /* Selected day styling */
 .flatpickr-day.selected {
-    background: #4DA6FF;
-    border-color: #4DA6FF;
-    color: #ffffff;
+  background: #4da6ff;
+  border-color: #4da6ff;
+  color: #ffffff;
 }
 
 /* Today's date styling */
 .flatpickr-day.today {
-    border-color: #4DA6FF;
+  border-color: #4da6ff;
 }
 
 .flatpickr-day.today:hover {
-    background: #333333;
-    color: #ffffff;
+  background: #333333;
+  color: #ffffff;
 }
 
 /* Month navigation arrows */
 .flatpickr-prev-month svg,
 .flatpickr-next-month svg {
-    fill: #4DA6FF;
+  fill: #4da6ff;
 }
 
 .flatpickr-prev-month:hover svg,
 .flatpickr-next-month:hover svg {
-    fill: #ffffff;
+  fill: #ffffff;
 }
-
-
-
-
-
-
 
 /* hide package one */
 
 .react-flow__panel {
-    display: none;
+  display: none;
 }
