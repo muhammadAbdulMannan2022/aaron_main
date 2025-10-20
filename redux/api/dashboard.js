@@ -37,9 +37,11 @@ export const dashboard = createApi({
     // dashboard
     getDashboards: builder.query({
       query: () => "/api/project/dashboard/",
+      providesTags: ["Dashboard"],
     }),
     getOneDashboard: builder.query({
       query: (id) => `/api/project/dashboard/${id}/`,
+      invalidatesTags: ["Dashboard"],
     }),
     createNewDashboard: builder.mutation({
       query: (data) => ({
@@ -47,6 +49,15 @@ export const dashboard = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Dashboard"],
+    }),
+    updateDashboard: builder.mutation({
+      query: (data) => ({
+        url: `/api/project/dashboard/${data.projectId}/${data.dashboardId}/`,
+        method: "PATCH",
+        body: { data: data.data },
+      }),
+      invalidatesTags: ["Dashboard"],
     }),
   }),
 });
@@ -59,4 +70,5 @@ export const {
   useGetDashboardsQuery,
   useGetOneDashboardQuery,
   useCreateNewDashboardMutation,
+  useUpdateDashboardMutation,
 } = dashboard;

@@ -88,9 +88,9 @@ export function CsvUploadFormVariant({ onClose, isRelated = false }) {
         >
           Upload CSV file
         </h2>
-        <p style={{ color: "var(--color-main-text)" }}>
+        {/* <p style={{ color: "var(--color-main-text)" }}>
           Empowering hotels and restaurants with AI
-        </p>
+        </p> */}
       </div>
 
       {error && <p className="text-red-600 text-sm text-center">{error}</p>}

@@ -21,6 +21,7 @@ import MainFilterDashboard from "../../Contents/modalContent/MainFilterDashboard
 import {
   useCreateNewDashboardMutation,
   useGetDashboardsQuery,
+  useUpdateDashboardMutation,
 } from "../../../../../redux/api/dashboard";
 
 export default function KpiDashboard() {
@@ -41,10 +42,16 @@ export default function KpiDashboard() {
   const [addDashboardModalOpen, setAddDashboardModalOpen] = useState(false);
   const [dashboardName, setDashboardName] = useState("");
 
+  const [dashboardId, setDashboardId] = useState(null);
+  const [projectId, setProjectId] = useState(null);
+  const [activeDashboard, setActiveDashboard] = useState(null);
+
   // rtks
   const { data: dashboards, isLoading: isDashboardsLoading } =
     useGetDashboardsQuery();
   const [createNewDashboard, isLoading] = useCreateNewDashboardMutation();
+  const [updateDashboard, { isLoading: isUpdating }] =
+    useUpdateDashboardMutation();
 
   // headers
   const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false);
@@ -74,18 +81,40 @@ export default function KpiDashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    if (dashboards && dashboards.length > 0) {
+      setActiveDashboard(dashboards[0]);
+      setDashboardId(dashboards[0].id);
+      setProjectId(dashboards[0].project);
+    }
+  }, [dashboards]);
+
   // end headers
 
-  const handleImportConfig = (e) => {
+  const handleImportConfig = (content) => {
     // const file = e.target.files?.[0];
     // if (file) {
     //   const reader = new FileReader();
     //   reader.onload = (event) => {
     //     const content = event.target?.result;
-    //     importConfig(content);
+    importConfig(content);
     //   };
     //   reader.readAsText(file);
     // }
+  };
+  const handleSaveDashboard = async () => {
+    const data = localStorage.getItem("dashboardState");
+    try {
+      // console.log(JSON.parse(data), "lllllllllllllllllllllllllllll");
+      const res = await updateDashboard({
+        projectId,
+        dashboardId,
+        data: JSON.parse(data),
+      });
+      console.log("Dashboard updated:", res);
+    } catch (error) {
+      console.log("Error updating dashboard:", error);
+    }
   };
 
   const handleDragEnd = (event) => {
@@ -123,6 +152,20 @@ export default function KpiDashboard() {
       return;
     setShowSidebar(false);
   };
+  const createNewDashboardHandler = async () => {
+    const projectId = localStorage.getItem("currentProjectId");
+    try {
+      const res = await createNewDashboard({
+        name: dashboardName,
+        project: projectId,
+      });
+      console.log(res, "Dashboard created successfully");
+    } catch (error) {
+      console.log("Error on creating dashboard:", error);
+    }
+  };
+
+  if (isDashboardsLoading) return <div>Loading...</div>;
 
   return (
     <div
@@ -141,22 +184,33 @@ export default function KpiDashboard() {
                   }
                   className="flex items-center gap-2 px-4 py-2 text-[#574bff] border border-[#574bff] rounded-lg hover:bg-blue-400/10 hover:cursor-pointer"
                 >
-                  <span>Dashboard List</span>
+                  <span>
+                    {activeDashboard
+                      ? activeDashboard.name
+                      : "Select Dashboard"}
+                  </span>
                   <ChevronDown size={16} />
                 </button>
 
                 {isDashboardDropdownOpen && (
                   <div className="absolute top-full left-0 mt-1 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-[10001]">
                     <div className="py-1">
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#574bff] hover:cursor-pointer">
-                        Dashboard 1
-                      </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#574bff] hover:cursor-pointer">
-                        Dashboard 2
-                      </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#574bff] hover:cursor-pointer">
-                        Dashboard 3
-                      </button>
+                      {dashboards.length > 0 &&
+                        dashboards.map((dashboard) => (
+                          <button
+                            key={dashboard.id}
+                            onClick={() => {
+                              localStorage.removeItem("dashboardState");
+                              setActiveDashboard(dashboard);
+                              setDashboardId(dashboard.id);
+                              setProjectId(dashboard.project);
+                              handleImportConfig(dashboard.data);
+                            }}
+                            className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#574bff] hover:cursor-pointer"
+                          >
+                            {dashboard.name}
+                          </button>
+                        ))}
                     </div>
                   </div>
                 )}
@@ -176,7 +230,10 @@ export default function KpiDashboard() {
 
             {/* Right side - Save and Actions */}
             <div className="flex items-center gap-3">
-              <button className="px-4 py-2 text-[#574bff] hover:bg-blue-400/10 rounded-lg hover:cursor-pointer">
+              <button
+                onClick={() => handleSaveDashboard()}
+                className="px-4 py-2 text-[#574bff] hover:bg-blue-400/10 rounded-lg hover:cursor-pointer"
+              >
                 Save
               </button>
 
@@ -316,7 +373,9 @@ export default function KpiDashboard() {
 
           {/* Button */}
           <button
-            onClick={() => {}}
+            onClick={() => {
+              createNewDashboardHandler();
+            }}
             disabled={!dashboardName.trim()}
             className={`w-full flex items-center justify-center gap-2 rounded-lg py-2 font-medium transition-colors ${
               dashboardName.trim()
