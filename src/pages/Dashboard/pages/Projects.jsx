@@ -51,10 +51,16 @@ export default function Projects() {
       year: "numeric",
     });
   };
+  // filtered out related projects
+  const onlyOrginalProjects = projectsData?.results.filter(
+    (project) =>
+      project.related_project !== null ||
+      (project.related_project == null && project.is_related === false)
+  );
 
   // Filter and transform projectsData based on selected date
   const tableData =
-    projectsData?.results
+    onlyOrginalProjects
       ?.filter((project) => {
         if (!date) return true; // If no date selected, show all projects
         const projectDate = formatDate(project.created_at); // Convert ISO date to September 2, 2025 format
