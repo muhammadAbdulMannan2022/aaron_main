@@ -67,6 +67,30 @@ export const dashboard = createApi({
     getAbailableKpis: builder.query({
       query: () => "/api/project/kpi-list/",
     }),
+    // list of 27
+    getCycleTime: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/project/cycle-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
   }),
 });
 

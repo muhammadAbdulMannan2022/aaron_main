@@ -49,7 +49,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
       case "line-chart":
         return (
           <LineChartWidget
-            title={widgetProps.title || widget.title || "Line Chart"}
+            title={widget.title || widgetProps.title || "Line Chart"}
             data={widgetProps.data}
             lines={widgetProps.lines}
           />
@@ -57,7 +57,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
       case "bar-chart":
         return (
           <BarChartWidget
-            title={widgetProps.title || widget.title || "Bar Chart"}
+            title={widget.title || widgetProps.title || "Bar Chart"}
             data={widgetProps.data}
             orientation={widgetProps.orientation}
           />
@@ -65,7 +65,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
       case "pie-chart":
         return (
           <DonutChart
-            title={widgetProps.title || widget.title || "Donut Chart"}
+            title={widget.title || widgetProps.title || "Donut Chart"}
             data={widgetProps.data}
             centerValue={widgetProps.centerValue}
           />
@@ -73,7 +73,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
       case "progress-tracker":
         return (
           <CircularProgress
-            title={widgetProps.title || widget.title || "Progress"}
+            title={widget.title || widgetProps.title || "Progress"}
             value={widgetProps.value}
             percentage={widgetProps.percentage}
           />
@@ -81,7 +81,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
       case "key-metrics":
         return (
           <MetricCard
-            title={widgetProps.title || widget.title || "Metric"}
+            title={widget.title || widgetProps.title || "Metric"}
             value={widgetProps.value}
             chartType={widgetProps.chartType}
             data={widgetProps.data}

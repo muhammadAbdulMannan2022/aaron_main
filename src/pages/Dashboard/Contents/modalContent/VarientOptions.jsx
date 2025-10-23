@@ -24,13 +24,16 @@ export default function ProcessVariantsModal({
   };
 
   const handleSelect = () => {
-    // const selected = variants.filter((variant) =>
-    //   selectedVariants.has(variant.id)
-    // );
-    // console.log(Array.from(selectedVariants), "hello");
-    setToManState(Array.from(selectedVariants));
+    // convert selectedVariants Set to array
+    const selectedArray = Array.from(selectedVariants);
+
+    // create query string
+    const queryString = selectedArray.map((id) => `variants=${id}`).join("&");
+
+    console.log(queryString); // variants=1&variants=2&variants=3 etc.
+
+    setToManState(selectedArray);
     onClose();
-    // onSelect(selected)
   };
 
   const selectedCount = selectedVariants.size;
