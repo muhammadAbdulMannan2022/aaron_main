@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Modal } from "../../../../helpers/Modal";
 import ProcessVariantsModal from "./VarientOptions";
+import { useGetProcessVarientQuery } from "../../../../../redux/api/dashboard";
 
 const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const MONTHS = [
@@ -18,23 +19,28 @@ const MONTHS = [
   "November",
   "December",
 ];
-
-const PROCESS_VARIANTS = [
-  { id: "A", label: "A" },
-  { id: "B", label: "B" },
-  { id: "C", label: "C" },
-  { id: "D", label: "D" },
-  { id: "E", label: "E" },
-];
-
-export default function MainFilterDashboard({ onClose, onApply }) {
+export default function MainFilterDashboard({
+  onClose,
+  selectedDateRange,
+  setSelectedDateRange,
+  selectedVarients,
+  setSelectedVarients,
+  cycleTime,
+  setCycleTime,
+}) {
   const [currentDate, setCurrentDate] = useState(new Date(2021, 5)); // June 2021
-  const [selectedDates, setSelectedDates] = useState([]); //[new Date(2021, 5, 8), new Date(2021, 5, 18)]
-  const [selectedVariants, setSelectedVariants] = useState([]); // "A", "B", "C", "D"
+  const [selectedDates, setSelectedDates] = useState([]); // Store dates as YYYY-MM-DD strings
   const [minCycleTime, setMinCycleTime] = useState("");
   const [maxCycleTime, setMaxCycleTime] = useState("");
-  // variant modal
   const [variantModalOpen, setVariantModalOpen] = useState(false);
+  const projectId = localStorage.getItem("currentProjectId");
+
+  const { data: varientData, isLoading } = useGetProcessVarientQuery(
+    projectId,
+    {
+      skip: !projectId,
+    }
+  );
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -51,30 +57,39 @@ export default function MainFilterDashboard({ onClose, onApply }) {
     return days;
   };
 
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const isDateSelected = (date) => {
     if (!date) return false;
-    return selectedDates.some((d) => d.toDateString() === date.toDateString());
+    const formattedDate = formatDate(date);
+    return selectedDates.includes(formattedDate);
   };
 
   const isDateInRange = (date) => {
     if (!date || selectedDates.length !== 2) return false;
-    const [start, end] = [...selectedDates].sort((a, b) => a - b);
-    return date >= start && date <= end;
+    const [start, end] = [...selectedDates].sort();
+    const formattedDate = formatDate(date);
+    return formattedDate >= start && formattedDate <= end;
   };
 
   const handleDateClick = (date) => {
+    if (!date) return;
+    const formattedDate = formatDate(date);
     const isSelected = isDateSelected(date);
     if (isSelected) {
-      setSelectedDates(
-        selectedDates.filter((d) => d.toDateString() !== date.toDateString())
-      );
+      setSelectedDates(selectedDates.filter((d) => d !== formattedDate));
     } else {
       if (selectedDates.length === 0) {
-        setSelectedDates([date]);
+        setSelectedDates([formattedDate]);
       } else if (selectedDates.length === 1) {
-        setSelectedDates([...selectedDates, date]);
+        setSelectedDates([...selectedDates, formattedDate]);
       } else {
-        setSelectedDates([date]);
+        setSelectedDates([formattedDate]);
       }
     }
   };
@@ -86,21 +101,9 @@ export default function MainFilterDashboard({ onClose, onApply }) {
     setCurrentDate(newDate);
   };
 
-  const handleVariantToggle = (variantId) => {
-    if (selectedVariants.includes(variantId)) {
-      setSelectedVariants(selectedVariants.filter((id) => id !== variantId));
-    } else if (selectedVariants.length < 5) {
-      setSelectedVariants([...selectedVariants, variantId]);
-    }
-  };
-
   const handleApply = () => {
-    // onApply({
-    //     selectedDates,
-    //     processVariants: selectedVariants,
-    //     minCycleTime,
-    //     maxCycleTime,
-    // })
+    setSelectedDateRange(selectedDates);
+    setCycleTime([minCycleTime, maxCycleTime]);
     onClose();
   };
 
@@ -109,7 +112,6 @@ export default function MainFilterDashboard({ onClose, onApply }) {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl text-center text-white">Filter Options</h1>
-      {/* Calendar */}
       <div>
         <div className="flex items-center justify-between mb-4 text-gray-300">
           <button
@@ -148,14 +150,14 @@ export default function MainFilterDashboard({ onClose, onApply }) {
               onClick={() => date && handleDateClick(date)}
               disabled={!date}
               className={`
-                    aspect-square flex items-center justify-center text-sm rounded
-                    ${!date ? "invisible" : "hover:bg-gray-700"}
-                    ${
-                      date && (isDateSelected(date) || isDateInRange(date))
-                        ? "bg-auth-button-bg text-white"
-                        : "text-gray-300"
-                    }
-                  `}
+                aspect-square flex items-center justify-center text-sm rounded
+                ${!date ? "invisible" : "hover:bg-gray-700"}
+                ${
+                  date && (isDateSelected(date) || isDateInRange(date))
+                    ? "bg-auth-button-bg text-white"
+                    : "text-gray-300"
+                }
+              `}
             >
               {date?.getDate()}
             </button>
@@ -163,7 +165,6 @@ export default function MainFilterDashboard({ onClose, onApply }) {
         </div>
       </div>
 
-      {/* Process Variants */}
       <div>
         <h3 className="text-sm font-medium mb-3 text-text-primary">
           Select Process variants (Max 5)
@@ -177,81 +178,29 @@ export default function MainFilterDashboard({ onClose, onApply }) {
             <ChevronRight size={14} />
           </button>
         </div>
-        <div className="flex gap-4">
-          {PROCESS_VARIANTS.map((variant) => (
-            <div
-              key={variant.id}
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() => handleVariantToggle(variant.id)}
-            >
-              {/* Custom Checkbox */}
-              <div
-                className={`w-5 h-5 flex items-center justify-center rounded-md border transition-colors
-      ${
-        selectedVariants.includes(variant.id)
-          ? "bg-auth-button-bg border-auth-button-bg"
-          : "border-gray-500 bg-transparent"
-      }`}
-              >
-                {selectedVariants.includes(variant.id) && (
-                  <Check className="w-4 h-4 text-white" />
-                )}
-              </div>
-
-              {/* Label */}
-              <label
-                htmlFor={variant.id}
-                className="text-sm text-text-primary select-none"
-              >
-                {variant.label}
-              </label>
-            </div>
-          ))}
-        </div>
       </div>
 
-      {/* Case Filter */}
       <div>
         <h3 className="text-sm font-medium mb-3">Case Filter</h3>
-
         <div className="space-y-3">
           <div>
             <label
-              className="block text-xs mb-1"
+              className="block text-xs mb-3"
               style={{ color: "var(--color-text-notActive)" }}
             >
-              Min cycle time
+              Cycle time (Min - Max) in Hours
             </label>
             <div className="grid grid-cols-2 gap-2">
               <input
-                placeholder="Ex. 1h"
+                placeholder="Ex. 1"
                 value={minCycleTime}
                 onChange={(e) => setMinCycleTime(e.target.value)}
                 className="bg-transparent border border-gray-600 text-white placeholder-gray-500 rounded px-2 py-1"
               />
               <input
-                placeholder="Ex. 30min"
-                className="bg-transparent border border-gray-600 text-white placeholder-gray-500 rounded px-2 py-1"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label
-              className="block text-xs mb-1"
-              style={{ color: "var(--color-text-notActive)" }}
-            >
-              Max cycle time
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                placeholder="Ex. 3h"
                 value={maxCycleTime}
                 onChange={(e) => setMaxCycleTime(e.target.value)}
-                className="bg-transparent border border-gray-600 text-white placeholder-gray-500 rounded px-2 py-1"
-              />
-              <input
-                placeholder="Ex. 30min"
+                placeholder="Ex. 30"
                 className="bg-transparent border border-gray-600 text-white placeholder-gray-500 rounded px-2 py-1"
               />
             </div>
@@ -259,10 +208,9 @@ export default function MainFilterDashboard({ onClose, onApply }) {
         </div>
       </div>
 
-      {/* Apply Button */}
       <button
         onClick={handleApply}
-        className="w-full text-white font-medium rounded py-2"
+        className="w-full text-white font-medium rounded py-2 hover:cursor-pointer"
         style={{ backgroundColor: "var(--color-auth-button-bg)" }}
       >
         Apply
@@ -271,7 +219,12 @@ export default function MainFilterDashboard({ onClose, onApply }) {
         isOpen={variantModalOpen}
         onClose={() => setVariantModalOpen(false)}
       >
-        <ProcessVariantsModal onClose={() => setVariantModalOpen(false)} />
+        <ProcessVariantsModal
+          data={isLoading ? [] : varientData.variants}
+          selectedVarients={selectedVarients}
+          setSelectedVarients={setSelectedVarients}
+          onClose={() => setVariantModalOpen(false)}
+        />
       </Modal>
     </div>
   );

@@ -101,6 +101,11 @@ export default function KpiDashboard() {
   const [projectId, setProjectId] = useState(null);
   const [activeDashboard, setActiveDashboard] = useState(null);
 
+  // filters
+  const [selectedDateRange, setSelectedDateRange] = useState(["", ""]);
+  const [selectedVarients, setSelectedVarients] = useState([]);
+  const [cycleTime, setCycleTime] = useState(["", ""]);
+
   // rtks
   const { data: dashboards, isLoading: isDashboardsLoading } =
     useGetDashboardsQuery();
@@ -143,6 +148,14 @@ export default function KpiDashboard() {
       setProjectId(dashboards[0].project);
     }
   }, [dashboards]);
+  useEffect(() => {
+    console.log(
+      selectedVarients,
+      selectedDateRange,
+      cycleTime,
+      "selectedVarients"
+    );
+  }, [selectedVarients, selectedDateRange]);
 
   // end headers
 
@@ -413,7 +426,15 @@ export default function KpiDashboard() {
         />
       )}
       <Modal isOpen={mainFilterOpen} onClose={() => setMainFilterOpen(false)}>
-        <MainFilterDashboard onClose={() => setMainFilterOpen(false)} />
+        <MainFilterDashboard
+          selectedDateRange={selectedDateRange}
+          setSelectedDateRange={setSelectedDateRange}
+          selectedVarients={selectedVarients}
+          setSelectedVarients={setSelectedVarients}
+          cycleTime={cycleTime}
+          setCycleTime={setCycleTime}
+          onClose={() => setMainFilterOpen(false)}
+        />
       </Modal>
       <Modal
         isOpen={addDashboardModalOpen}

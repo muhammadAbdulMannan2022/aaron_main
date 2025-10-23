@@ -25,6 +25,10 @@ export const dashboard = createApi({
   reducerPath: "dashboard",
   baseQuery: baseQueryWithAuthCheck,
   endpoints: (builder) => ({
+    // kpi
+    getProcessVarient: builder.query({
+      query: (id) => `/api/project/process-variants/${id}/`,
+    }),
     getKpiList: builder.query({
       query: () => "/api/project/kpi-list/",
     }),
@@ -67,6 +71,7 @@ export const dashboard = createApi({
 });
 
 export const {
+  useGetProcessVarientQuery,
   useGetKpiListQuery,
   useGetIdealPathQuery,
   useGetOrginalPathQuery,
