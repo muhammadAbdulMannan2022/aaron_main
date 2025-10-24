@@ -84,7 +84,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/project/cycle-time/${projectId}/?start_date=${
+        return `/api/project/cycle-time/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -106,4 +106,5 @@ export const {
   useUpdateDashboardMutation,
   // KPIs
   useGetAbailableKpisQuery,
+  useLazyGetCycleTimeQuery,
 } = dashboard;

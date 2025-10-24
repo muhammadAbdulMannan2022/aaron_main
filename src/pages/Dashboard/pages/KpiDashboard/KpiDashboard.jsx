@@ -23,6 +23,7 @@ import {
   useGetDashboardsQuery,
   useUpdateDashboardMutation,
 } from "../../../../../redux/api/dashboard";
+import { useCallRtk } from "../../../../hooks/useCallRtk";
 
 export default function KpiDashboard() {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -106,13 +107,38 @@ export default function KpiDashboard() {
   const [selectedVarients, setSelectedVarients] = useState([]);
   const [cycleTime, setCycleTime] = useState(["", ""]);
 
+  // loading state for data
+  const [isDataLoading, setIsDataLoading] = useState(false);
+
   // rtks
   const { data: dashboards, isLoading: isDashboardsLoading } =
     useGetDashboardsQuery();
   const [createNewDashboard, isLoading] = useCreateNewDashboardMutation();
   const [updateDashboard, { isLoading: isUpdating }] =
     useUpdateDashboardMutation();
+  // useCallRtk
+  const { callRtk } = useCallRtk();
+  const fetchData = async (name) => {
+    try {
+      setIsDataLoading(true);
+      const { data } = await callRtk(name, {
+        projectId,
+        startTime: selectedDateRange[0],
+        endTime: selectedDateRange[1],
+        variants: selectedVarients,
+        minCycleTime: cycleTime[0],
+        maxCycleTime: cycleTime[1],
+      });
+      setIsDataLoading(false);
 
+      return { data, isLoading: isDataLoading };
+    } catch (error) {
+      console.log(error, "error fetching varients");
+    }
+  };
+  useEffect(() => {
+    console.log(isDataLoading, "Data is loading");
+  }, [isDataLoading]);
   // headers
   const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false);
   const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState(false);
@@ -149,26 +175,31 @@ export default function KpiDashboard() {
     }
   }, [dashboards]);
   useEffect(() => {
+    // start_date=2024-09-17&end_date=2025-06-30&variants=6&variants=7&min_cycle_time=200&max_cycle_time=300
+
+    widgets &&
+      widgets.length > 0 &&
+      widgets.map(async (widget) => {
+        const res = await fetchData(widget.title);
+        console.log(res, "responce kkkkkkkkkkkkkkkkkkkkk");
+        return {
+          ...widget, // keep old widget data
+          rtk_data: res?.data || null, // safely add new field
+        };
+      });
+
     console.log(
       selectedVarients,
       selectedDateRange,
       cycleTime,
       "selectedVarients"
     );
-  }, [selectedVarients, selectedDateRange]);
+  }, [selectedVarients, selectedDateRange, projectId, widgets]);
 
   // end headers
 
   const handleImportConfig = (content) => {
-    // const file = e.target.files?.[0];
-    // if (file) {
-    //   const reader = new FileReader();
-    //   reader.onload = (event) => {
-    //     const content = event.target?.result;
     importConfig(content);
-    //   };
-    //   reader.readAsText(file);
-    // }
   };
   const handleSaveDashboard = async () => {
     const data = localStorage.getItem("dashboardState");
@@ -228,6 +259,7 @@ export default function KpiDashboard() {
         project: projectId,
       });
       console.log(res, "Dashboard created successfully");
+      setAddDashboardModalOpen(false);
     } catch (error) {
       console.log("Error on creating dashboard:", error);
     }
@@ -381,28 +413,39 @@ export default function KpiDashboard() {
                       backgroundSize: "20px 20px",
                     }}
                   />
-                  {widgets.map((widget) => {
-                    // merge demo data for this widget type if available
-                    const demo = demoWidgetData[widget.type] || {};
-                    const widgetWithDemo = {
-                      ...widget,
-                      props: {
-                        ...(widget.props || {}),
-                        ...demo,
-                      },
-                    };
+                  {isDataLoading ? (
+                    <div className="flex items-center justify-center w-full h-full">
+                      loading...
+                    </div>
+                  ) : (
+                    widgets.map((widget) => {
+                      // merge demo data for this widget type if available
+                      const demo = demoWidgetData[widget.type] || {};
+                      const widgetWithDemo = {
+                        ...widget,
+                        props: {
+                          ...(widget.props || {}),
+                          ...demo,
+                        },
+                      };
 
-                    return (
-                      <WidgetCard
-                        key={widget.id}
-                        widget={widgetWithDemo}
-                        onMove={moveWidget}
-                        onResize={resizeWidget}
-                        onBringToFront={bringToFront}
-                        onRemove={(id) => removeWidget(id)}
-                      />
-                    );
-                  })}
+                      console.log(
+                        widget,
+                        "test kkkkkkkkkkkkkkkkkdslkjsdfgajjsadfgljdslgaal"
+                      );
+
+                      return (
+                        <WidgetCard
+                          key={widget.id}
+                          widget={widgetWithDemo}
+                          onMove={moveWidget}
+                          onResize={resizeWidget}
+                          onBringToFront={bringToFront}
+                          onRemove={(id) => removeWidget(id)}
+                        />
+                      );
+                    })
+                  )}
                 </div>
               </DndContext>
             )}
