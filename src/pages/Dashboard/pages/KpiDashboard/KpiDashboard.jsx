@@ -246,6 +246,9 @@ export default function KpiDashboard() {
       setDashboardId(dashboards[0].id);
       setProjectId(dashboards[0].project);
     }
+    setSelectedDateRange(["", ""]);
+    setSelectedVarients([]);
+    setCycleTime(["", ""]);
   }, [dashboards]);
 
   const handleImportConfig = (content) => {

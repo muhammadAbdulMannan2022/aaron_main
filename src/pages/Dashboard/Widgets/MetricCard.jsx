@@ -28,22 +28,74 @@ export default function MetricCard({
     >
       <div className="relative z-10">
         <h3
-          className="text-sm font-medium mb-1"
+          className="text-sm font-medium mb-4"
           style={{ color: "var(--color-main-text)" }}
         >
           {title}
+          {/* {alert(title)} */}
         </h3>
         {rtk_data && (
           <div className="" style={{ color: "var(--color-text-primary)" }}>
             {title === "Cycle Time" && (
-              <div className="space-y-2">
+              <div className="flex flex-wrap gap-2 justify-center">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div
                     key={key}
-                    className="text-md font-bold"
-                    style={{ color: "var(--color-text-primary)" }}
+                    className="rounded-2xl w-[200px] border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow"
                   >
-                    {key} : {value}
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {key.replace(/_/g, " ")}
+                    </p>
+                    <p className="text-xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
+                      {typeof value === "number"
+                        ? value.toLocaleString()
+                        : value}{" "}
+                      h
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {title === "Total Number of Cases" && (
+              <div className="rounded-2xl w-fit items-center justify-center border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow">
+                {Object.entries(rtk_data).map(([key, value]) => (
+                  <div key={key} className="w-fit">
+                    <p className="text-3xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
+                      {typeof value === "number"
+                        ? value.toLocaleString()
+                        : value}{" "}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {title === "Total Idle Time / Idle Time Ratio" && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                {Object.entries(rtk_data).map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="rounded-2xl w-[200px] border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow"
+                  >
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {key.replace(/_/g, " ")}
+                    </p>
+                    <p className="text-xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
+                      {(() => {
+                        if (typeof value !== "number") return value;
+
+                        if (key.includes("Percentage")) {
+                          return `${value.toFixed(2)}%`;
+                        } else if (key.toLowerCase().includes("s")) {
+                          // seconds to hours
+                          const hours = value / 3600;
+                          return `${hours.toFixed(2)} h`;
+                        } else if (key.toLowerCase().includes("h")) {
+                          return `${value.toFixed(2)} h`;
+                        } else {
+                          return value.toLocaleString();
+                        }
+                      })()}
+                    </p>
                   </div>
                 ))}
               </div>

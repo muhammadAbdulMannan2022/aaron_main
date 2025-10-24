@@ -1,85 +1,85 @@
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
+import { useEffect, useState } from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 const defaultData = [
-    { name: "Series A", value: 35, color: "var(--color-chart-main)" },
-    { name: "Series B", value: 25, color: "var(--color-chart-2nd)" },
-    { name: "Series C", value: 40, color: "var(--color-chart-thard)" },
-]
+  { name: "Series A", value: 35, color: "var(--color-chart-main)" },
+  { name: "Series B", value: 25, color: "var(--color-chart-2nd)" },
+  { name: "Series C", value: 40, color: "var(--color-chart-thard)" },
+];
 
 export default function DonutChart({
-    title = "Donut Chart",
-    centerValue = "100%",
-    data = defaultData,
+  title = "Donut Chart",
+  centerValue = "100%",
+  data = defaultData,
+  rtk_data = {},
 }) {
-    return (
-        <div
-            className="p-6 rounded-lg border w-full h-full flex flex-col"
-            style={{
-                backgroundColor: "var(--color-gray-button-bg)",
-                borderColor: "var(--color-button-outline)",
-            }}
+  const [idealChartData, setIdealChartData] = useState([]);
+  useEffect(() => {
+    if (rtk_data?.["Idle_Time_Ratio_Percentage"] !== undefined) {
+      const idleValue = rtk_data["Idle_Time_Ratio_Percentage"];
+      setIdealChartData([
+        {
+          name: "Idle",
+          value: idleValue,
+          color: "var(--color-chart-main)",
+        },
+        {
+          name: "Rest of",
+          value: Number((100 - idleValue).toFixed(2)),
+          color: "var(--color-chart-secondary)",
+        },
+      ]);
+    }
+  }, [rtk_data]); // <-- run whenever rtk_data changes
+  const COLORS = ["#4841A8", "#4CAF50"];
+
+  return (
+    <div
+      className="p-6 rounded-lg border w-full h-full flex flex-col"
+      style={{
+        backgroundColor: "var(--color-gray-button-bg)",
+        borderColor: "var(--color-button-outline)",
+      }}
+    >
+      {title && (
+        <h3
+          className="text-sm font-medium mb-4"
+          style={{ color: "var(--color-main-text)" }}
         >
-            {title && (
-                <h3
-                    className="text-sm font-medium mb-4"
-                    style={{ color: "var(--color-main-text)" }}
-                >
-                    {title}
-                </h3>
-            )}
+          {title}
+        </h3>
+      )}
 
-            {/* 👇 chart area should flex to fill */}
-            <div className="relative flex-1">
-                <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                        <Pie
-                            data={data}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius="60%"
-                            outerRadius="80%"
-                            paddingAngle={2}
-                            dataKey="value"
-                        >
-                            {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                        </Pie>
-                    </PieChart>
-                </ResponsiveContainer>
-
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div
-                        className="text-2xl font-bold"
-                        style={{ color: "var(--color-text-primary)" }}
-                    >
-                        {centerValue}
-                    </div>
-                </div>
-            </div>
-
-            {/* legend stays at bottom */}
-            <div className="mt-4 space-y-2">
-                {data.map((item, index) => (
-                    <div
-                        key={index}
-                        className="flex items-center justify-between text-sm"
-                    >
-                        <div className="flex items-center gap-2">
-                            <div
-                                className="w-3 h-3 rounded-full"
-                                style={{ backgroundColor: item.color }}
-                            />
-                            <span style={{ color: "var(--color-main-text)" }}>
-                                {item.name}
-                            </span>
-                        </div>
-                        <span style={{ color: "var(--color-text-primary)" }}>
-                            {item.value}
-                        </span>
-                    </div>
+      {/* 👇 chart area should flex to fill */}
+      <div className="relative flex-1 flex flex-row items-center justify-center">
+        {title === "Total Idle Time / Idle Time Ratio" && (
+          <div className="flex items-center gap-4">
+            <PieChart width={120} height={120}>
+              <Pie
+                data={idealChartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={50}
+                innerRadius={25}
+                paddingAngle={2}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index]} />
                 ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+            <div className="flex flex-col justify-center">
+              <span className="font-bold text-lg">
+                {rtk_data?.["Idle_Time_Ratio_Percentage"]}%
+              </span>
+              <span className="text-sm text-muted-foreground">Idle Time</span>
             </div>
-        </div>
-    )
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
