@@ -116,6 +116,7 @@ export default function KpiDashboard() {
   const [createNewDashboard, isLoading] = useCreateNewDashboardMutation();
   const [updateDashboard, { isLoading: isUpdating }] =
     useUpdateDashboardMutation();
+  const [widgetData, setWidgetData] = useState({}); // New state for fetched data
   // useCallRtk
   const { callRtk } = useCallRtk();
   const fetchData = async (name) => {
@@ -130,10 +131,11 @@ export default function KpiDashboard() {
         maxCycleTime: cycleTime[1],
       });
       setIsDataLoading(false);
-
-      return { data, isLoading: isDataLoading };
+      return data;
     } catch (error) {
-      console.log(error, "error fetching varients");
+      console.error(`Error fetching data for ${name}:`, error);
+      setIsDataLoading(false);
+      return null;
     }
   };
   useEffect(() => {
@@ -175,26 +177,23 @@ export default function KpiDashboard() {
     }
   }, [dashboards]);
   useEffect(() => {
-    // start_date=2024-09-17&end_date=2025-06-30&variants=6&variants=7&min_cycle_time=200&max_cycle_time=300
+    const fetchAllWidgetData = async () => {
+      if (!widgets || widgets.length === 0) return;
 
-    widgets &&
-      widgets.length > 0 &&
-      widgets.map(async (widget) => {
-        const res = await fetchData(widget.title);
-        console.log(res, "responce kkkkkkkkkkkkkkkkkkkkk");
-        return {
-          ...widget, // keep old widget data
-          rtk_data: res?.data || null, // safely add new field
-        };
-      });
+      setIsDataLoading(true);
+      const fetchedData = {};
+      await Promise.all(
+        widgets.map(async (widget) => {
+          const data = await fetchData(widget.title);
+          fetchedData[widget.id] = data;
+        })
+      );
+      setWidgetData(fetchedData);
+      setIsDataLoading(false);
+    };
 
-    console.log(
-      selectedVarients,
-      selectedDateRange,
-      cycleTime,
-      "selectedVarients"
-    );
-  }, [selectedVarients, selectedDateRange, projectId, widgets]);
+    fetchAllWidgetData();
+  }, [selectedVarients, selectedDateRange, cycleTime, projectId, widgets]);
 
   // end headers
 
@@ -419,25 +418,22 @@ export default function KpiDashboard() {
                     </div>
                   ) : (
                     widgets.map((widget) => {
-                      // merge demo data for this widget type if available
+                      // Merge demo data and fetched data for this widget
                       const demo = demoWidgetData[widget.type] || {};
-                      const widgetWithDemo = {
+                      const fetched = widgetData[widget.id] || {};
+                      const widgetWithData = {
                         ...widget,
                         props: {
                           ...(widget.props || {}),
                           ...demo,
+                          rtk_data: fetched, // Attach fetched data
                         },
                       };
-
-                      console.log(
-                        widget,
-                        "test kkkkkkkkkkkkkkkkkdslkjsdfgajjsadfgljdslgaal"
-                      );
-
+                      console.log(widgetWithData, "kkkkkkkkkkkkkkkkkkkkkkkkk");
                       return (
                         <WidgetCard
                           key={widget.id}
-                          widget={widgetWithDemo}
+                          widget={widgetWithData}
                           onMove={moveWidget}
                           onResize={resizeWidget}
                           onBringToFront={bringToFront}
