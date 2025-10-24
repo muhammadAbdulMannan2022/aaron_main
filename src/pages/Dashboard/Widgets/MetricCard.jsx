@@ -16,10 +16,11 @@ export default function MetricCard({
   chartType = "area",
   data = defaultData,
   percentage = 75,
+  rtk_data = null,
 }) {
   return (
     <div
-      className="p-4 rounded-lg border relative flex flex-col h-full w-full overflow-hidden"
+      className="p-4 rounded-lg  border relative flex flex-col h-full w-full overflow-hidden"
       style={{
         backgroundColor: "var(--color-gray-button-bg)",
         borderColor: "var(--color-button-outline)",
@@ -32,16 +33,27 @@ export default function MetricCard({
         >
           {title}
         </h3>
-        <div
-          className="text-2xl font-bold"
-          style={{ color: "var(--color-text-primary)" }}
-        >
-          {value}
-        </div>
+        {rtk_data && (
+          <div className="" style={{ color: "var(--color-text-primary)" }}>
+            {title === "Cycle Time" && (
+              <div className="space-y-2">
+                {Object.entries(rtk_data).map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="text-md font-bold"
+                    style={{ color: "var(--color-text-primary)" }}
+                  >
+                    {key} : {value}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {(chartType === "area" || chartType === "bar") && (
-        <div className="flex-1 mt-2 opacity-60">
+        <div className="flex-1  opacity-30 absolute w-full h-full bottom-0 right-0">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === "area" ? (
               <AreaChart data={data}>

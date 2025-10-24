@@ -40,7 +40,6 @@ export default function KpiDashboard() {
   } = useDashboard();
 
   // --- Static demo data for widgets (temporary) ---
-  // We'll attach this data to widget objects when mapping so widgets receive dynamic data.
   const demoWidgetData = {
     "line-chart": {
       title: "Revenue Over Time",
@@ -93,32 +92,36 @@ export default function KpiDashboard() {
       percentage: 65,
     },
   };
+
   const [mainFilterOpen, setMainFilterOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [addDashboardModalOpen, setAddDashboardModalOpen] = useState(false);
   const [dashboardName, setDashboardName] = useState("");
-
   const [dashboardId, setDashboardId] = useState(null);
   const [projectId, setProjectId] = useState(null);
   const [activeDashboard, setActiveDashboard] = useState(null);
 
-  // filters
+  // Filters
   const [selectedDateRange, setSelectedDateRange] = useState(["", ""]);
   const [selectedVarients, setSelectedVarients] = useState([]);
   const [cycleTime, setCycleTime] = useState(["", ""]);
 
-  // loading state for data
+  // Loading state for data
   const [isDataLoading, setIsDataLoading] = useState(false);
+  const [widgetData, setWidgetData] = useState({}); // Fetched data for widgets
+  const prevWidgetsRef = useRef([]); // Store previous widgets to detect changes
+  const prevFiltersRef = useRef({}); // Store previous filters to detect changes
 
-  // rtks
+  // RTK Queries
   const { data: dashboards, isLoading: isDashboardsLoading } =
     useGetDashboardsQuery();
-  const [createNewDashboard, isLoading] = useCreateNewDashboardMutation();
+  const [createNewDashboard, { isLoading: isCreating }] =
+    useCreateNewDashboardMutation();
   const [updateDashboard, { isLoading: isUpdating }] =
     useUpdateDashboardMutation();
-  const [widgetData, setWidgetData] = useState({}); // New state for fetched data
-  // useCallRtk
   const { callRtk } = useCallRtk();
+
+  // Fetch data function
   const fetchData = async (name) => {
     try {
       setIsDataLoading(true);
@@ -130,18 +133,86 @@ export default function KpiDashboard() {
         minCycleTime: cycleTime[0],
         maxCycleTime: cycleTime[1],
       });
-      setIsDataLoading(false);
       return data;
     } catch (error) {
       console.error(`Error fetching data for ${name}:`, error);
-      setIsDataLoading(false);
       return null;
+    } finally {
+      setIsDataLoading(false);
     }
   };
+
+  // Helper to detect meaningful widget changes
+  const hasWidgetChanged = (prevWidget, currWidget) => {
+    return (
+      prevWidget.title !== currWidget.title ||
+      prevWidget.type !== currWidget.type ||
+      JSON.stringify(prevWidget.props) !== JSON.stringify(currWidget.props)
+    );
+  };
+
+  // Helper to detect filter or projectId changes
+  const haveFiltersChanged = () => {
+    const prevFilters = prevFiltersRef.current;
+    return (
+      JSON.stringify(prevFilters.selectedDateRange) !==
+        JSON.stringify(selectedDateRange) ||
+      JSON.stringify(prevFilters.selectedVarients) !==
+        JSON.stringify(selectedVarients) ||
+      JSON.stringify(prevFilters.cycleTime) !== JSON.stringify(cycleTime) ||
+      prevFilters.projectId !== projectId
+    );
+  };
+
+  // Fetch widget data
+  const fetchWidgetData = async () => {
+    if (!widgets || widgets.length === 0) return;
+
+    setIsDataLoading(true);
+    let fetchedData = { ...widgetData }; // Preserve existing data
+    const prevWidgets = prevWidgetsRef.current;
+
+    // If filters or projectId have changed, fetch data for all widgets
+    if (haveFiltersChanged()) {
+      await Promise.all(
+        widgets.map(async (widget) => {
+          const data = await fetchData(widget.title);
+          fetchedData[widget.id] = data;
+        })
+      );
+    } else {
+      // Otherwise, fetch data only for new or changed widgets
+      const widgetsToFetch = widgets.filter((widget) => {
+        const prevWidget = prevWidgets.find((pw) => pw.id === widget.id);
+        if (!prevWidget) return true; // New widget
+        return hasWidgetChanged(prevWidget, widget); // Changed widget
+      });
+
+      await Promise.all(
+        widgetsToFetch.map(async (widget) => {
+          const data = await fetchData(widget.title);
+          fetchedData[widget.id] = data;
+        })
+      );
+    }
+
+    setWidgetData(fetchedData);
+    prevWidgetsRef.current = widgets; // Update previous widgets
+    prevFiltersRef.current = {
+      selectedDateRange,
+      selectedVarients,
+      cycleTime,
+      projectId,
+    }; // Update previous filters
+    setIsDataLoading(false);
+  };
+
+  // Single useEffect for all triggers
   useEffect(() => {
-    console.log(isDataLoading, "Data is loading");
-  }, [isDataLoading]);
-  // headers
+    fetchWidgetData();
+  }, [widgets, selectedDateRange, selectedVarients, cycleTime, projectId]);
+
+  // Headers and dropdown logic
   const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false);
   const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState(false);
   const dashboardDropdownRef = useRef(null);
@@ -176,34 +247,14 @@ export default function KpiDashboard() {
       setProjectId(dashboards[0].project);
     }
   }, [dashboards]);
-  useEffect(() => {
-    const fetchAllWidgetData = async () => {
-      if (!widgets || widgets.length === 0) return;
-
-      setIsDataLoading(true);
-      const fetchedData = {};
-      await Promise.all(
-        widgets.map(async (widget) => {
-          const data = await fetchData(widget.title);
-          fetchedData[widget.id] = data;
-        })
-      );
-      setWidgetData(fetchedData);
-      setIsDataLoading(false);
-    };
-
-    fetchAllWidgetData();
-  }, [selectedVarients, selectedDateRange, cycleTime, projectId, widgets]);
-
-  // end headers
 
   const handleImportConfig = (content) => {
     importConfig(content);
   };
+
   const handleSaveDashboard = async () => {
     const data = localStorage.getItem("dashboardState");
     try {
-      // console.log(JSON.parse(data), "lllllllllllllllllllllllllllll");
       const res = await updateDashboard({
         projectId,
         dashboardId,
@@ -250,6 +301,7 @@ export default function KpiDashboard() {
       return;
     setShowSidebar(false);
   };
+
   const createNewDashboardHandler = async () => {
     const projectId = localStorage.getItem("currentProjectId");
     try {
@@ -272,9 +324,8 @@ export default function KpiDashboard() {
       onClick={handleOutsideClick}
     >
       <div className="w-full h-full">
-        <header className="sticky top-0 z-[1001] bg-main-bg  py-2">
+        <header className="sticky top-0 z-[1001] bg-main-bg py-2">
           <div className="flex items-center justify-between gap-3">
-            {/* Left side - Dashboard List dropdown and Sidebar Toggle */}
             <div className="flex items-center gap-3">
               <div className="relative" ref={dashboardDropdownRef}>
                 <button
@@ -315,7 +366,6 @@ export default function KpiDashboard() {
                 )}
               </div>
 
-              {/* Filters button */}
               <button
                 onClick={() => {
                   setMainFilterOpen(true);
@@ -327,7 +377,6 @@ export default function KpiDashboard() {
               </button>
             </div>
 
-            {/* Right side - Save and Actions */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => handleSaveDashboard()}
@@ -355,7 +404,10 @@ export default function KpiDashboard() {
                       >
                         <Layout size={16} /> Create new
                       </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
+                      <button
+                        onClick={handleToggleSidebar}
+                        className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer"
+                      >
                         <Plus size={16} /> Add widget
                       </button>
                       <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
@@ -372,8 +424,8 @@ export default function KpiDashboard() {
           </div>
         </header>
 
-        <main className="flex-1 min-h-0 ">
-          <div className="h-auto  pb-4 mb-20">
+        <main className="flex-1 min-h-0">
+          <div className="h-auto pb-4 mb-20">
             {widgets.length === 0 ? (
               <div className="text-center py-20">
                 <div className="bg-gray-800 rounded-lg p-8 shadow-lg max-w-md mx-auto">
@@ -406,9 +458,9 @@ export default function KpiDashboard() {
                     className="absolute inset-0 opacity-20 border border-green-800"
                     style={{
                       backgroundImage: `
-                                        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-                                        linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-                                    `,
+                        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+                      `,
                       backgroundSize: "20px 20px",
                     }}
                   />
@@ -418,7 +470,6 @@ export default function KpiDashboard() {
                     </div>
                   ) : (
                     widgets.map((widget) => {
-                      // Merge demo data and fetched data for this widget
                       const demo = demoWidgetData[widget.type] || {};
                       const fetched = widgetData[widget.id] || {};
                       const widgetWithData = {
@@ -426,10 +477,9 @@ export default function KpiDashboard() {
                         props: {
                           ...(widget.props || {}),
                           ...demo,
-                          rtk_data: fetched, // Attach fetched data
+                          rtk_data: fetched,
                         },
                       };
-                      console.log(widgetWithData, "kkkkkkkkkkkkkkkkkkkkkkkkk");
                       return (
                         <WidgetCard
                           key={widget.id}
@@ -479,8 +529,7 @@ export default function KpiDashboard() {
         isOpen={addDashboardModalOpen}
         onClose={() => setAddDashboardModalOpen(false)}
       >
-        <div className="p-6 w-[350px] space-y-5  text-white">
-          {/* Input Field */}
+        <div className="p-6 w-[350px] space-y-5 text-white">
           <div className="space-y-2">
             <label
               htmlFor="dashboardName"
@@ -497,8 +546,6 @@ export default function KpiDashboard() {
               className="w-full bg-transparent border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gray-400 transition-colors"
             />
           </div>
-
-          {/* Button */}
           <button
             onClick={() => {
               createNewDashboardHandler();

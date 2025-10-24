@@ -52,6 +52,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
             title={widget.title || widgetProps.title || "Line Chart"}
             data={widgetProps.data}
             lines={widgetProps.lines}
+            rtk_data={widgetProps.rtk_data}
           />
         );
       case "bar-chart":
@@ -60,6 +61,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
             title={widget.title || widgetProps.title || "Bar Chart"}
             data={widgetProps.data}
             orientation={widgetProps.orientation}
+            rtk_data={widgetProps.rtk_data}
           />
         );
       case "pie-chart":
@@ -68,6 +70,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
             title={widget.title || widgetProps.title || "Donut Chart"}
             data={widgetProps.data}
             centerValue={widgetProps.centerValue}
+            rtk_data={widgetProps.rtk_data}
           />
         );
       case "progress-tracker":
@@ -76,9 +79,11 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
             title={widget.title || widgetProps.title || "Progress"}
             value={widgetProps.value}
             percentage={widgetProps.percentage}
+            rtk_data={widgetProps.rtk_data}
           />
         );
       case "key-metrics":
+        // console.log(widgetProps, "what to go ");
         return (
           <MetricCard
             title={widget.title || widgetProps.title || "Metric"}
@@ -86,6 +91,7 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
             chartType={widgetProps.chartType}
             data={widgetProps.data}
             percentage={widgetProps.percentage}
+            rtk_data={widgetProps.rtk_data}
           />
         );
       default:
