@@ -69,7 +69,8 @@ export default function MetricCard({
                 ))}
               </div>
             )}
-            {title === "Total Idle Time / Idle Time Ratio" && (
+            {(title === "Total Idle Time / Idle Time Ratio" ||
+              title === "Total Loops / Loops Ratio") && (
               <div className="flex flex-wrap gap-2 justify-center">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div
@@ -85,11 +86,11 @@ export default function MetricCard({
 
                         if (key.includes("Percentage")) {
                           return `${value.toFixed(2)}%`;
-                        } else if (key.toLowerCase().includes("s")) {
+                        } else if (key.toLowerCase().includes("seconds")) {
                           // seconds to hours
                           const hours = value / 3600;
                           return `${hours.toFixed(2)} h`;
-                        } else if (key.toLowerCase().includes("h")) {
+                        } else if (key.toLowerCase().includes("hours")) {
                           return `${value.toFixed(2)} h`;
                         } else {
                           return value.toLocaleString();
