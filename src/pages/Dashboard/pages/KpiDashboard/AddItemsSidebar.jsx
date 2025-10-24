@@ -7,7 +7,7 @@ import {
   BarChart3,
   Activity,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGetAbailableKpisQuery } from "../../../../../redux/api/dashboard";
 
 const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
@@ -49,6 +49,26 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
       icon: Activity,
     },
   ];
+
+  // Find selected KPI
+  const selectedKpi = kpiList?.find((kpi) => kpi.kpi_name === selectedName);
+
+  // Filter widget options based on KPI visualizations
+  const filteredWidgetOptions = selectedKpi
+    ? widgetOptions.filter((widget) =>
+        selectedKpi.visualizations.includes(widget.name)
+      )
+    : widgetOptions;
+
+  // Auto-deselect widget if it's not valid for selected KPI
+  useEffect(() => {
+    if (
+      selectedWidget &&
+      !filteredWidgetOptions.find((w) => w.id === selectedWidget)
+    ) {
+      setSelectedWidget("");
+    }
+  }, [selectedName]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -135,7 +155,7 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
             </div>
 
             <div className="space-y-3 mt-6">
-              {widgetOptions.map((widget) => {
+              {filteredWidgetOptions.map((widget) => {
                 const IconComponent = widget.icon;
                 return (
                   <div

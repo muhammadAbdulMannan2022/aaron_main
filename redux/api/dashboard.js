@@ -91,6 +91,490 @@ export const dashboard = createApi({
         }&max_cycle_time=${maxCycleTime || ""}`;
       },
     }),
+    averageVmedianCycleTime: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/average-vs-median-by-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    totalCaseCount: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/total-case-count/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    loopsAndRatio: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/total-loops-&-ratio/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    bottlenecksAndRatio: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/total-bottleneck-&-ratio/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    calculateStepAndCases: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/calculate-step-and-cases/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    dropoutAndRatio: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/dropout-rate/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    avarageActivityTime: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/average-activity-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    firstPassRate: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/first-pass-rate/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    longestWaitingTime: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/longest-waiting-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    variantComplexity: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/variant-complexity-index/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    variantChangeOverTime: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/variant-change-over-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    casesFollowingTopVariant: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/cases-following-top-variant/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    maxStepInACase: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/max-steps-in-a-case/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    timeSavedPotential: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/time-saved-potential/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    activityFrequencyDistribution: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/activity-frequency-distribution/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    happyPathCompliance: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/happy-path-compliance/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+
+    totalCompletedCase: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/total-completed-cases/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    happyPathDeviation: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/happy-path-deviation/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    skippedStepsRate: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/skipped-steps-rate/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    caseThroughPutRate: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/case-throughput-rate/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    idleTimeAndRatio: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/total-idle-time-&-ratio/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
   }),
 });
 
@@ -107,4 +591,25 @@ export const {
   // KPIs
   useGetAbailableKpisQuery,
   useLazyGetCycleTimeQuery,
+  useLazyAverageVmedianCycleTimeQuery,
+  useLazyTotalCaseCountQuery,
+  useLazyLoopsAndRatioQuery,
+  useLazyBottlenecksAndRatioQuery,
+  useLazyCalculateStepAndCasesQuery,
+  useLazyDropoutAndRatioQuery,
+  useLazyAvarageActivityTimeQuery,
+  useLazyFirstPassRateQuery,
+  useLazyLongestWaitingTimeQuery,
+  useLazyVariantComplexityQuery,
+  useLazyVariantChangeOverTimeQuery,
+  useLazyCasesFollowingTopVariantQuery,
+  useLazyMaxStepInACaseQuery,
+  useLazyTimeSavedPotentialQuery,
+  useLazyActivityFrequencyDistributionQuery,
+  useLazyHappyPathComplianceQuery,
+  useLazyTotalCompletedCaseQuery,
+  useLazyHappyPathDeviationQuery,
+  useLazySkippedStepsRateQuery,
+  useLazyCaseThroughPutRateQuery,
+  useLazyIdleTimeAndRatioQuery,
 } = dashboard;

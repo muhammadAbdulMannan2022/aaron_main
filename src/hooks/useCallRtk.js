@@ -1,17 +1,155 @@
-import { useLazyGetCycleTimeQuery } from "../../redux/api/dashboard";
+import {
+  useLazyGetCycleTimeQuery,
+  useLazyAverageVmedianCycleTimeQuery,
+  useLazyTotalCaseCountQuery,
+  useLazyLoopsAndRatioQuery,
+  useLazyBottlenecksAndRatioQuery,
+  useLazyCalculateStepAndCasesQuery,
+  useLazyDropoutAndRatioQuery,
+  useLazyAvarageActivityTimeQuery,
+  useLazyFirstPassRateQuery,
+  useLazyLongestWaitingTimeQuery,
+  useLazyVariantComplexityQuery,
+  useLazyVariantChangeOverTimeQuery,
+  useLazyCasesFollowingTopVariantQuery,
+  useLazyMaxStepInACaseQuery,
+  useLazyTimeSavedPotentialQuery,
+  useLazyActivityFrequencyDistributionQuery,
+  useLazyHappyPathComplianceQuery,
+  useLazyTotalCompletedCaseQuery,
+  useLazyHappyPathDeviationQuery,
+  useLazySkippedStepsRateQuery,
+  useLazyCaseThroughPutRateQuery,
+  useLazyIdleTimeAndRatioQuery,
+} from "../../redux/api/dashboard";
 
 export const useCallRtk = () => {
+  // Lazy queries
   const [getCycleTime, cycleState] = useLazyGetCycleTimeQuery();
+  const [averageCycle, averageCycleState] =
+    useLazyAverageVmedianCycleTimeQuery();
+  const [totalCases, totalCasesState] = useLazyTotalCaseCountQuery();
+  const [loopsRatio, loopsRatioState] = useLazyLoopsAndRatioQuery();
+  const [bottlenecksRatio, bottlenecksRatioState] =
+    useLazyBottlenecksAndRatioQuery();
+  const [calculateStepCases, calculateStepCasesState] =
+    useLazyCalculateStepAndCasesQuery();
+  const [dropoutRatio, dropoutRatioState] = useLazyDropoutAndRatioQuery();
+  const [averageActivityTime, averageActivityTimeState] =
+    useLazyAvarageActivityTimeQuery();
+  const [firstPassRate, firstPassRateState] = useLazyFirstPassRateQuery();
+  const [longestWaitingTime, longestWaitingTimeState] =
+    useLazyLongestWaitingTimeQuery();
+  const [variantComplexity, variantComplexityState] =
+    useLazyVariantComplexityQuery();
+  const [variantChangeOverTime, variantChangeOverTimeState] =
+    useLazyVariantChangeOverTimeQuery();
+  const [casesTopVariant, casesTopVariantState] =
+    useLazyCasesFollowingTopVariantQuery();
+  const [maxStepInCase, maxStepInCaseState] = useLazyMaxStepInACaseQuery();
+  const [timeSavedPotential, timeSavedPotentialState] =
+    useLazyTimeSavedPotentialQuery();
+  const [activityFrequency, activityFrequencyState] =
+    useLazyActivityFrequencyDistributionQuery();
+  const [happyPathCompliance, happyPathComplianceState] =
+    useLazyHappyPathComplianceQuery();
+  const [totalCompletedCases, totalCompletedCasesState] =
+    useLazyTotalCompletedCaseQuery();
+  const [happyPathDeviation, happyPathDeviationState] =
+    useLazyHappyPathDeviationQuery();
+  const [skippedStepsRate, skippedStepsRateState] =
+    useLazySkippedStepsRateQuery();
+  const [caseThroughputRate, caseThroughputRateState] =
+    useLazyCaseThroughPutRateQuery();
+  const [idleTimeRatio, idleTimeRatioState] = useLazyIdleTimeAndRatioQuery();
 
-  // ...rest of them
-
+  // Map endpoint names to functions + state
+  // Example: mapping KPI names dynamically to your hooks
   const endpoints = {
     "cycle time": { fn: getCycleTime, state: cycleState },
+    "average vs. median cycle time": {
+      fn: averageCycle,
+      state: averageCycleState,
+    },
+    "total number of cases": { fn: totalCases, state: totalCasesState },
+    "total idle time / idle time ratio": {
+      fn: idleTimeRatio,
+      state: idleTimeRatioState,
+    },
+    "total loops / loops ratio": { fn: loopsRatio, state: loopsRatioState },
+    "happy-path compliance rate": {
+      fn: happyPathCompliance,
+      state: happyPathComplianceState,
+    },
+    "time lost to bottleneck + bottleneck severity index": {
+      fn: bottlenecksRatio,
+      state: bottlenecksRatioState,
+    },
+    "median / average steps per case": {
+      fn: calculateStepCases,
+      state: calculateStepCasesState,
+    },
+    // "cost per case": { fn: costPerCase, state: costPerCaseState },
+    "dropout rate": { fn: dropoutRatio, state: dropoutRatioState },
+    "average activity duration": {
+      fn: averageActivityTime,
+      state: averageActivityTimeState,
+    },
+    "total completed cases": {
+      fn: totalCompletedCases,
+      state: totalCompletedCasesState,
+    },
+    "number of process variants": {
+      fn: variantComplexity,
+      state: variantComplexityState,
+    },
+    "top 5 process variants (count & %)": {
+      fn: casesTopVariant,
+      state: casesTopVariantState,
+    },
+    "largest bottleneck": { fn: maxStepInCase, state: maxStepInCaseState },
+    "average deviation from happy path": {
+      fn: happyPathDeviation,
+      state: happyPathDeviationState,
+    },
+    "first pass rate": { fn: firstPassRate, state: firstPassRateState },
+    "longest waiting time step": {
+      fn: longestWaitingTime,
+      state: longestWaitingTimeState,
+    },
+    "variant complexity index": {
+      fn: variantComplexity,
+      state: variantComplexityState,
+    },
+    "variant change over time": {
+      fn: variantChangeOverTime,
+      state: variantChangeOverTimeState,
+    },
+    "case throughput rate": {
+      fn: caseThroughputRate,
+      state: caseThroughputRateState,
+    },
+    "cases following top variant": {
+      fn: casesTopVariant,
+      state: casesTopVariantState,
+    },
+    "max steps in a case": { fn: maxStepInCase, state: maxStepInCaseState },
+    "skipped steps rate": {
+      fn: skippedStepsRate,
+      state: skippedStepsRateState,
+    },
+    "average time saved potential": {
+      fn: timeSavedPotential,
+      state: timeSavedPotentialState,
+    },
+    "activity frequency distribution": {
+      fn: activityFrequency,
+      state: activityFrequencyState,
+    },
   };
 
   const callRtk = async (name, query) => {
-    console.log(name, "hellollllllllllllllllllllllllllllllllllllllllllll");
-    const key = name.toLowerCase(); // normalize just in case
+    const key = name.toLowerCase();
     const endpoint = endpoints[key];
     if (!endpoint) throw new Error(`Unknown endpoint: ${name}`);
 
@@ -22,56 +160,3 @@ export const useCallRtk = () => {
 
   return { callRtk };
 };
-
-// const demoWidgetData = {
-//     "line-chart": {
-//       title: "Revenue Over Time",
-//       data: [
-//         { month: "Jan", value: 120 },
-//         { month: "Feb", value: 210 },
-//         { month: "Mar", value: 150 },
-//         { month: "Apr", value: 300 },
-//         { month: "May", value: 250 },
-//         { month: "Jun", value: 330 },
-//       ],
-//       lines: [{ dataKey: "value", color: "var(--color-chart-main)" }],
-//     },
-//     "bar-chart": {
-//       title: "Top Categories",
-//       data: [
-//         { name: "A", value: 120 },
-//         { name: "B", value: 90 },
-//         { name: "C", value: 150 },
-//         { name: "D", value: 70 },
-//       ],
-//       orientation: "horizontal",
-//     },
-//     "pie-chart": {
-//       title: "Distribution",
-//       data: [
-//         { name: "Alpha", value: 40, color: "var(--color-chart-main)" },
-//         { name: "Beta", value: 30, color: "var(--color-chart-2nd)" },
-//         { name: "Gamma", value: 30, color: "var(--color-chart-thard)" },
-//       ],
-//       centerValue: "100",
-//     },
-//     "progress-tracker": {
-//       title: "Completion",
-//       value: "75%",
-//       percentage: 75,
-//     },
-//     "key-metrics": {
-//       title: "Active Users",
-//       value: "2,430",
-//       chartType: "area",
-//       data: [
-//         { value: 20 },
-//         { value: 35 },
-//         { value: 25 },
-//         { value: 45 },
-//         { value: 30 },
-//         { value: 55 },
-//       ],
-//       percentage: 65,
-//     },
-//   };
