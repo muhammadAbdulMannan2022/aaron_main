@@ -98,7 +98,9 @@ export default function KpiDashboard() {
   const [addDashboardModalOpen, setAddDashboardModalOpen] = useState(false);
   const [dashboardName, setDashboardName] = useState("");
   const [dashboardId, setDashboardId] = useState(null);
-  const [projectId, setProjectId] = useState(null);
+  const [projectId, setProjectId] = useState(
+    () => localStorage.getItem("currentProjectId") || null
+  );
   const [activeDashboard, setActiveDashboard] = useState(null);
 
   // Filters
@@ -113,8 +115,11 @@ export default function KpiDashboard() {
   const prevFiltersRef = useRef({}); // Store previous filters to detect changes
 
   // RTK Queries
-  const { data: dashboards, isLoading: isDashboardsLoading } =
-    useGetDashboardsQuery();
+  const {
+    data: dashboards,
+    refetch,
+    isLoading: isDashboardsLoading,
+  } = useGetDashboardsQuery(projectId, { skip: !projectId });
   const [createNewDashboard, { isLoading: isCreating }] =
     useCreateNewDashboardMutation();
   const [updateDashboard, { isLoading: isUpdating }] =
@@ -127,6 +132,7 @@ export default function KpiDashboard() {
       setIsDataLoading(true);
       const { data } = await callRtk(name, {
         projectId,
+        dashboardId,
         startTime: selectedDateRange[0],
         endTime: selectedDateRange[1],
         variants: selectedVarients,
@@ -250,6 +256,14 @@ export default function KpiDashboard() {
     setSelectedVarients([]);
     setCycleTime(["", ""]);
   }, [dashboards]);
+  // Ensure we have a projectId from local storage on mount so the
+  // dashboards query can start normally. Do not call `refetch`
+  // before the query has been started by the hook — that causes
+  // the "Cannot refetch a query that has not been started yet." error.
+  useEffect(() => {
+    const localProjectId = localStorage.getItem("currentProjectId");
+    if (localProjectId && !projectId) setProjectId(localProjectId);
+  }, []);
 
   const handleImportConfig = (content) => {
     importConfig(content);
