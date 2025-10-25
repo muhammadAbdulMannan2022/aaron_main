@@ -575,6 +575,29 @@ export const dashboard = createApi({
         }&max_cycle_time=${maxCycleTime || ""}`;
       },
     }),
+    costPerCase: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/cost-per-process/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
   }),
 });
 
@@ -612,4 +635,5 @@ export const {
   useLazySkippedStepsRateQuery,
   useLazyCaseThroughPutRateQuery,
   useLazyIdleTimeAndRatioQuery,
+  useLazyCostPerCaseQuery,
 } = dashboard;

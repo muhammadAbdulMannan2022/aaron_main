@@ -310,7 +310,10 @@ export default function InvoiceFlow() {
           className="bg-gray-800 text-white rounded p-1 focus:outline-none hover:cursor-pointer"
         >
           <option value="actual">Actual</option>
-          <option value="happy_path">Happy Path</option>
+
+          {orginalPathData?.global_metrics?.Happy_Path?.Is_Happy_Path && (
+            <option value="happy_path">Happy Path</option>
+          )}
           <option value="bottlenecks">Bottlenecks</option>
           <option value="dropouts">Dropouts</option>
           <option value="loops">Loops</option>

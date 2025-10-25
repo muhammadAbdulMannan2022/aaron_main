@@ -70,7 +70,8 @@ export default function MetricCard({
               </div>
             )}
             {(title === "Total Idle Time / Idle Time Ratio" ||
-              title === "Total Loops / Loops Ratio") && (
+              title === "Total Loops / Loops Ratio" ||
+              title === "Median / Average Steps per Case") && (
               <div className="flex flex-wrap gap-2 justify-center">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div
@@ -99,6 +100,72 @@ export default function MetricCard({
                     </p>
                   </div>
                 ))}
+              </div>
+            )}
+            {title === "Cost per Case" && rtk_data && (
+              <div className="p-4 rounded-xl border border-border bg-white/10 backdrop-blur-sm bg-card shadow-sm">
+                {/* Header info */}
+                <div className="mb-4 text-center">
+                  <h2 className="text-lg font-semibold">
+                    {rtk_data.process_name}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Total Cost:{" "}
+                    <span className="font-medium">
+                      {rtk_data.total_cost_all_activities} {rtk_data.currency}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Conditional Table */}
+                {Array.isArray(rtk_data.activities_cost_breakdown) &&
+                rtk_data.activities_cost_breakdown.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full border-collapse border border-border rounded-lg overflow-hidden text-sm">
+                      <thead className="bg-muted text-muted-foreground">
+                        <tr>
+                          <th className="border border-border px-3 py-2 text-left">
+                            Activity Name
+                          </th>
+                          <th className="border border-border px-3 py-2 text-right">
+                            Occurrences
+                          </th>
+                          <th className="border border-border px-3 py-2 text-right">
+                            Cost / Occurrence
+                          </th>
+                          <th className="border border-border px-3 py-2 text-right">
+                            Total Cost
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rtk_data.activities_cost_breakdown.map((item, idx) => (
+                          <tr
+                            key={idx}
+                            className="hover:bg-muted/30 transition-colors"
+                          >
+                            <td className="border border-border px-3 py-2">
+                              {item.activity_name}
+                            </td>
+                            <td className="border border-border px-3 py-2 text-right">
+                              {item.occurrences}
+                            </td>
+                            <td className="border border-border px-3 py-2 text-right">
+                              {item.cost_per_occurrence}
+                            </td>
+                            <td className="border border-border px-3 py-2 text-right font-medium">
+                              {item.total_activity_cost}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-center text-sm text-muted-foreground mt-4">
+                    No activity cost data available.
+                  </p>
+                )}
               </div>
             )}
           </div>

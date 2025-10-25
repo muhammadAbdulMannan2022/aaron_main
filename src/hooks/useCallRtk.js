@@ -21,6 +21,7 @@ import {
   useLazySkippedStepsRateQuery,
   useLazyCaseThroughPutRateQuery,
   useLazyIdleTimeAndRatioQuery,
+  useLazyCostPerCaseQuery,
 } from "../../redux/api/dashboard";
 
 export const useCallRtk = () => {
@@ -62,6 +63,7 @@ export const useCallRtk = () => {
   const [caseThroughputRate, caseThroughputRateState] =
     useLazyCaseThroughPutRateQuery();
   const [idleTimeRatio, idleTimeRatioState] = useLazyIdleTimeAndRatioQuery();
+  const [costPerCase, costPerCaseState] = useLazyCostPerCaseQuery();
 
   // Map endpoint names to functions + state
   // Example: mapping KPI names dynamically to your hooks
@@ -89,7 +91,7 @@ export const useCallRtk = () => {
       fn: calculateStepCases,
       state: calculateStepCasesState,
     },
-    // "cost per case": { fn: costPerCase, state: costPerCaseState },
+    "cost per case": { fn: costPerCase, state: costPerCaseState },
     "dropout rate": { fn: dropoutRatio, state: dropoutRatioState },
     "average activity duration": {
       fn: averageActivityTime,

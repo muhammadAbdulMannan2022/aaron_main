@@ -29,8 +29,8 @@ const WidgetCard = ({ widget, onResize, onBringToFront, onRemove }) => {
 
   const handleResize = (event, { size }) => {
     onResize(widget.id, {
-      width: Math.max(200, Math.min(600, size.width)),
-      height: Math.max(150, Math.min(800, size.height)),
+      width: Math.max(200, Math.min(1000, size.width)),
+      height: Math.max(150, Math.min(1000, size.height)),
     });
   };
 
