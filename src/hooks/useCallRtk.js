@@ -151,9 +151,43 @@ export const useCallRtk = () => {
   };
 
   const callRtk = async (name, query) => {
-    const key = name.toLowerCase();
-    const endpoint = endpoints[key];
-    if (!endpoint) throw new Error(`Unknown endpoint: ${name}`);
+    if (!name) throw new Error("No endpoint name provided to callRtk");
+
+    // Basic normalization: lowercase and trim
+    let key = String(name).toLowerCase().trim();
+
+    // Try direct lookup first
+    let endpoint = endpoints[key];
+
+    // If not found, normalize by removing punctuation/extra spaces and try again
+    if (!endpoint) {
+      const normalized = key
+        .replace(/[^a-z0-9\s]/g, " ") // replace non-alphanum with space
+        .replace(/\s+/g, " ")
+        .trim();
+      endpoint = endpoints[normalized];
+      if (endpoint) {
+        console.debug(
+          `useCallRtk: resolved endpoint '${name}' -> '${normalized}'`
+        );
+      }
+    }
+
+    // As a last resort, try common alternates (underscored, hyphenated)
+    if (!endpoint) {
+      const alt = key.replace(/\s+/g, "_");
+      endpoint = endpoints[alt];
+      if (endpoint)
+        console.debug(`useCallRtk: resolved endpoint '${name}' -> '${alt}'`);
+    }
+
+    if (!endpoint) {
+      // Provide clearer error and don't crash the app silently
+      console.warn(
+        `useCallRtk: Unknown endpoint requested: '${name}' (normalized='${key}')`
+      );
+      throw new Error(`Unknown endpoint: ${name}`);
+    }
 
     const { fn, state } = endpoint;
     const data = await fn(query).unwrap();

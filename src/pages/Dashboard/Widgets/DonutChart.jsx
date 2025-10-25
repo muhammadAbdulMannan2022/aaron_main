@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 const defaultData = [
   { name: "Series A", value: 35, color: "var(--color-chart-main)" },
@@ -15,6 +22,19 @@ export default function DonutChart({
 }) {
   const [idealChartData, setIdealChartData] = useState([]);
   const [loopsData, setLoopsData] = useState([]);
+  const COLORSforPy = [
+    "#8884d8",
+    "#82ca9d",
+    "#ffc658",
+    "#ff8042",
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+  ];
+
+  const getColor = (index) => COLORSforPy[index % COLORSforPy.length];
+
   useEffect(() => {
     if (rtk_data?.["Idle_Time_Ratio_Percentage"] !== undefined) {
       const idleValue = rtk_data["Idle_Time_Ratio_Percentage"];
@@ -127,6 +147,30 @@ export default function DonutChart({
             )}
           </div>
         )}
+        {/* {console.log(title)} */}
+        {title === "Activity Frequency Distribution" &&
+          Array.isArray(rtk_data?.Distribution) &&
+          rtk_data.Distribution.length > 0 && (
+            <ResponsiveContainer width="100%">
+              <PieChart>
+                <Legend />
+                <Pie
+                  data={rtk_data.Distribution}
+                  dataKey="percentage"
+                  nameKey="activity"
+                  outerRadius={100}
+                  label
+                >
+                  {rtk_data.Distribution.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={getColor(index)} // custom color per slice
+                    />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          )}
       </div>
     </div>
   );

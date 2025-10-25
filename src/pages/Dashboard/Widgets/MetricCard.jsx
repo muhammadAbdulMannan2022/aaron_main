@@ -38,6 +38,7 @@ export default function MetricCard({
           <div className="" style={{ color: "var(--color-text-primary)" }}>
             {title === "Cycle Time" && (
               <div className="flex flex-wrap gap-2 justify-center">
+                {console.log(rtk_data)}
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div
                     key={key}
@@ -56,11 +57,41 @@ export default function MetricCard({
                 ))}
               </div>
             )}
-            {title === "Total Number of Cases" && (
+            {title === "Average Activity Duration" && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                {rtk_data.Average_Activity_Duration_Hours &&
+                  Object.entries(rtk_data.Average_Activity_Duration_Hours).map(
+                    ([key, value], i) => (
+                      <>
+                        {console.log(key, value)}
+                        <div
+                          key={i}
+                          className="rounded-2xl w-[200px] border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow"
+                        >
+                          <p className="text-xs font-medium text-muted-foreground">
+                            {key.replace(/_/g, " ")}
+                          </p>
+                          <p className="text-xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
+                            {value} h
+                          </p>
+                        </div>
+                      </>
+                    )
+                  )}
+              </div>
+            )}
+            {(title === "Total Number of Cases" ||
+              title === "Total Completed Cases") && (
               <div className="rounded-2xl w-fit items-center justify-center border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div key={key} className="w-fit">
-                    <p className="text-3xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
+                    <p
+                      className={`${
+                        title === "Total Completed Cases"
+                          ? " text-center"
+                          : "text-3xl"
+                      } font-semibold text-foreground mt-1 text-[var(--color-main-text)]`}
+                    >
                       {typeof value === "number"
                         ? value.toLocaleString()
                         : value}{" "}
@@ -71,7 +102,17 @@ export default function MetricCard({
             )}
             {(title === "Total Idle Time / Idle Time Ratio" ||
               title === "Total Loops / Loops Ratio" ||
-              title === "Median / Average Steps per Case") && (
+              title === "Median / Average Steps per Case" ||
+              title === "Dropout Rate" ||
+              title === "Number of Process Variants" ||
+              title === "Top 5 Process Variants (Count & %)" ||
+              title === "Largest Bottleneck" ||
+              title === "First Pass Rate" ||
+              title === "Longest Waiting Time Step" ||
+              title === "Variant Complexity Index" ||
+              title === "Cases Following Top Variant" ||
+              title === "Max Steps in a Case" ||
+              title === "Average Time Saved Potential") && (
               <div className="flex flex-wrap gap-2 justify-center">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div

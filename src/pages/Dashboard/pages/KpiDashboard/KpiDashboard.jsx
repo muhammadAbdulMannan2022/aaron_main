@@ -483,6 +483,7 @@ export default function KpiDashboard() {
                           rtk_data: fetched,
                         },
                       };
+                      // console.log(widgetWithData);
                       return (
                         <WidgetCard
                           key={widget.id}

@@ -8,6 +8,8 @@ import {
   YAxis,
   ResponsiveContainer,
   Tooltip,
+  CartesianGrid,
+  Legend,
 } from "recharts";
 
 export default function BarChartWidget({
@@ -162,6 +164,60 @@ export default function BarChartWidget({
           )}
         </>
       )}
+      {console.log(title)}
+      {title === "Activity Frequency Distribution" &&
+        Array.isArray(rtk_data?.Distribution) &&
+        rtk_data.Distribution.length > 0 && (
+          <ResponsiveContainer width="100%">
+            <BarChart
+              data={rtk_data.Distribution}
+              layout="vertical"
+              margin={{ top: 20, right: 40, left: 0, bottom: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+              <XAxis
+                type="number"
+                tick={{ fill: "var(--color-main-text)" }}
+                label={{
+                  value: "Count",
+                  position: "insideBottom",
+                  offset: -5,
+                  fill: "var(--color-main-text)",
+                }}
+              />
+              <YAxis
+                dataKey="activity"
+                type="category"
+                tick={{ fill: "var(--color-main-text)" }}
+                width={100}
+              />
+              <Tooltip
+                formatter={(val, name) =>
+                  name === "percentage" ? `${val}%` : val
+                }
+                contentStyle={{
+                  backgroundColor: "var(--color-gray-button-bg)",
+                  border: "1px solid var(--color-button-outline)",
+                }}
+              />
+              <Legend />
+              <Bar
+                dataKey="count"
+                name="Count"
+                fill="#8884d8"
+                radius={[2, 2, 0, 0]}
+                barSize={7}
+              />
+              <Bar
+                dataKey="percentage"
+                name="Percentage (%)"
+                fill="#82ca9d"
+                radius={[2, 2, 0, 0]}
+                barSize={7}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
     </div>
   );
 }
