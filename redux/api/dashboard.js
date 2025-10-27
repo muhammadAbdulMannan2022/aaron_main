@@ -85,7 +85,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/cycle-time/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/cycle-time/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -109,7 +109,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/average-vs-median-by-time/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/average-vs-median-by-time/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -133,7 +133,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/total-case-count/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/total-case-count/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -157,7 +157,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/total-loops-&-ratio/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/total-loops-&-ratio/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -181,7 +181,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/total-bottleneck-&-ratio/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/total-bottleneck-&-ratio/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -205,7 +205,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/calculate-step-and-cases/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/calculate-step-and-cases/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -229,7 +229,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/dropout-rate/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/dropout-rate/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -253,7 +253,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/average-activity-time/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/average-activity-time/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -277,7 +277,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/first-pass-rate/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/first-pass-rate/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -301,7 +301,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/longest-waiting-time/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/longest-waiting-time/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -325,7 +325,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/variant-complexity-index/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/variant-complexity-index/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -349,7 +349,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/variant-change-over-time/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/variant-change-over-time/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -373,7 +373,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/cases-following-top-variant/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/cases-following-top-variant/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -397,7 +397,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/max-steps-in-a-case/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/max-steps-in-a-case/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -421,7 +421,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/time-saved-potential/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/time-saved-potential/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -445,7 +445,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/activity-frequency-distribution/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/activity-frequency-distribution/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -469,7 +469,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/happy-path-compliance/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/happy-path-compliance/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -494,7 +494,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/total-completed-cases/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/total-completed-cases/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -518,7 +518,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/happy-path-deviation/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/happy-path-deviation/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -542,7 +542,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/skipped-steps-rate/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/skipped-steps-rate/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -566,7 +566,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/case-throughput-rate/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/case-throughput-rate/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -590,7 +590,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/total-idle-time-&-ratio/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/total-idle-time-&-ratio/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -614,7 +614,7 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/cost-per-process/${projectId}/${dashboardId}/?start_date=${
+        return `/api/project/cost-per-process/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
