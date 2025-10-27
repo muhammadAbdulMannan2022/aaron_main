@@ -7,6 +7,7 @@ function PricingCard({
   description,
   features,
   buttonText,
+  onClick,
 }) {
   return (
     <div
@@ -31,6 +32,7 @@ function PricingCard({
       </ul>
 
       <button
+        onClick={onClick}
         className={`w-full py-3 hover:cursor-pointer px-6 bg- border border-[#342BAD] text-[#5d52fc] rounded-lg hover:bg-[#342BAD] hover:text-white transition-colors`}
       >
         {buttonText}

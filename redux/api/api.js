@@ -130,6 +130,22 @@ export const api = createApi({
       }),
       invalidatesTags: ["Projects"],
     }),
+    // subscription
+    subscribeNow: builder.mutation({
+      query: (data) => ({
+        url: "/api/subscription/create-checkout-session/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
+    cancelSubscription: builder.mutation({
+      query: () => ({
+        url: "/api/subscription/cancel_subscription/",
+        method: "POST",
+      }),
+      invalidatesTags: ["Profile"],
+    }),
   }),
 });
 // 👇 these are auto-generated hooks
@@ -152,4 +168,7 @@ export const {
   useGetCollQuery,
   useSteColNameMutation,
   useDeleteProjectMutation,
+  // sub
+  useSubscribeNowMutation,
+  useCancelSubscriptionMutation,
 } = api;
