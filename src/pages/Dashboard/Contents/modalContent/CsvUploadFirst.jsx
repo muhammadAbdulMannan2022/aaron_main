@@ -59,6 +59,7 @@ export function CsvUploadFormVariant({ onClose, isRelated = false }) {
     isRelated &&
       relatedProjectId &&
       dataToSend.append("related_project", relatedProjectId);
+    isRelated && relatedProjectId && dataToSend.append("copy", true);
 
     try {
       const res = await submitProject(dataToSend).unwrap();

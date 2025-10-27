@@ -146,6 +146,18 @@ export const api = createApi({
       }),
       invalidatesTags: ["Profile"],
     }),
+    // banchmark
+    getBanchmark: builder.query({
+      query: (id) => `/api/project/kpi-summary-metrics/${id}/`,
+    }),
+    getBanchmarkPdf: builder.mutation({
+      query: (data) => ({
+        url: `/api/project/export-benchmark-pdf/`,
+        method: "POST",
+        body: data,
+        responseHandler: (response) => response.text(),
+      }),
+    }),
   }),
 });
 // 👇 these are auto-generated hooks
@@ -171,4 +183,7 @@ export const {
   // sub
   useSubscribeNowMutation,
   useCancelSubscriptionMutation,
+  // get banchmark
+  useGetBanchmarkQuery,
+  useGetBanchmarkPdfMutation,
 } = api;

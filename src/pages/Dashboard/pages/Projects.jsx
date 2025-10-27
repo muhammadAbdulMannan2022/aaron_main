@@ -53,9 +53,7 @@ export default function Projects() {
   };
   // filtered out related projects
   const onlyOrginalProjects = projectsData?.results.filter(
-    (project) =>
-      project.related_project !== null ||
-      (project.related_project == null && project.is_related === false)
+    (project) => project.copy !== true
   );
 
   // Filter and transform projectsData based on selected date

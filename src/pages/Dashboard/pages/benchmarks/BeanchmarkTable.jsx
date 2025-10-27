@@ -4,82 +4,10 @@ import { Modal } from "../../../../helpers/Modal";
 import { CsvUploadFormVariant } from "../../Contents/modalContent/CsvUploadFirst";
 import { CsvUploadForm } from "../../Contents/modalContent/UploadCsv";
 import { useNavigate } from "react-router";
+import { useGetAllProjectsQuery } from "../../../../../redux/api/api";
 
-const data = [
-  {
-    id: 1,
-    process: "2 January, 2025",
-    date: "2 January, 2025",
-    analyzedCsv: "Customer Support",
-    uploadedCsv: "Carolina Panthers",
-    analysisType: "start",
-  },
-  {
-    id: 2,
-    process: "2 January, 2025",
-    date: "2 January, 2025",
-    analyzedCsv: "User Interface",
-    uploadedCsv: "New Orleans Saints",
-    analysisType: "start",
-  },
-  {
-    id: 3,
-    process: "3 January, 2025",
-    date: "3 January, 2025",
-    analyzedCsv: "Development",
-    uploadedCsv: "San Francisco 49ers",
-    analysisType: "report",
-  },
-  {
-    id: 4,
-    process: "4 January, 2025",
-    date: "4 January, 2025",
-    analyzedCsv: "Production",
-    uploadedCsv: "Los Angeles Rams",
-    analysisType: "start",
-  },
-  {
-    id: 5,
-    process: "5 January, 2025",
-    date: "5 January, 2025",
-    analyzedCsv: "Project Management",
-    uploadedCsv: "Dallas Cowboys",
-    analysisType: "start",
-  },
-  {
-    id: 6,
-    process: "6 January, 2025",
-    date: "6 January, 2025",
-    analyzedCsv: "Automation Testing",
-    uploadedCsv: "Green Bay Packers",
-    analysisType: "start",
-  },
-  {
-    id: 7,
-    process: "7 January, 2025",
-    date: "7 January, 2025",
-    analyzedCsv: "Automation Testing",
-    uploadedCsv: "Minnesota Vikings",
-    analysisType: "start",
-  },
-  {
-    id: 8,
-    process: "8 January, 2025",
-    date: "8 January, 2025",
-    analyzedCsv: "User Interface",
-    uploadedCsv: "Atlanta Falcons",
-    analysisType: "start",
-  },
-  {
-    id: 9,
-    process: "9 January, 2025",
-    date: "9 January, 2025",
-    analyzedCsv: "Automation Testing",
-    uploadedCsv: "Detroit Lions",
-    analysisType: "start",
-  },
-];
 export default function BenchmarkTable() {
+  const { data: projectsData, isLoading } = useGetAllProjectsQuery();
   const [openActionId, setOpenActionId] = useState(null);
   const navigate = useNavigate();
 
@@ -106,13 +34,20 @@ export default function BenchmarkTable() {
 
   const handleReport = (item) => {
     console.log("Report:", item);
-    navigate("/dashboard/v1/benchmarks/report");
+    navigate("/dashboard/v1/benchmarks/report", { state: { id: item.id } });
   };
 
   const handleAdd = () => {
     setIsUploading(true);
     console.log("Add new benchmark");
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+  const onlyOrginalProjects = projectsData?.results.filter(
+    (project) => project.copy !== true
+  );
 
   return (
     <div className="bg-[#0f0f0f] text-white min-h-screen p-6">
@@ -150,13 +85,13 @@ export default function BenchmarkTable() {
                 <th className="px-6 py-4 text-left text-sm font-medium text-text-primary">
                   Analysis
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-text-primary">
+                {/* <th className="px-6 py-4 text-left text-sm font-medium text-text-primary">
                   Action
-                </th>
+                </th> */}
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => (
+              {onlyOrginalProjects.map((item, index) => (
                 <tr
                   key={item.id}
                   className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
@@ -168,21 +103,29 @@ export default function BenchmarkTable() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm text-text-notActive">
-                      {item.date}
+                      {new Date(item.created_at).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-auth-button-bg underline">
+                      <a target="_blank" href={item.csv_file}>
+                        File
+                      </a>
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm text-text-notActive">
-                      {item.analyzedCsv}
+                      {item.related_project
+                        ? `id: ${item.related_project}`
+                        : "No file"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-text-notActive">
-                      {item.uploadedCsv}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {item.analysisType === "report" ? (
+                    {item?.related_project ? (
                       <button
                         onClick={() => handleReport(item)}
                         className="text-auth-button-bg hover:text-auth-button-bg/80 hover:cursor-pointer text-sm font-medium transition-colors"
@@ -198,14 +141,14 @@ export default function BenchmarkTable() {
                       </button>
                     )}
                   </td>
-                  <td className="px-6 py-4">
+                  {/* <td className="px-6 py-4">
                     <button
                       onClick={() => handleDelete(item)}
                       className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-800 transition-colors hover:cursor-pointer"
                     >
                       <FiTrash2 className="w-4 h-4 text-red-700" />
                     </button>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>
