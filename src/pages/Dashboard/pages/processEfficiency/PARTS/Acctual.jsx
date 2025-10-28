@@ -11,6 +11,7 @@ import "reactflow/dist/style.css";
 import { FlowContext } from "../ProcessEfficiencyLayout";
 import { FaAngleRight } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
+import { useHappyPathQuery } from "../../../../../../redux/api/dashboard";
 
 // ✅ Custom Node with Problem Highlighting
 const CustomNode = ({ data, filter, isActualPath = true }) => {
@@ -153,34 +154,40 @@ export default function InvoiceFlow() {
   const [orginalPath, setOrginalPath] = useState([]);
   const [filter, setFilter] = useState("actual");
   const [showactual, setShowactual] = useState(false); // State for toggling actual path
+  const projectid = localStorage.getItem("currentProjectId");
+
+  const { data: happyPath, isLoading: isHappyPathLoading } = useHappyPathQuery(
+    projectid,
+    { skip: !projectid }
+  );
 
   // Mock data for testing (remove once API provides data)
-  const mockHappyPath = [
-    {
-      id: "1",
-      label: "Invoice Created",
-      average_time_minutes: 30,
-      status: "active",
-      owner: "System",
-      descriptions: ["Step 1: Invoice created in system"],
-    },
-    {
-      id: "2",
-      label: "Invoice Sent",
-      average_time_minutes: 15,
-      status: "active",
-      owner: "System",
-      descriptions: ["Step 2: Invoice sent to client"],
-    },
-    {
-      id: "3",
-      label: "Payment Received",
-      average_time_minutes: 10,
-      status: "active",
-      owner: "System",
-      descriptions: ["Step 3: Payment received and processed"],
-    },
-  ];
+  // const mockHappyPath = [
+  //   {
+  //     id: "1",
+  //     label: "Invoice Created",
+  //     average_time_minutes: 30,
+  //     status: "active",
+  //     owner: "System",
+  //     descriptions: ["Step 1: Invoice created in system"],
+  //   },
+  //   {
+  //     id: "2",
+  //     label: "Invoice Sent",
+  //     average_time_minutes: 15,
+  //     status: "active",
+  //     owner: "System",
+  //     descriptions: ["Step 2: Invoice sent to client"],
+  //   },
+  //   {
+  //     id: "3",
+  //     label: "Payment Received",
+  //     average_time_minutes: 10,
+  //     status: "active",
+  //     owner: "System",
+  //     descriptions: ["Step 3: Payment received and processed"],
+  //   },
+  // ];
 
   // Log data for debugging
   useEffect(() => {
@@ -192,16 +199,31 @@ export default function InvoiceFlow() {
 
   // Set ideal and original paths when data is available
   useEffect(() => {
-    // if (idealPathData?.ideal_path) {
-    if (false) {
-      setIdealPath(idealPathData.ideal_path);
+    // ✅ set happy path (ideal path) from API data
+    if (happyPath?.happy_paths?.length) {
+      const formattedHappyPath = happyPath.happy_paths.map((step) => ({
+        id: step.id.toString(),
+        serial_number: step.serial_number,
+        label: step.activity_name,
+        activity_name: step.activity_name,
+        average_time_minutes: parseFloat(step.average_time_minutes),
+        status: "active",
+        owner: "System",
+        descriptions: [
+          `${step.activity_name} — Avg Time: ${step.average_time_minutes} mins`,
+        ],
+      }));
+      setIdealPath(formattedHappyPath);
     } else {
-      setIdealPath(mockHappyPath); // Use mock data as fallback
+      // fallback to mock if API gives nothing
+      setIdealPath([]);
     }
+
+    // ✅ set actual/original process flow
     if (orginalPathData?.process_flow_nodes) {
       setOrginalPath(orginalPathData.process_flow_nodes);
     }
-  }, [idealPathData, orginalPathData]);
+  }, [happyPath, orginalPathData]);
 
   // Build nodes and edges for actual path (always shown in non-happy_path or in right canvas)
   const actualNodes = useMemo(
@@ -311,7 +333,7 @@ export default function InvoiceFlow() {
         >
           <option value="actual">Actual</option>
 
-          {orginalPathData?.global_metrics?.Happy_Path?.Is_Happy_Path && (
+          {orginalPathData?.global_metrics?.happy_path && (
             <option value="happy_path">Happy Path</option>
           )}
           <option value="bottlenecks">Bottlenecks</option>

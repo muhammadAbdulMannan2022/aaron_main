@@ -35,6 +35,19 @@ export const dashboard = createApi({
     getIdealPath: builder.query({
       query: (id) => `/api/project/ideal-path/${id}/`,
     }),
+    happyPath: builder.query({
+      query: (id) => `/api/project/happy-path/${id}/`,
+      providesTags: ["happypath"],
+    }),
+    // happy path
+    updateHappyPath: builder.mutation({
+      query: (data) => ({
+        url: `/api/project/happy-path/${data.projectId}/`,
+        method: "PATCH",
+        body: { id: data.id, average_time_minutes: data.average_time_minutes },
+      }),
+      invalidatesTags: ["happypath"],
+    }),
     getOrginalPath: builder.query({
       query: (id) => `/api/project/actual-path-data-with-connections/${id}/`,
     }),
@@ -629,6 +642,8 @@ export const {
   useGetKpiListQuery,
   useGetIdealPathQuery,
   useGetOrginalPathQuery,
+  useHappyPathQuery,
+  useUpdateHappyPathMutation,
   // dashboard
   useGetDashboardsQuery,
   useGetOneDashboardQuery,
