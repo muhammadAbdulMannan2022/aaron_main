@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -9,344 +9,199 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import ReactMarkdown from "react-markdown";
-import { buildEdges, buildNodes } from "../../../../utils/aiCustomDimantion";
+import {
+  useGetOrginalPathQuery,
+  // useUpdateActivityCostMutation,
+} from "../../../../../redux/api/dashboard";
+import { Modal } from "../../../../helpers/Modal";
 
-const rawInvoiceFlowData = [
-  {
-    id: "1",
-    label: "Invoice Created",
-    value: "23.47",
-    status: "completed",
-    owner: "Finance Team",
-    descriptions: [
-      "Invoice generated in the system.",
-      "Starting point for all cases.",
-    ],
-    isDropout: false,
-  },
-  {
-    id: "2",
-    label: "Invoice Sent",
-    value: "16.33",
-    status: "completed",
-    owner: "Sales Team",
-    descriptions: ["Invoice forwarded to client.", "Tracks delivery status."],
-    isDropout: false,
-  },
-  {
-    id: "3",
-    label: "Payment Monitoring",
-    value: "7475.87",
-    status: "in-progress",
-    owner: "Finance Team",
-    descriptions: [
-      "Monitors incoming payments.",
-      "Frequent bottleneck (e.g., 9995 min in R00001) and part of loops.",
-    ],
-    isBottleneck: true,
-    hasLoop: true,
-    loopConnections: {
-      from: "3",
-      to: "7",
-    },
-    extras: [
-      {
-        id: "3a",
-        label: "Payment Follow-Up",
-        position: "right",
-      },
-      {
-        id: "3b",
-        label: "Delay Check",
-        position: "left",
-        hasLoop: true,
-        loopConnections: {
-          from: "3b",
-          to: "7",
-        },
-      },
-    ],
-  },
-  {
-    id: "4",
-    label: "Payment Received",
-    value: "39.67",
-    status: "pending",
-    owner: "Finance Team",
-    descriptions: ["Client payment received.", "Awaits reconciliation."],
-    isDropout: false,
-  },
-  {
-    id: "5",
-    label: "Receipt Reconciled",
-    value: "62.73",
-    status: "final",
-    owner: "Finance Team",
-    descriptions: [
-      "Reconciles receipt with payment records.",
-      "Occasional bottleneck in R00004 (102 min).",
-    ],
-    isBottleneck: true,
-    extras: [
-      {
-        id: "5a",
-        label: "Reconciliation Check",
-        position: "right",
-      },
-    ],
-  },
-  {
-    id: "6",
-    label: "Archive",
-    value: "6.20",
-    status: "final",
-    owner: "Finance Team",
-    descriptions: [
-      "Case archived after reconciliation.",
-      "Reached in all cases.",
-    ],
-    isDropout: false,
-  },
-  {
-    id: "7",
-    label: "Dispute Raised",
-    value: "24.00",
-    status: "in-progress",
-    owner: "Finance Team",
-    descriptions: [
-      "Client dispute triggers rework.",
-      "Part of loops in R00003 and R00010.",
-    ],
-    hasLoop: true,
-    loopConnections: {
-      from: "7",
-      to: "8",
-    },
-    extras: [
-      {
-        id: "7a",
-        label: "Dispute Review",
-        position: "right",
-      },
-      {
-        id: "7b",
-        label: "Client Clarification",
-        position: "left",
-        hasLoop: true,
-        loopConnections: {
-          from: "7b",
-          to: "8",
-        },
-      },
-    ],
-  },
-  {
-    id: "8",
-    label: "Invoice Resent",
-    value: "12.00",
-    status: "in-progress",
-    owner: "Sales Team",
-    descriptions: [
-      "Invoice resent after dispute.",
-      "Loops to Invoice Adjusted or Payment Monitoring.",
-    ],
-    hasLoop: true,
-    loopConnections: {
-      from: "8",
-      to: "9",
-    },
-    extras: [
-      {
-        id: "8a",
-        label: "Resend Confirmation",
-        position: "right",
-      },
-    ],
-  },
-  {
-    id: "9",
-    label: "Invoice Adjusted",
-    value: "82.00",
-    status: "in-progress",
-    owner: "Finance Team",
-    descriptions: [
-      "Invoice adjusted due to disputes.",
-      "Loops back to Dispute Raised in R00003, R00010.",
-    ],
-    hasLoop: true,
-    loopConnections: {
-      from: "9",
-      to: "7",
-    },
-    extras: [
-      {
-        id: "9a",
-        label: "Adjustment Review",
-        position: "right",
-      },
-      {
-        id: "9b",
-        label: "Error Correction",
-        position: "left",
-        hasLoop: true,
-        loopConnections: {
-          from: "9b",
-          to: "7",
-        },
-      },
-    ],
-  },
-  {
-    id: "10",
-    label: "Invoice Created",
-    value: "19.00",
-    status: "completed",
-    owner: "Finance Team",
-    descriptions: [
-      "Efficient invoice creation (minimum duration).",
-      "Reference to ideal process start.",
-    ],
-    isDropout: false,
-  },
-  {
-    id: "11",
-    label: "Invoice Approval",
-    value: "84.00",
-    status: "in-progress",
-    owner: "Management Team",
-    descriptions: [
-      "Approval step before sending invoice.",
-      "Assumed bottleneck due to review time.",
-    ],
-    isBottleneck: true,
-    extras: [
-      {
-        id: "11a",
-        label: "Approval Check",
-        position: "right",
-      },
-    ],
-  },
-  {
-    id: "12",
-    label: "Receipt Reconciled",
-    value: "102.00",
-    status: "final",
-    owner: "Finance Team",
-    descriptions: [
-      "Delayed reconciliation in R00004.",
-      "Significant bottleneck.",
-    ],
-    isBottleneck: true,
-    extras: [
-      {
-        id: "12a",
-        label: "Reconciliation Audit",
-        position: "right",
-      },
-    ],
-  },
-  {
-    id: "13",
-    label: "Invoice Sent",
-    value: "4.00",
-    status: "completed",
-    owner: "Sales Team",
-    descriptions: [
-      "Efficient invoice delivery (minimum duration).",
-      "Part of ideal process flow.",
-    ],
-    isDropout: false,
-  },
-  {
-    id: "14",
-    label: "Payment Monitoring",
-    value: "9995.00",
-    status: "in-progress",
-    owner: "Finance Team",
-    descriptions: [
-      "Major bottleneck in R00001 (9995 min).",
-      "Triggers loops with disputes.",
-    ],
-    isBottleneck: true,
-    hasLoop: true,
-    loopConnections: {
-      from: "14",
-      to: "7",
-    },
-    extras: [
-      {
-        id: "14a",
-        label: "Extended Follow-Up",
-        position: "right",
-      },
-      {
-        id: "14b",
-        label: "Overdue Check",
-        position: "left",
-        hasLoop: true,
-        loopConnections: {
-          from: "14b",
-          to: "7",
-        },
-      },
-    ],
-  },
-  {
-    id: "15",
-    label: "Payment Received",
-    value: "5.00",
-    status: "pending",
-    owner: "Finance Team",
-    descriptions: [
-      "Efficient payment receipt (minimum duration).",
-      "Part of ideal process flow.",
-    ],
-    isDropout: false,
-  },
-];
-// Deduplicate data
-const invoiceFlowData = rawInvoiceFlowData
-  .reduce((acc, step) => {
-    const existing = acc.find(
-      (s) => s.id === step.id && s.label === step.label
-    );
-    if (!existing) {
-      acc.push({ ...step });
-    } else {
-      existing.descriptions = [
-        ...new Set([...existing.descriptions, ...step.descriptions]),
-      ];
-      existing.hasLoop = existing.hasLoop || step.hasLoop || false;
-      existing.loopConnections =
-        existing.loopConnections || step.loopConnections;
-      existing.isBottleneck =
-        existing.isBottleneck || step.isBottleneck || false;
-      existing.isDropout = existing.isDropout || step.isDropout || false;
-      existing.value = step.value; // Use the latest value
-      existing.status = step.status; // Use the latest status
-      existing.owner = step.owner || existing.owner;
+/* --------------------------------------------------------------- */
+/*  COST EDITOR PANEL – edit all steps at once                     */
+/* --------------------------------------------------------------- */
+const CostEditorPanel = ({ nodes, onClose }) => {
+  const [costs, setCosts] = useState({});
+  // const [updateCost, { isLoading }] = useUpdateActivityCostMutation();
+  const projectId = localStorage.getItem("currentProjectId");
+
+  // initialise from node data
+  useEffect(() => {
+    if (!nodes) return;
+    const init = {};
+    nodes.forEach((n) => {
+      init[n.id] = n.data.costPerHour?.toString() || "";
+    });
+    setCosts(init);
+  }, [nodes]);
+
+  const handleChange = (nodeId, value) => {
+    setCosts((prev) => ({ ...prev, [nodeId]: value }));
+  };
+
+  const handleSaveAll = async () => {
+    const payloads = Object.entries(costs)
+      .filter(([_, v]) => v !== "" && !isNaN(v))
+      .map(([nodeId, cost]) => ({
+        nodeId,
+        cost_per_hour: parseFloat(cost),
+        projectId,
+      }));
+
+    if (!payloads.length) {
+      onClose();
+      return;
     }
-    return acc;
-  }, [])
-  .sort((a, b) => {
-    if (a.id === b.id) return a.label.localeCompare(b.label);
-    return parseInt(a.id) - parseInt(b.id);
-  });
 
-// Custom Node
-const CustomNode = ({ data }) => {
-  const { label, extra } = data;
-  const statusColor = extra.isDropout
-    ? "#aa0000"
-    : extra.isBottleneck
-    ? "#8a8a00"
-    : extra.hasLoop
-    ? "#342BAD"
-    : "#000000";
+    try {
+      // await Promise.all(payloads.map((p) => updateCost(p).unwrap()));
+      onClose();
+    } catch (e) {
+      console.error("Bulk cost update failed", e);
+    }
+  };
+
+  if (!nodes) return null;
+
   return (
     <div
-      className={`min-w-64 min-h-5 rounded-md text-gray-200 flex justify-between hover:cursor-pointer z-20 border border-[${statusColor}] `}
+      className="p-6 md:min-w-xl"
+      style={{
+        backgroundColor: "var(--color-main-bg)",
+        color: "var(--color-text-primary)",
+      }}
+    >
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Set Cost per Hour (All Steps)</h2>
+      </div>
+
+      {/* Table */}
+      <div className="max-h-96 overflow-y-auto mb-6">
+        <table className="w-full text-sm">
+          <thead>
+            <tr
+              className="border-b pb-2"
+              style={{ borderColor: "var(--color-gray-button-bg)" }}
+            >
+              <th
+                className="text-left py-2"
+                style={{ color: "var(--color-dark-text)" }}
+              >
+                Step
+              </th>
+              <th
+                className="text-center py-2"
+                style={{ color: "var(--color-dark-text)" }}
+              >
+                Avg Time (min)
+              </th>
+              <th
+                className="text-right py-2 pr-4"
+                style={{ color: "var(--color-dark-text)" }}
+              >
+                Cost $/hour
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {nodes.map((n) => (
+              <tr
+                key={n.id}
+                className="border-b"
+                style={{ borderColor: "var(--color-gray-button-bg)" }}
+              >
+                <td
+                  className="py-2"
+                  style={{ color: "var(--color-text-primary)" }}
+                >
+                  {n.data.label}
+                </td>
+                <td
+                  className="text-center py-2"
+                  style={{ color: "var(--color-dark-text)" }}
+                >
+                  {n.data.value}
+                </td>
+                <td className="py-2 pr-2 flex items-center justify-end">
+                  <>
+                    <style>
+                      {`
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    `}
+                    </style>
+
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={costs[n.id] ?? ""}
+                      onChange={(e) => handleChange(n.id, e.target.value)}
+                      className="w-24 px-2 py-1 text-center rounded border-0 outline-none"
+                      style={{
+                        backgroundColor: "var(--color-gray-button-bg)",
+                        color: "var(--color-text-primary)",
+                        appearance: "textfield",
+                        MozAppearance: "textfield",
+                      }}
+                      placeholder="0.00"
+                    />
+                  </>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex gap-3">
+        <button
+          onClick={onClose}
+          className="flex-1 py-2 px-4 rounded font-medium transition-opacity hover:opacity-70 hover:cursor-pointer"
+          style={{
+            backgroundColor: "var(--color-gray-button-bg)",
+            color: "var(--color-text-primary)",
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleSaveAll}
+          // disabled={isLoading}
+          className="flex-1 py-2 px-4 rounded font-medium transition-opacity hover:cursor-pointer hover:opacity-90 disabled:opacity-50"
+          style={{
+            backgroundColor: "var(--color-outer-button-bg)",
+            color: "var(--color-text-primary)",
+          }}
+        >
+          {/* {isLoading ? "Saving…" : "Set Cost"} */}
+          set cost
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* --------------------------------------------------------------- */
+/*  CUSTOM NODE – original colours + cost badge                     */
+/* --------------------------------------------------------------- */
+const CustomNode = ({ data }) => {
+  const { label, value, isDropout, isBottleneck, hasLoop, costPerHour } = data;
+
+  const statusColor = isDropout
+    ? "#aa0000"
+    : isBottleneck
+    ? "#8a8a00"
+    : hasLoop
+    ? "#342BAD"
+    : "#000000";
+
+  return (
+    <div
+      className="min-w-64 min-h-5 rounded-md text-gray-200 flex justify-between hover:cursor-pointer z-20 border"
       style={{
         backgroundColor: statusColor,
         borderColor: statusColor === "#000000" ? "#342BAD" : statusColor,
@@ -372,148 +227,222 @@ const CustomNode = ({ data }) => {
       />
       <Handle
         type="target"
-        position={Position.Right}
-        id="right"
+        position={Position.Left}
+        id="left"
         style={{ background: "#555" }}
       />
+
       <div className="flex justify-center w-full">
         <div className="py-2 px-4 flex items-center justify-center">
           <h1 className="text-sm font-bold text-center">{label}</h1>
         </div>
       </div>
+
+      {costPerHour > 0 && (
+        <div className="absolute top-1 right-1 bg-green-600 text-xs px-2 py-0.5 rounded-full">
+          ${costPerHour}/h
+        </div>
+      )}
     </div>
   );
 };
+
 const nodeTypes = { custom: CustomNode };
 
+/* --------------------------------------------------------------- */
+/*  MAIN COMPONENT                                                  */
+/* --------------------------------------------------------------- */
 export default function AiSupport() {
+  const projectId = localStorage.getItem("currentProjectId");
+  const { data, isLoading } = useGetOrginalPathQuery(projectId, {
+    skip: !projectId,
+  });
+
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [descriptions, setDescriptions] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
-  const [descriptionsToShow, setDescriptionsToShow] = useState([]);
-  const chatContainerRef = useRef(null);
-  // get data of simulation
+  const [showCostEditor, setShowCostEditor] = useState(false);
+  const chatRef = useRef(null);
 
-  // Scroll to bottom when messages or descriptions change
+  /* ------------------- scroll chat ------------------- */
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
-  }, [chatMessages, descriptionsToShow]);
+    chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
+  }, [chatMessages, descriptions]);
 
-  // Build nodes and edges
-  const mainNodes = useMemo(() => buildNodes(invoiceFlowData), []);
-  const mainEdges = useMemo(() => buildEdges(invoiceFlowData), []);
+  /* ------------------- VERTICAL LAYOUT ------------------- */
+  const { flowNodes, flowEdges } = useMemo(() => {
+    if (!data?.process_flow_nodes) return { flowNodes: [], flowEdges: [] };
 
-  // ReactFlow state
-  const [nodes, setNodes, onNodesChange] = useNodesState(mainNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(mainEdges);
+    const VERTICAL_SPACING = 180;
+    const START_Y = 100;
+
+    const nodes = data.process_flow_nodes.map((node, idx) => ({
+      id: node.id,
+      type: "custom",
+      position: { x: 350, y: START_Y + idx * VERTICAL_SPACING },
+      data: {
+        label: node.label,
+        value: node.value,
+        isDropout: node.isDropout,
+        isBottleneck: node.isBottleneck,
+        hasLoop: node.hasLoop,
+        costPerHour: node.cost_per_hour || 0,
+        descriptions: node.descriptions,
+      },
+    }));
+
+    const edges = nodes.slice(0, -1).map((n, i) => ({
+      id: `e${i}`,
+      source: n.id,
+      target: nodes[i + 1].id,
+      animated: n.data.hasLoop,
+      style: { stroke: n.data.hasLoop ? "#ffaa00" : "#666" },
+    }));
+
+    return { flowNodes: nodes, flowEdges: edges };
+  }, [data]);
 
   useEffect(() => {
-    setNodes(mainNodes);
-    setEdges(mainEdges);
-  }, [mainNodes, mainEdges, setNodes, setEdges]);
+    setNodes(flowNodes);
+    setEdges(flowEdges);
+  }, [flowNodes, flowEdges, setNodes, setEdges]);
 
-  const [selectedNode, setSelectedNode] = useState(null);
-
+  /* ------------------- node click ------------------- */
   const onNodeClick = useCallback((_, node) => {
-    setSelectedNode(node.data);
-    setDescriptionsToShow(node.data.step.descriptions);
+    const d = node.data;
+    setSelectedNode(d);
+    setDescriptions(d.descriptions || []);
   }, []);
 
-  const handleChatSubmit = useCallback(
-    (e) => {
-      e.preventDefault();
-      if (chatInput.trim()) {
-        setChatMessages([...chatMessages, { text: chatInput, sender: "user" }]);
-        // Simulate AI response in Markdown format
-        setChatMessages((prev) => [
-          ...prev,
-          {
-            text: `**AI Response**: Your query was "${chatInput}". Here's some information:\n\n- This is a **sample** response.\n- Feel free to ask more about the invoice flow!`,
-            sender: "ai",
-          },
-        ]);
-        setChatInput("");
-        setDescriptionsToShow([]); // Hide descriptions when sending a message
-      }
-    },
-    [chatMessages, chatInput]
-  );
+  /* ------------------- chat ------------------- */
+  const handleChat = (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    setChatMessages((m) => [...m, { text: chatInput, sender: "user" }]);
+    setChatMessages((m) => [
+      ...m,
+      {
+        text: `**AI**: You asked about **${chatInput}**.\n\n${
+          selectedNode?.label || "Select a node"
+        } takes **${selectedNode?.value || "?"} min**.\n\n${
+          selectedNode?.costPerHour
+            ? `Cost: **$${selectedNode.costPerHour}/hour**`
+            : "No cost set yet."
+        }`,
+        sender: "ai",
+      },
+    ]);
+    setChatInput("");
+  };
+
+  /* ------------------- render ------------------- */
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-white text-xl">
+        Loading process flow...
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full h-full relative">
-      {/* Main Content */}
-      <div className="flex flex-1 flex-col md:flex-row gap-4 p-4">
-        {/* Main Flow */}
-        <div className="flex-1 border rounded bg-main-bg relative">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeClick={onNodeClick}
-            nodeTypes={nodeTypes}
-            maxZoom={1.5}
-            minZoom={1.0}
-            defaultViewport={{ x: 0, y: 0 }}
-            fitView
-          >
-            <Background color="#414040" />
-            <Controls />
-          </ReactFlow>
-        </div>
+      {/* ---------- Flow (vertical) ---------- */}
+      <div className="flex-1 relative">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onNodeClick={onNodeClick}
+          nodeTypes={nodeTypes}
+          fitView
+          maxZoom={2}
+          minZoom={0.5}
+        >
+          <Background color="#333" gap={16} />
+          <Controls />
+        </ReactFlow>
 
-        {/* AI Chat Sidebar */}
-        <div className="w-80 rounded bg-main-bg border-l border-gray-button-bg px-4 flex flex-col">
-          <h2 className="text-white text-lg font-bold mb-4">AI Assistant</h2>
-          <div
-            ref={chatContainerRef}
-            className="flex-1 overflow-y-auto mb-4 scroll-smooth"
-          >
-            {chatMessages.map((msg, index) => (
-              <div
-                key={index}
-                className={`mb-2 p-2 rounded max-w-[80%] w-fit ${
-                  msg.sender === "user"
-                    ? "bg-[#0B0B0B] text-[#8D8C8C] ml-auto pe-3"
-                    : "bg-gray-700 text-[#8D8C8C] mr-auto"
-                }`}
-              >
-                {msg.sender === "ai" ? (
-                  <ReactMarkdown>{msg.text}</ReactMarkdown>
-                ) : (
-                  <span>{msg.text}</span>
-                )}
-              </div>
-            ))}
-            {descriptionsToShow.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-white font-bold">Node Descriptions:</h3>
-                <ul className="text-[#8D8C8C] list-disc pl-5">
-                  {descriptionsToShow.map((desc, index) => (
-                    <li key={index}>{desc}</li>
-                  ))}
-                </ul>
-              </div>
+        {/* ---------- Cost Editor Panel (overlay) ---------- */}
+        {/* {showCostEditor && ( */}
+        <Modal isOpen={showCostEditor} onClose={() => setShowCostEditor(false)}>
+          <CostEditorPanel
+            nodes={flowNodes}
+            onClose={() => setShowCostEditor(false)}
+          />
+        </Modal>
+        {/* )} */}
+
+        {/* ---------- Open Cost Editor button ---------- */}
+        <button
+          onClick={() => setShowCostEditor(true)}
+          className="absolute top-4 right-4 bg-[#574bff] text-white px-4 py-2 rounded hover:bg-[#675dfa] transition font-medium hover:cursor-pointer"
+        >
+          Set Costs
+        </button>
+
+        {/* ---------- Selected-node panel ---------- */}
+        {selectedNode && (
+          <div className="absolute top-4 left-4 bg-[#1a1a1a] p-4 rounded-lg shadow-xl max-w-xs text-white">
+            <h3 className="font-bold text-lg">{selectedNode.label}</h3>
+            <p className="text-sm text-gray-400">
+              Avg: <strong>{selectedNode.value} min</strong>
+            </p>
+            {selectedNode.costPerHour > 0 && (
+              <p className="text-green-400 text-sm">
+                Cost: <strong>${selectedNode.costPerHour}/hour</strong>
+              </p>
             )}
           </div>
-          <form onSubmit={handleChatSubmit} className="flex gap-2">
-            <input
-              type="text"
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              className="flex-1 bg-gray-700 text-white rounded p-2 focus:outline-none"
-              placeholder="Ask AI..."
-            />
-            <button
-              type="submit"
-              className="bg-[#574bff] text-white px-4 py-2 rounded hover:bg-[#675dfa]"
+        )}
+      </div>
+
+      {/* ---------- AI Chat Sidebar ---------- */}
+      <div className="w-80 bg-[#0f0f0f] border-l border-gray-700 p-4 flex flex-col">
+        <h2 className="text-xl font-bold text-white mb-3">AI Assistant</h2>
+        <div ref={chatRef} className="flex-1 overflow-y-auto mb-3 space-y-3">
+          {chatMessages.map((msg, i) => (
+            <div
+              key={i}
+              className={`p-3 rounded-lg max-w-[85%] ${
+                msg.sender === "user"
+                  ? "bg-[#574bff] text-white ml-auto"
+                  : "bg-gray-700 text-gray-200"
+              }`}
             >
-              Send
-            </button>
-          </form>
+              {msg.sender === "ai" ? (
+                <ReactMarkdown>{msg.text}</ReactMarkdown>
+              ) : (
+                msg.text
+              )}
+            </div>
+          ))}
+          {descriptions.length > 0 && (
+            <div className="bg-gray-800 p-3 rounded-lg text-sm">
+              <strong>Details:</strong>
+              <ul className="list-disc pl-5 mt-1 text-gray-300">
+                {descriptions.map((d, i) => (
+                  <li key={i}>{d}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
+        <form onSubmit={handleChat} className="flex gap-2">
+          <input
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="Ask about this flow..."
+            className="flex-1 bg-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#574bff]"
+          />
+          <button className="bg-[#574bff] px-4 py-2 rounded hover:bg-[#675dfa] transition text-white font-medium">
+            Send
+          </button>
+        </form>
       </div>
     </div>
   );

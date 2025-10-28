@@ -262,6 +262,15 @@ export function HappyPathSetup({ isOpen, onClose }) {
 
           <div className="flex items-center justify-center gap-6 mb-8">
             <div className="flex flex-col items-center">
+              <style>
+                {`
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    `}
+              </style>
               <input
                 type="number"
                 min="0"
@@ -273,6 +282,8 @@ export function HappyPathSetup({ isOpen, onClose }) {
                 style={{
                   backgroundColor: "var(--color-gray-button-bg)",
                   color: "var(--color-text-primary)",
+                  appearance: "textfield",
+                  MozAppearance: "textfield",
                 }}
               />
               <span
@@ -314,7 +325,7 @@ export function HappyPathSetup({ isOpen, onClose }) {
           <div className="flex gap-3">
             <button
               onClick={() => setEditingStep(null)}
-              className="flex-1 py-2 px-4 rounded font-medium transition-opacity hover:opacity-70"
+              className="flex-1 py-2 px-4 rounded font-medium transition-opacity hover:opacity-70 hover:cursor-pointer"
               style={{
                 backgroundColor: "var(--color-gray-button-bg)",
                 color: "var(--color-text-primary)",
@@ -324,7 +335,7 @@ export function HappyPathSetup({ isOpen, onClose }) {
             </button>
             <button
               onClick={handleSaveDuration}
-              className="flex-1 py-2 px-4 rounded font-medium transition-opacity hover:opacity-90"
+              className="flex-1 py-2 px-4 rounded font-medium transition-opacity hover:opacity-90 hover:cursor-pointer"
               style={{
                 backgroundColor: "var(--color-outer-button-bg)",
                 color: "var(--color-text-primary)",

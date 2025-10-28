@@ -215,9 +215,8 @@ const AddWidgetSidebar = ({ isOpen, onClose, onAdd, onToggle, isopen }) => {
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity hover:cursor-pointer"
+                className="flex-1 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity hover:cursor-pointer bg-[#574bff]"
                 style={{
-                  backgroundColor: "var(--color-auth-button-bg)",
                   color: "var(--color-text-primary)",
                 }}
               >
