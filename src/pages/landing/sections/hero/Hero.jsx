@@ -2,8 +2,10 @@ import { FaPlay } from "react-icons/fa6";
 import GradientText from "../../../../helpers/GradientText";
 import MarqueeSection from "./Marquee";
 import { useRef } from "react";
+import { useNavigate } from "react-router";
 export function Hero() {
   const videoRef = useRef(null);
+  const navigate = useNavigate();
   return (
     <section className="relative bg-[#0f0f0f] flex items-center justify-center overflow-hidden md:h-[calc(100vh-70px)] h-[calc(100vh-70px)] ">
       {/* Content */}
@@ -23,11 +25,14 @@ export function Hero() {
           </p>
 
           <div className="flex flex-row gap-4 justify-center md:justify-start">
-            <button className="bg-outer-button-bg hover:bg-outer-button-bg/80 text-white px-6 py-2 md:px-8 md:py-3 rounded-lg font-semibold text-sm md:text-base transition-colors duration-200 md:min-w-[160px]">
+            <button
+              onClick={() => navigate("/auth/login")}
+              className="bg-outer-button-bg hover:bg-outer-button-bg/80 hover:cursor-pointer text-white px-6 py-2 md:px-8 md:py-3 rounded-lg font-semibold text-sm md:text-base transition-colors duration-200 md:min-w-[160px]"
+            >
               Get Started Now
             </button>
 
-            <button className="bg-gray-button-bg hover:bg-gray-button-bg/80 text-white px-6 py-2 md:px-8 md:py-3 rounded-lg font-semibold text-sm md:text-base transition-colors duration-200 flex items-center gap-2 md:min-w-[160px] justify-center border border-gray-700">
+            <button className="bg-gray-button-bg hover:bg-gray-button-bg/80 hover:cursor-pointer text-white px-6 py-2 md:px-8 md:py-3 rounded-lg font-semibold text-sm md:text-base transition-colors duration-200 flex items-center gap-2 md:min-w-[160px] justify-center border border-gray-700">
               <FaPlay />
               Watch Demo
             </button>

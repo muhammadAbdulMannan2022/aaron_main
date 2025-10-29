@@ -89,7 +89,7 @@ export function HowItsWorks() {
               How it Works
             </h2>
             <p className="text-gray-400 text-center">
-              Line software suite that simplifies process mining
+              From raw data to real impact.
             </p>
           </div>
         </div>

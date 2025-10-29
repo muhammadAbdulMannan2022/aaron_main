@@ -1,4 +1,5 @@
 function ShimmerButton() {
+  const navigate = useNavigate();
   const customCss = `
     @property --angle {
       syntax: '<angle>';
@@ -30,7 +31,10 @@ function ShimmerButton() {
             animation: "shimmer-spin 2.5s linear infinite",
           }}
         />
-        <span className="relative z-10 inline-flex items-center rounded-full hover:cursor-pointer justify-center w-full h-full px-8 py-3 text-text-primary bg-gray-button-bg transition-colors duration-300 hover:bg-gray-button-bg/80">
+        <span
+          onClick={() => navigate("/auth/login")}
+          className="relative z-10 inline-flex items-center rounded-full hover:cursor-pointer justify-center w-full h-full px-8 py-3 text-text-primary bg-gray-button-bg transition-colors duration-300 hover:bg-gray-button-bg/80"
+        >
           Subscribe Today
         </span>
       </Link>
@@ -38,14 +42,14 @@ function ShimmerButton() {
   );
 }
 
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function SubscribeS() {
   return (
     <div className="bg-black/80 flex items-center justify-center py-10 md:py-20">
       <div className="max-w-7xl w-full bg-[#161616] rounded-2xl text-center gap-5 flex flex-col landing-shadow p-8 md:p-16 items-center justify-center py-10 md:py-28">
         <h1 className="text-3xl md:text-5xl max-w-2xl font-semibold text-[#C6CED3]">
-          Turn your Process into progres
+          Turn your Process into Progress
         </h1>
         <p className="max-w-3xl text-base text-gray-400">
           {" "}
