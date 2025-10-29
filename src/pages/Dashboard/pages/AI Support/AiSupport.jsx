@@ -10,8 +10,8 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import ReactMarkdown from "react-markdown";
 import {
+  useDefineCostMutation,
   useGetOrginalPathQuery,
-  // useUpdateActivityCostMutation,
 } from "../../../../../redux/api/dashboard";
 import { Modal } from "../../../../helpers/Modal";
 
@@ -20,15 +20,17 @@ import { Modal } from "../../../../helpers/Modal";
 /* --------------------------------------------------------------- */
 const CostEditorPanel = ({ nodes, onClose }) => {
   const [costs, setCosts] = useState({});
-  // const [updateCost, { isLoading }] = useUpdateActivityCostMutation();
+  const [defineCost, { isLoading }] = useDefineCostMutation();
   const projectId = localStorage.getItem("currentProjectId");
 
-  // initialise from node data
+  // Initialize costs from node.data.cost_per_h
   useEffect(() => {
     if (!nodes) return;
     const init = {};
     nodes.forEach((n) => {
-      init[n.id] = n.data.costPerHour?.toString() || "";
+      const cost = n.data.cost_per_h;
+      init[n.id] =
+        cost != null && cost !== "" ? parseFloat(cost).toFixed(2) : "";
     });
     setCosts(init);
   }, [nodes]);
@@ -37,13 +39,24 @@ const CostEditorPanel = ({ nodes, onClose }) => {
     setCosts((prev) => ({ ...prev, [nodeId]: value }));
   };
 
+  const handleBlur = (nodeId, value) => {
+    if (value === "" || isNaN(value)) {
+      handleChange(nodeId, "");
+    } else {
+      handleChange(nodeId, parseFloat(value).toFixed(2));
+    }
+  };
+
   const handleSaveAll = async () => {
-    const payloads = Object.entries(costs)
-      .filter(([_, v]) => v !== "" && !isNaN(v))
-      .map(([nodeId, cost]) => ({
-        nodeId,
-        cost_per_hour: parseFloat(cost),
-        projectId,
+    const payloads = nodes
+      .filter((n) => {
+        const val = costs[n.id];
+        return val !== "" && val != null && !isNaN(val) && parseFloat(val) > 0;
+      })
+      .map((n) => ({
+        project: parseInt(projectId, 10),
+        activity_name: n.data.label,
+        cost_per_h: parseFloat(costs[n.id]).toFixed(2),
       }));
 
     if (!payloads.length) {
@@ -52,14 +65,14 @@ const CostEditorPanel = ({ nodes, onClose }) => {
     }
 
     try {
-      // await Promise.all(payloads.map((p) => updateCost(p).unwrap()));
+      await defineCost(payloads).unwrap();
       onClose();
     } catch (e) {
       console.error("Bulk cost update failed", e);
     }
   };
 
-  if (!nodes) return null;
+  if (!nodes || nodes.length === 0) return null;
 
   return (
     <div
@@ -69,12 +82,10 @@ const CostEditorPanel = ({ nodes, onClose }) => {
         color: "var(--color-text-primary)",
       }}
     >
-      {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Set Cost per Hour (All Steps)</h2>
       </div>
 
-      {/* Table */}
       <div className="max-h-96 overflow-y-auto mb-6">
         <table className="w-full text-sm">
           <thead>
@@ -122,33 +133,28 @@ const CostEditorPanel = ({ nodes, onClose }) => {
                   {n.data.value}
                 </td>
                 <td className="py-2 pr-2 flex items-center justify-end">
-                  <>
-                    <style>
-                      {`
-      input[type=number]::-webkit-inner-spin-button,
-      input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-    `}
-                    </style>
-
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={costs[n.id] ?? ""}
-                      onChange={(e) => handleChange(n.id, e.target.value)}
-                      className="w-24 px-2 py-1 text-center rounded border-0 outline-none"
-                      style={{
-                        backgroundColor: "var(--color-gray-button-bg)",
-                        color: "var(--color-text-primary)",
-                        appearance: "textfield",
-                        MozAppearance: "textfield",
-                      }}
-                      placeholder="0.00"
-                    />
-                  </>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={costs[n.id] ?? ""}
+                    onChange={(e) => handleChange(n.id, e.target.value)}
+                    onBlur={(e) => handleBlur(n.id, e.target.value)}
+                    className="w-24 px-2 py-1 text-center rounded border-0 outline-none"
+                    style={{
+                      backgroundColor: "var(--color-gray-button-bg)",
+                      color: "var(--color-text-primary)",
+                      MozAppearance: "textfield",
+                    }}
+                    placeholder="0.00"
+                  />
+                  <style jsx>{`
+                    input[type="number"]::-webkit-inner-spin-button,
+                    input[type="number"]::-webkit-outer-spin-button {
+                      -webkit-appearance: none;
+                      margin: 0;
+                    }
+                  `}</style>
                 </td>
               </tr>
             ))}
@@ -156,7 +162,6 @@ const CostEditorPanel = ({ nodes, onClose }) => {
         </table>
       </div>
 
-      {/* Buttons */}
       <div className="flex gap-3">
         <button
           onClick={onClose}
@@ -170,15 +175,14 @@ const CostEditorPanel = ({ nodes, onClose }) => {
         </button>
         <button
           onClick={handleSaveAll}
-          // disabled={isLoading}
+          disabled={isLoading}
           className="flex-1 py-2 px-4 rounded font-medium transition-opacity hover:cursor-pointer hover:opacity-90 disabled:opacity-50"
           style={{
             backgroundColor: "var(--color-outer-button-bg)",
             color: "var(--color-text-primary)",
           }}
         >
-          {/* {isLoading ? "Saving…" : "Set Cost"} */}
-          set cost
+          {isLoading ? "Saving…" : "Set Cost"}
         </button>
       </div>
     </div>
@@ -186,7 +190,7 @@ const CostEditorPanel = ({ nodes, onClose }) => {
 };
 
 /* --------------------------------------------------------------- */
-/*  CUSTOM NODE – original colours + cost badge                     */
+/*  CUSTOM NODE – shows cost badge only if cost > 0                */
 /* --------------------------------------------------------------- */
 const CustomNode = ({ data }) => {
   const { label, value, isDropout, isBottleneck, hasLoop, costPerHour } = data;
@@ -238,11 +242,12 @@ const CustomNode = ({ data }) => {
         </div>
       </div>
 
-      {costPerHour > 0 && (
+      {/* Show badge only if costPerHour > 0 */}
+      {/* {costPerHour > 0 && (
         <div className="absolute top-1 right-1 bg-green-600 text-xs px-2 py-0.5 rounded-full">
           ${costPerHour}/h
         </div>
-      )}
+      )} */}
     </div>
   );
 };
@@ -267,7 +272,6 @@ export default function AiSupport() {
   const [showCostEditor, setShowCostEditor] = useState(false);
   const chatRef = useRef(null);
 
-  /* ------------------- scroll chat ------------------- */
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
   }, [chatMessages, descriptions]);
@@ -289,8 +293,9 @@ export default function AiSupport() {
         isDropout: node.isDropout,
         isBottleneck: node.isBottleneck,
         hasLoop: node.hasLoop,
-        costPerHour: node.cost_per_hour || 0,
+        costPerHour: node.cost_per_h || 0, // Use cost_per_h
         descriptions: node.descriptions,
+        cost_per_h: node.cost_per_h, // Pass raw for editor
       },
     }));
 
@@ -310,14 +315,13 @@ export default function AiSupport() {
     setEdges(flowEdges);
   }, [flowNodes, flowEdges, setNodes, setEdges]);
 
-  /* ------------------- node click ------------------- */
   const onNodeClick = useCallback((_, node) => {
     const d = node.data;
     setSelectedNode(d);
     setDescriptions(d.descriptions || []);
+    // console.log(d, "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
   }, []);
 
-  /* ------------------- chat ------------------- */
   const handleChat = (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
@@ -329,7 +333,7 @@ export default function AiSupport() {
         text: `**AI**: You asked about **${chatInput}**.\n\n${
           selectedNode?.label || "Select a node"
         } takes **${selectedNode?.value || "?"} min**.\n\n${
-          selectedNode?.costPerHour
+          selectedNode?.costPerHour > 0
             ? `Cost: **$${selectedNode.costPerHour}/hour**`
             : "No cost set yet."
         }`,
@@ -339,7 +343,6 @@ export default function AiSupport() {
     setChatInput("");
   };
 
-  /* ------------------- render ------------------- */
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full text-white text-xl">
@@ -367,15 +370,13 @@ export default function AiSupport() {
           <Controls />
         </ReactFlow>
 
-        {/* ---------- Cost Editor Panel (overlay) ---------- */}
-        {/* {showCostEditor && ( */}
+        {/* ---------- Cost Editor Modal ---------- */}
         <Modal isOpen={showCostEditor} onClose={() => setShowCostEditor(false)}>
           <CostEditorPanel
             nodes={flowNodes}
             onClose={() => setShowCostEditor(false)}
           />
         </Modal>
-        {/* )} */}
 
         {/* ---------- Open Cost Editor button ---------- */}
         <button
@@ -423,7 +424,7 @@ export default function AiSupport() {
           ))}
           {descriptions.length > 0 && (
             <div className="bg-gray-800 p-3 rounded-lg text-sm">
-              <strong>Details:</strong>
+              <strong className="text-gray-400">Details:</strong>
               <ul className="list-disc pl-5 mt-1 text-gray-300">
                 {descriptions.map((d, i) => (
                   <li key={i}>{d}</li>

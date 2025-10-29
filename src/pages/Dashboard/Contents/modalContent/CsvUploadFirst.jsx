@@ -7,7 +7,11 @@ import {
   useSubmitProjectDataMutation,
 } from "../../../../../redux/api/api";
 
-export function CsvUploadFormVariant({ onClose, isRelated = false }) {
+export function CsvUploadFormVariant({
+  onClose,
+  isRelated = false,
+  relatedProjectI,
+}) {
   const [processName, setProcessName] = useState("");
   const [team, setTeam] = useState("");
   const [department, setDepartment] = useState("");
@@ -41,10 +45,13 @@ export function CsvUploadFormVariant({ onClose, isRelated = false }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(relatedProjectI);
     setError(""); // Clear previous errors
-    const relatedProjectId = isRelated
-      ? localStorage.getItem("currentProjectId")
-      : null;
+    const relatedProjectId =
+      isRelated &&
+      (relatedProjectI
+        ? relatedProjectI
+        : localStorage.getItem("currentProjectId"));
 
     if (!processName || !team || !department || !selectedFile) {
       setError("Please fill out all fields and select a CSV file.");

@@ -50,6 +50,15 @@ export const dashboard = createApi({
     }),
     getOrginalPath: builder.query({
       query: (id) => `/api/project/actual-path-data-with-connections/${id}/`,
+      providesTags: ["simulation"],
+    }),
+    defineCost: builder.mutation({
+      query: (data) => ({
+        url: "/api/project/cost-per-process/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["simulation"],
     }),
     // dashboard
     getDashboards: builder.query({
@@ -649,6 +658,7 @@ export const {
   useGetOneDashboardQuery,
   useCreateNewDashboardMutation,
   useUpdateDashboardMutation,
+  useDefineCostMutation,
   // KPIs
   useGetAbailableKpisQuery,
   useLazyGetCycleTimeQuery,

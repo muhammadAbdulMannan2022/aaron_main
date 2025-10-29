@@ -14,21 +14,11 @@ export default function BenchmarkTable() {
   // modals controle
   const [isUploading, setIsUploading] = useState(false);
 
-  const toggleAction = (id) => {
-    setOpenActionId(openActionId === id ? null : id);
-  };
-
-  const handleEdit = (item) => {
-    console.log("Edit:", item);
-    setOpenActionId(null);
-  };
-
-  const handleDelete = (item) => {
-    console.log("Delete:", item);
-    setOpenActionId(null);
-  };
-
   const handleStart = (item) => {
+    if (!item.id) return;
+    setOpenActionId(item.id);
+    setIsUploading(true);
+
     console.log("Start:", item);
   };
 
@@ -158,6 +148,7 @@ export default function BenchmarkTable() {
       <Modal isOpen={isUploading} onClose={() => setIsUploading(false)}>
         <CsvUploadFormVariant
           isRelated={true}
+          relatedProjectI={openActionId}
           onClose={() => setIsUploading(false)}
         />
       </Modal>
