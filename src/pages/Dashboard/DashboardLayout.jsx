@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import Sidebar from "./Contents/SideBar";
 import TopBar from "./Contents/TopBar";
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { Modal } from "../../helpers/Modal";
 import { ChangeEmailForm } from "./Contents/modalContent/ChangeEmailForm";
 import { ChangePasswordForm } from "./Contents/modalContent/ChangePassword";
@@ -12,6 +12,7 @@ import { CsvUploadFormVariant } from "./Contents/modalContent/CsvUploadFirst";
 import { DepartmentList } from "./Contents/modalContent/DepartmentList";
 import { TeamList } from "./Contents/modalContent/TeamList";
 import { useGetProfileDataQuery } from "../../../redux/api/api";
+import Cookie from "js-cookie";
 
 export const modalContext = createContext({});
 export const profileContext = createContext({});
@@ -30,6 +31,7 @@ export default function DashboardLayout() {
   const [departmentListOpen, setDepartmentListOpen] = useState(false);
   const [teamListOpen, setTeamListOpen] = useState(false);
   const [currentFileId, setCurrentFileId] = useState("");
+  const navigate = useNavigate();
   const contextData = {
     // Renamed for clarity
     changeEmailFormActive,
@@ -122,6 +124,9 @@ export default function DashboardLayout() {
             <LogoutConfirmation
               onConfirm={() => {
                 setIsLogOut(false);
+                Cookie.remove("access");
+                Cookie.remove("refresh");
+                navigate("/auth/login");
               }}
               onCancel={() => setIsLogOut(false)}
             />

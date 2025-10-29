@@ -26,19 +26,20 @@ export default function Login() {
     setErrorMessage("");
     try {
       const res = await login({ email, password }).unwrap();
-      console.log("Login successful:", res);
+      console.log("Login successful:", res, res.access, res.refresh);
 
       // 🟢 Save tokens to cookies
       if (res?.access) {
-        Cookie.set("access_token", res.access, { expires: 1 }); // 1 day
+        Cookie.set("access", res.access, { expires: 7 }); // 1 day
       }
       if (res?.refresh) {
-        Cookie.set("refresh_token", res.refresh, { expires: 7 }); // 7 days
+        Cookie.set("refresh", res.refresh, { expires: 7 }); // 7 days
       }
 
       navigate("/dashboard");
     } catch (error) {
       setErrorMessage(error?.data?.Message || "Login failed. Try again!");
+      console.log(error, "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
     }
   };
 
@@ -51,7 +52,7 @@ export default function Login() {
 
       // 🟢 Save tokens to cookies
       if (serverRes?.access) {
-        Cookie.set("access", serverRes.access, { expires: 1 });
+        Cookie.set("access", serverRes.access, { expires: 7 });
       }
       if (serverRes?.refresh) {
         Cookie.set("refresh", serverRes.refresh, { expires: 7 });

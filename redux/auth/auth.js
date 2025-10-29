@@ -4,8 +4,11 @@ export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://key-humpback-scarcely.ngrok-free.app",
-    headers: {
-      "ngrok-skip-browser-warning": "true",
+    credentials: "include", // if using cookies
+    prepareHeaders: (headers) => {
+      headers.set("ngrok-skip-browser-warning", "true");
+      headers.set("Content-Type", "application/json");
+      return headers;
     },
   }),
   endpoints: (builder) => ({
