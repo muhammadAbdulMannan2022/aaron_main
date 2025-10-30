@@ -27,6 +27,7 @@ function EditPrifile() {
     personalEmail: "",
     aboutYourself: "",
     professionalBackground: "",
+    companyName: "", // ← NEW: Company Name
   });
 
   const [profileImage, setProfileImage] = useState(null);
@@ -62,6 +63,7 @@ function EditPrifile() {
         personalEmail: profileData.email || "",
         aboutYourself: profileData.about_yourself || "",
         professionalBackground: profileData.professional_background || "",
+        companyName: profileData.company_name || "", // ← NEW: Populate from API
       });
     }
   }, [profileData]);
@@ -116,6 +118,7 @@ function EditPrifile() {
       "professional_background",
       formData.professionalBackground || ""
     );
+    formDataToSend.append("company_name", formData.companyName || ""); // ← NEW: Send to backend
 
     // Construct date_of_birth in the format expected by the backend (e.g., "YYYY-MM-DD")
     const { date, month, year } = formData.dateOfBirth;
@@ -140,10 +143,8 @@ function EditPrifile() {
       await update(formDataToSend).unwrap();
       console.log("Profile updated successfully!");
       navigate("/dashboard/profile/");
-      // Optionally, redirect or show a success message
     } catch (error) {
       console.error("Failed to update profile:", error);
-      // Optionally, show an error message to the user
     }
   };
 
@@ -408,8 +409,8 @@ function EditPrifile() {
               </div>
             </div>
 
-            {/* Company Logo and Additional Fields */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            {/* Company Logo, Company Name, and Location */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               <div>
                 <label
                   className="block text-sm font-medium mb-2"
@@ -439,6 +440,26 @@ function EditPrifile() {
                   </label>
                 </div>
               </div>
+
+              {/* NEW: Company Name Field */}
+              <div>
+                <label
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "#ACC0D8" }}
+                >
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter here"
+                  value={formData.companyName}
+                  onChange={(e) =>
+                    handleInputChange("companyName", e.target.value)
+                  }
+                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+
               <div>
                 <label
                   className="block text-sm font-medium mb-2"

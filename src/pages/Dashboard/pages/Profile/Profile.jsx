@@ -3,6 +3,7 @@ import { Edit2, Phone, Mail, MapPin, User, Calendar } from "lucide-react";
 import { useLocation, useNavigate } from "react-router";
 import { useGetProfileDataQuery } from "../../../../../redux/api/api";
 import { baseUrl } from "../../../../../redux/auth/auth";
+import { PiBuildingOfficeLight } from "react-icons/pi";
 
 function Profile() {
   const navigate = useNavigate();
@@ -72,6 +73,15 @@ function Profile() {
               {/* Contact Information */}
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-1/2 p-2">
+                  <div className="flex items-center gap-3 text- py-1">
+                    <PiBuildingOfficeLight
+                      size={16}
+                      style={{ color: "#ACC0D8" }}
+                    />
+                    <span className="text-[#ACC0D8]">
+                      {getValue(profileData?.company_name)}
+                    </span>
+                  </div>
                   <div className="flex items-center gap-3 text- py-1">
                     <Phone size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">

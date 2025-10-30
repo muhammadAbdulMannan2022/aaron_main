@@ -39,9 +39,9 @@ const TopBar = () => {
       <div className="dropdown-container relative">
         <div className="flex items-center gap-2">
           {/* Placeholder for image - replace with your image */}
-          <div className="hidden md:block">
+          <div className="hidden md:block text-end">
             <p className="text-[#5B6269] text-sm">
-              Tea and Table Services Ltd.
+              {!loading && profile.company_name}
             </p>
             <p className="text-[#5B6269] text-sm">
               {!loading && profile.email}

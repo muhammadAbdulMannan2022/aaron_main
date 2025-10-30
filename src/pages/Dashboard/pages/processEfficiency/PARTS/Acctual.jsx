@@ -161,34 +161,6 @@ export default function InvoiceFlow() {
     { skip: !projectid }
   );
 
-  // Mock data for testing (remove once API provides data)
-  // const mockHappyPath = [
-  //   {
-  //     id: "1",
-  //     label: "Invoice Created",
-  //     average_time_minutes: 30,
-  //     status: "active",
-  //     owner: "System",
-  //     descriptions: ["Step 1: Invoice created in system"],
-  //   },
-  //   {
-  //     id: "2",
-  //     label: "Invoice Sent",
-  //     average_time_minutes: 15,
-  //     status: "active",
-  //     owner: "System",
-  //     descriptions: ["Step 2: Invoice sent to client"],
-  //   },
-  //   {
-  //     id: "3",
-  //     label: "Payment Received",
-  //     average_time_minutes: 10,
-  //     status: "active",
-  //     owner: "System",
-  //     descriptions: ["Step 3: Payment received and processed"],
-  //   },
-  // ];
-
   // Log data for debugging
   useEffect(() => {
     console.log("orginalPathData:", orginalPathData);
