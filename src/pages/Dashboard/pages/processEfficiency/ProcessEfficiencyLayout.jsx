@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { LuArrowLeft } from "react-icons/lu";
 import { Modal } from "../../../../helpers/Modal";
 import { HappyPathSetup } from "../../Contents/modalContent/HappyPath";
@@ -17,6 +17,7 @@ export function ProcessEfficiencyLayout() {
   const [descriptionsToShow, setDescriptionsToShow] = useState([]);
   const [editHappyPath, setIsHappyPath] = useState(false);
   const id = localStorage.getItem("currentProjectId");
+  const navigate = useNavigate();
 
   // Fetch data using RTK Query
   const {
@@ -51,7 +52,10 @@ export function ProcessEfficiencyLayout() {
       <div className="h-full flex flex-col">
         <header className="flex flex-col items-start justify-center pt-4 gap-4 border-b border-gray-button-bg bg-background px-6">
           <div className="text-text-notActive flex w-full justify-between pt-5 md:pt-2">
-            <div className="flex items-center gap-3 border border-gray-button-bg p-1 rounded-md hover:cursor-pointer px-3">
+            <div
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-3 border border-gray-button-bg p-1 rounded-md hover:cursor-pointer px-3"
+            >
               <LuArrowLeft />
               <h1>Back</h1>
             </div>

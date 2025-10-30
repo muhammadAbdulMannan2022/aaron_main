@@ -9,7 +9,7 @@ export function LogoutConfirmation({ onConfirm, onCancel }) {
         {/* Confirm */}
         <button
           onClick={onConfirm}
-          className="w-full bg-modal-button-bg hover:bg-modal-button-bg/80 hover:cursor-pointer text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black"
+          className="w-full bg-[#574bff] hover:bg-[#574bff]/80 hover:cursor-pointer text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black"
         >
           Yes
         </button>

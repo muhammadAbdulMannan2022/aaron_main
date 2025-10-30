@@ -67,6 +67,13 @@ export const dashboard = createApi({
     }),
     getOneDashboard: builder.query({
       query: (id) => `/api/project/dashboard/${id}/`,
+      providesTags: ["Dashboard"],
+    }),
+    deleteDashboard: builder.mutation({
+      query: ({ dashboardId, projectId }) => ({
+        url: `/api/project/dashboard/${projectId}/${dashboardId}/`,
+        method: "DELETE",
+      }),
       invalidatesTags: ["Dashboard"],
     }),
     createNewDashboard: builder.mutation({
@@ -653,6 +660,7 @@ export const {
   useGetOrginalPathQuery,
   useHappyPathQuery,
   useUpdateHappyPathMutation,
+  useDeleteDashboardMutation,
   // dashboard
   useGetDashboardsQuery,
   useGetOneDashboardQuery,

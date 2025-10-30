@@ -5,12 +5,14 @@ import { TbLockPassword } from "react-icons/tb";
 import { TfiEmail } from "react-icons/tfi";
 import { modalContext, profileContext } from "../DashboardLayout";
 import { baseUrl } from "../../../../redux/auth/auth";
+import { useNavigate } from "react-router";
 
 const TopBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { profile, loading, error } = useContext(profileContext);
   const { setChangeEmailFormActive, setChangePasswordFormActive, setIsLogOut } =
     useContext(modalContext);
+  const navigate = useNavigate();
 
   const handleClickOutside = (event) => {
     if (!event.target.closest(".dropdown-container")) {
@@ -66,13 +68,16 @@ const TopBar = () => {
         </div>
         {isDropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg z-10">
-            <div className="flex items-center p-2 text-gray-300 hover:bg-gray-700 cursor-pointer rounded-lg">
+            <div
+              onClick={() => navigate("/dashboard/priceing")}
+              className="flex items-center p-2 text-gray-300 hover:bg-gray-700 cursor-pointer rounded-lg"
+            >
               <span className="mr-2">
                 <CiCircleChevUp />
               </span>
               <span>Upgrade package</span>
             </div>
-            <div
+            {/* <div
               onClick={() => {
                 setChangeEmailFormActive(true); // Fixed typo here
                 setChangePasswordFormActive(false);
@@ -84,7 +89,7 @@ const TopBar = () => {
                 <TfiEmail />
               </span>
               <span>Change Email</span>
-            </div>
+            </div> */}
             <div
               onClick={() => {
                 setChangeEmailFormActive(false); // Fixed typo here

@@ -47,7 +47,7 @@ export default function BenchmarkTable() {
         </h1>
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 px-4 py-2 bg-auth-button-bg hover:bg-auth-button-bg/80 hover:cursor-pointer text-white rounded-md transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#574bff] hover:bg-[#574bff]/80 hover:cursor-pointer text-white rounded-md transition-colors"
         >
           Add
           <FiPlus className="w-4 h-4" />
@@ -101,7 +101,7 @@ export default function BenchmarkTable() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-auth-button-bg underline">
+                    <span className="text-sm text-[#574bff] underline">
                       <a target="_blank" href={item.csv_file}>
                         File
                       </a>
@@ -118,14 +118,14 @@ export default function BenchmarkTable() {
                     {item?.related_project ? (
                       <button
                         onClick={() => handleReport(item)}
-                        className="text-auth-button-bg hover:text-auth-button-bg/80 hover:cursor-pointer text-sm font-medium transition-colors"
+                        className="text-[#574bff] hover:text-[#574bff]/80 hover:cursor-pointer text-sm font-medium transition-colors"
                       >
                         Report
                       </button>
                     ) : (
                       <button
                         onClick={() => handleStart(item)}
-                        className="text-auth-button-bg hover:text-auth-button-bg/80 hover:cursor-pointer text-sm font-medium transition-colors"
+                        className="text-[#574bff] hover:text-[#574bff]/80 hover:cursor-pointer text-sm font-medium transition-colors"
                       >
                         Start
                       </button>

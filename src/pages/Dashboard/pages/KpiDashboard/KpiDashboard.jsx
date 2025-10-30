@@ -20,6 +20,7 @@ import { Modal } from "../../../../helpers/Modal";
 import MainFilterDashboard from "../../Contents/modalContent/MainFilterDashboard";
 import {
   useCreateNewDashboardMutation,
+  useDeleteDashboardMutation,
   useGetDashboardsQuery,
   useUpdateDashboardMutation,
 } from "../../../../../redux/api/dashboard";
@@ -125,6 +126,8 @@ export default function KpiDashboard() {
   const [updateDashboard, { isLoading: isUpdating }] =
     useUpdateDashboardMutation();
   const { callRtk } = useCallRtk();
+  // delete dashboard
+  const [deleteDashboard] = useDeleteDashboardMutation();
 
   // Fetch data function
   const fetchData = async (name) => {
@@ -263,6 +266,7 @@ export default function KpiDashboard() {
   useEffect(() => {
     const localProjectId = localStorage.getItem("currentProjectId");
     if (localProjectId && !projectId) setProjectId(localProjectId);
+    localStorage.removeItem("dashboardState");
   }, []);
 
   const handleImportConfig = (content) => {
@@ -310,7 +314,7 @@ export default function KpiDashboard() {
   };
 
   const handleToggleSidebar = () => {
-    setShowSidebar((prev) => !prev);
+    setShowSidebar(true);
   };
 
   const handleOutsideClick = (e) => {
@@ -421,16 +425,68 @@ export default function KpiDashboard() {
                       >
                         <Layout size={16} /> Create new
                       </button>
-                      <button
+                      {/* <button
                         onClick={handleToggleSidebar}
                         className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer"
                       >
                         <Plus size={16} /> Add widget
-                      </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
+                      </button> */}
+                      {/* <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
                         <Edit size={16} /> Edit
-                      </button>
-                      <button className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer">
+                      </button> */}
+                      <button
+                        onClick={async () => {
+                          if (
+                            !window.confirm(
+                              "Delete this dashboard? This cannot be undone."
+                            )
+                          )
+                            return;
+
+                          try {
+                            // 1. Delete on the server
+                            await deleteDashboard({
+                              dashboardId,
+                              projectId,
+                            }).unwrap();
+
+                            // 2. Remove the saved layout from localStorage
+                            localStorage.removeItem("dashboardState");
+
+                            // 3. Reset UI state
+                            setActiveDashboard(null);
+                            setDashboardId(null);
+                            setProjectId(
+                              localStorage.getItem("currentProjectId") || null
+                            );
+
+                            // 4. If there are other dashboards, switch to the first one
+                            if (dashboards?.length > 1) {
+                              const remaining = dashboards.filter(
+                                (d) => d.id !== dashboardId
+                              );
+                              const next = remaining[0];
+                              setActiveDashboard(next);
+                              setDashboardId(next.id);
+                              setProjectId(next.project);
+                              handleImportConfig(next.data); // load its saved layout
+                            } else {
+                              // No dashboards left → empty canvas
+                              // (useDashboard already returns an empty widgets array when nothing is loaded)
+                              handleImportConfig({ widgets: [] });
+                            }
+
+                            // 5. Close the dropdown
+                            setIsActionsDropdownOpen(false);
+                          } catch (err) {
+                            console.error("Failed to delete dashboard", err);
+                            alert(
+                              "Could not delete the dashboard. Please try again."
+                            );
+                          }
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-300 hover:text-[#8743FC] flex items-center gap-3 hover:cursor-pointer"
+                      >
                         <Trash2 size={16} /> Delete
                       </button>
                     </div>

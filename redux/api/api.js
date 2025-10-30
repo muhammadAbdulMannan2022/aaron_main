@@ -158,6 +158,13 @@ export const api = createApi({
         responseHandler: (response) => response.text(),
       }),
     }),
+    changePasswordWhenLoggedIn: builder.mutation({
+      query: (data) => ({
+        url: "/api/accounts/change_password/",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 // 👇 these are auto-generated hooks
@@ -186,4 +193,6 @@ export const {
   // get banchmark
   useGetBanchmarkQuery,
   useGetBanchmarkPdfMutation,
+  // change password
+  useChangePasswordWhenLoggedInMutation,
 } = api;
