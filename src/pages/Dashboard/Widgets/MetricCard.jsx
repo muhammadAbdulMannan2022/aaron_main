@@ -26,62 +26,46 @@ export default function MetricCard({
         borderColor: "var(--color-button-outline)",
       }}
     >
-      <div className="relative z-10">
-        <h3
+      <div className="relative z-10 items-center justify-center">
+        {/* <h3
           className="text-sm font-medium mb-4"
           style={{ color: "var(--color-main-text)" }}
         >
           {title}
-          {/* {alert(title)} */}
-        </h3>
+
+        </h3> */}
         {rtk_data && (
           <div className="" style={{ color: "var(--color-text-primary)" }}>
-            {title === "Cycle Time" && (
+            {(title === "Cycle Time" ||
+              title === "median cycle time" ||
+              title === "average idle time") && (
               <div className="flex flex-wrap gap-2 justify-center">
                 {console.log(rtk_data)}
-                {Object.entries(rtk_data).map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="rounded-2xl w-[200px] border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow"
-                  >
-                    <p className="text-xs font-medium text-muted-foreground">
-                      {key.replace(/_/g, " ")}
-                    </p>
-                    <p className="text-xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
-                      {typeof value === "number"
-                        ? value.toLocaleString()
-                        : value}{" "}
-                      h
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-            {title === "Average Activity Duration" && (
-              <div className="flex flex-wrap gap-2 justify-center">
-                {rtk_data.Average_Activity_Duration_Hours &&
-                  Object.entries(rtk_data.Average_Activity_Duration_Hours).map(
-                    ([key, value], i) => (
-                      <>
-                        {console.log(key, value)}
-                        <div
-                          key={i}
-                          className="rounded-2xl w-[200px] border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow"
-                        >
-                          <p className="text-xs font-medium text-muted-foreground">
-                            {key.replace(/_/g, " ")}
-                          </p>
-                          <p className="text-xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
-                            {value} h
-                          </p>
-                        </div>
-                      </>
+                {Object.entries(rtk_data).map(
+                  ([key, value]) =>
+                    key !== "Total_Cases" && (
+                      <div
+                        key={key}
+                        className="rounded-2xl w-[200px]  p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow"
+                      >
+                        <p className="text-xs font-medium text-muted-foreground">
+                          {key.replace(/_/g, " ")}
+                        </p>
+                        <p className="text-xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
+                          {typeof value === "number"
+                            ? value.toLocaleString()
+                            : value}{" "}
+                          h
+                        </p>
+                      </div>
                     )
-                  )}
+                )}
               </div>
             )}
+
             {(title === "Total Number of Cases" ||
-              title === "Total Completed Cases") && (
+              title === "Total Completed Cases" ||
+              title === "total completed cases") && (
               <div className="rounded-2xl w-fit items-center justify-center border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div key={key} className="w-fit">
@@ -89,7 +73,7 @@ export default function MetricCard({
                       className={`${
                         title === "Total Completed Cases"
                           ? " text-center"
-                          : "text-3xl"
+                          : "text-xl"
                       } font-semibold text-foreground mt-1 text-[var(--color-main-text)]`}
                     >
                       {typeof value === "number"
@@ -112,7 +96,7 @@ export default function MetricCard({
               title === "Variant Complexity Index" ||
               title === "Cases Following Top Variant" ||
               title === "Max Steps in a Case" ||
-              title === "Average Time Saved Potential") && (
+              title === "minimum cycle time") && (
               <div className="flex flex-wrap gap-2 justify-center">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div
@@ -207,6 +191,195 @@ export default function MetricCard({
                     No activity cost data available.
                   </p>
                 )}
+              </div>
+            )}
+            {title === "Average Time Saved Potential" && rtk_data && (
+              <div className="relative p-6 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden">
+                {/* Subtle brand glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#574bff]/20 via-transparent to-transparent opacity-40"></div>
+                <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-[#574bff]/10 rounded-full blur-3xl animate-pulse"></div>
+
+                <div className="relative z-10">
+                  {/* KPI Label */}
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
+                    {rtk_data.KPI_Name}
+                  </p>
+
+                  {/* Big Number */}
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <h2 className="text-4xl font-bold text-white">
+                      {Number(
+                        rtk_data.Average_Time_Saved_Potential_Per_Case_Hours
+                      ).toFixed(1)}
+                    </h2>
+                    <span className="text-sm text-gray-400">hrs</span>
+                  </div>
+
+                  <p className="text-sm text-gray-300 mt-1">
+                    saved{" "}
+                    <span className="font-medium text-white">per case</span> on
+                    average
+                  </p>
+
+                  {/* Total Impact */}
+                  <div className="mt-5 flex items-center justify-between text-sm">
+                    <div>
+                      <p className="text-gray-400">
+                        Total Time Saved (All Cases)
+                      </p>
+                      <p className="text-xl font-bold text-[#574bff] mt-1">
+                        {Number(
+                          rtk_data.Total_Time_Saved_Potential_Hours
+                        ).toLocaleString(undefined, {
+                          maximumFractionDigits: 0,
+                        })}
+                        <span className="text-sm font-normal text-gray-300 ml-1">
+                          hrs
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-gray-400">
+                        Out of {rtk_data.Total_Cases} cases
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {rtk_data.Cases_Outside_HappyPath_Variance} high
+                        variance
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Mini Insight */}
+                  <div className="mt-4 flex items-center gap-3 text-xs">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-500/20 text-green-300 border border-green-500/30">
+                      {(
+                        Number(
+                          rtk_data.Cases_Outside_HappyPath_Variance /
+                            rtk_data.Total_Cases
+                        ) * 100
+                      ).toFixed(0)}
+                      % opportunity
+                    </span>
+                    <span className="text-gray-500">
+                      {rtk_data.Cases_Within_HappyPath_Variance} cases on track
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+            {title === "largest bottleneck" && rtk_data && (
+              <div className="space-y-4">
+                {/* Glassmorphic #1 Bottleneck Card */}
+                {rtk_data.Top_Bottlenecks?.[0] && (
+                  <div className="relative p-5 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden">
+                    {/* Subtle glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#574bff]/20 to-transparent opacity-50"></div>
+
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
+                          Largest Bottleneck
+                        </p>
+                        <h3 className="text-2xl font-bold text-white mt-1">
+                          {rtk_data.Top_Bottlenecks[0].Activity}
+                        </h3>
+                        <p className="text-sm text-gray-300 mt-2">
+                          <span className="text-[#574bff] font-semibold">
+                            {rtk_data.Top_Bottlenecks[0].Average_Duration_Hours.toFixed(
+                              2
+                            )}{" "}
+                            hrs
+                          </span>{" "}
+                          avg —{" "}
+                          <span className="text-white/80">
+                            {rtk_data.Top_Bottlenecks[0].Total_Occurrences.toLocaleString()}{" "}
+                            times
+                          </span>
+                        </p>
+                      </div>
+
+                      {/* 7.2x Badge */}
+                      <div className="text-right">
+                        <p className="text-xs text-gray-400">vs. Overall Avg</p>
+                        <div className="inline-flex items-center px-3 py-1 mt-1 rounded-full bg-[#574bff]/20 border border-[#574bff]/40">
+                          <span className="text-lg font-bold text-[#574bff]">
+                            {(
+                              rtk_data.Top_Bottlenecks[0]
+                                .Average_Duration_Hours /
+                              rtk_data.Overall_Average_Activity_Duration_Hours
+                            ).toFixed(1)}
+                            x
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Micro animation pulse (optional) */}
+                    <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#574bff]/10 rounded-full blur-3xl animate-pulse"></div>
+                  </div>
+                )}
+
+                {/* Expandable Full List (Glass Table) */}
+                {rtk_data.Top_Bottlenecks &&
+                  rtk_data.Top_Bottlenecks.length > 1 && (
+                    <details className="text-sm">
+                      <summary className="cursor-pointer text-gray-400 hover:text-white text-xs font-medium mb-3 flex items-center gap-1">
+                        <span>View all bottlenecks</span>
+                        <span className="text-[#574bff]">
+                          ({rtk_data.Top_Bottlenecks.length})
+                        </span>
+                      </summary>
+
+                      <div className="rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-xs">
+                            <thead>
+                              <tr className="border-b border-white/10">
+                                <th className="px-4 py-3 text-left font-medium text-gray-300">
+                                  Activity
+                                </th>
+                                <th className="px-4 py-3 text-left font-medium text-gray-300">
+                                  Avg (hrs)
+                                </th>
+                                <th className="px-4 py-3 text-left font-medium text-gray-300">
+                                  Count
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {rtk_data.Top_Bottlenecks.map((item, i) => (
+                                <tr
+                                  key={i}
+                                  className={`border-b border-white/5 transition-colors ${
+                                    i === 0 ? "bg-[#574bff]/10 font-medium" : ""
+                                  }`}
+                                >
+                                  <td className="px-4 py-3 text-white">
+                                    {item.Activity}
+                                  </td>
+                                  <td className="px-4 py-3 text-gray-200">
+                                    {item.Average_Duration_Hours.toFixed(2)}
+                                  </td>
+                                  <td className="px-4 py-3 text-gray-200">
+                                    {item.Total_Occurrences.toLocaleString()}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </details>
+                  )}
+
+                {/* No Data */}
+                {!rtk_data.Top_Bottlenecks ||
+                  (rtk_data.Top_Bottlenecks.length === 0 && (
+                    <div className="text-center py-10 text-gray-500">
+                      <p className="text-sm">No bottleneck data available.</p>
+                    </div>
+                  ))}
               </div>
             )}
           </div>

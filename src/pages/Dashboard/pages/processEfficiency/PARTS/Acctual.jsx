@@ -6,12 +6,47 @@ import ReactFlow, {
   useEdgesState,
   Handle,
   Position,
+  BaseEdge,
+  getBezierPath,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { FlowContext } from "../ProcessEfficiencyLayout";
 import { FaAngleRight } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import { useHappyPathQuery } from "../../../../../../redux/api/dashboard";
+// 🌀 Custom smooth edge with variable curve offset
+const CurvedLoopEdge = ({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  markerEnd,
+  data,
+}) => {
+  // add a unique curve offset (e.g. 10px, 20px, 30px...)
+  const offset = data?.offset || 40;
+  const midY = (sourceY + targetY) / 2 - offset;
+
+  const path = `
+    M ${sourceX} ${sourceY}
+    C ${sourceX} ${midY}, ${targetX} ${midY}, ${targetX} ${targetY}
+  `;
+
+  return (
+    <>
+      <path
+        id={id}
+        d={path}
+        stroke="#342BAD"
+        strokeWidth={2}
+        strokeDasharray="5,5"
+        fill="none"
+        markerEnd={markerEnd}
+      />
+    </>
+  );
+};
 
 // ✅ Custom Node with Problem Highlighting
 const CustomNode = ({ data, filter, isActualPath = true }) => {
@@ -72,6 +107,18 @@ const CustomNode = ({ data, filter, isActualPath = true }) => {
         id="right"
         style={{ background: "#555" }}
       />
+      <Handle
+        type="source"
+        position={Position.Left}
+        id="left"
+        style={{ background: "#555" }}
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="left"
+        style={{ background: "#555" }}
+      />
       <div
         className={`flex justify-center w-full mx-5 rounded-md drop-shadow-2xl shadow-[#5A595921] border-2 ${highlightStyles.border} ${highlightStyles.bg}`}
       >
@@ -123,16 +170,40 @@ const buildEdges = (steps, filter, prefix = "", color = "#6b7280") => {
   ) {
     steps.forEach((step) => {
       if (step.hasLoop && step.loopConnections) {
-        edges.push({
-          id: `${prefix}e${step.loopConnections.from}-${step.loopConnections.to}`,
-          source: `${prefix}${step.loopConnections.from}`,
-          target: `${prefix}${step.loopConnections.to}`,
-          type: "smoothstep",
-          style: { stroke: "#342BAD", strokeWidth: 2, strokeDasharray: "5,5" },
-          markerEnd: { type: "arrowclosed", color: "#342BAD" },
-          sourceHandle: "right",
-          targetHandle: "right",
-        });
+        if (
+          (step.loopConnections.from + step.loopConnections.to).length % 2 ===
+          0
+        ) {
+          edges.push({
+            id: `${prefix}e${step.loopConnections.from}-${step.loopConnections.to}`,
+            source: `${prefix}${step.loopConnections.from}`,
+            target: `${prefix}${step.loopConnections.to}`,
+            type: "smoothstep",
+            style: {
+              stroke: "#342BAD",
+              strokeWidth: 2,
+              strokeDasharray: "5,5",
+            },
+            markerEnd: { type: "arrowclosed", color: "#342BAD" },
+            sourceHandle: "right",
+            targetHandle: "right",
+          });
+        } else {
+          edges.push({
+            id: `${prefix}e${step.loopConnections.from}-${step.loopConnections.to}`,
+            source: `${prefix}${step.loopConnections.from}`,
+            target: `${prefix}${step.loopConnections.to}`,
+            type: "smoothstep",
+            style: {
+              stroke: "#342BAD",
+              strokeWidth: 2,
+              strokeDasharray: "5,5",
+            },
+            markerEnd: { type: "arrowclosed", color: "#342BAD" },
+            sourceHandle: "left",
+            targetHandle: "left",
+          });
+        }
       }
     });
   }
@@ -160,7 +231,12 @@ export default function InvoiceFlow() {
     projectid,
     { skip: !projectid }
   );
-
+  const edgeTypes = useMemo(
+    () => ({
+      curvedLoop: CurvedLoopEdge,
+    }),
+    []
+  );
   // Log data for debugging
   useEffect(() => {
     console.log("orginalPathData:", orginalPathData);
@@ -334,6 +410,7 @@ export default function InvoiceFlow() {
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes} // 👈 added this
             fitView
             minZoom={0.5}
             defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}

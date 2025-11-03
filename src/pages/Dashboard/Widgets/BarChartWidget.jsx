@@ -10,6 +10,7 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
+  ReferenceLine,
 } from "recharts";
 
 export default function BarChartWidget({
@@ -49,7 +50,7 @@ export default function BarChartWidget({
       }}
     >
       {/* Chart Title */}
-      {title && (
+      {title && title !== "Average Activity Duration" && (
         <h3
           className="text-sm font-medium"
           style={{ color: "var(--color-main-text)" }}
@@ -164,7 +165,7 @@ export default function BarChartWidget({
           )}
         </>
       )}
-      {console.log(title)}
+      {/* {console.log(title)} */}
       {title === "Activity Frequency Distribution" &&
         Array.isArray(rtk_data?.Distribution) &&
         rtk_data.Distribution.length > 0 && (
@@ -218,6 +219,61 @@ export default function BarChartWidget({
             </BarChart>
           </ResponsiveContainer>
         )}
+      {title === "Average Activity Duration" && rtk_data && (
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={rtk_data.Average_Activity_Durations}
+            margin={{ top: 20, right: 10, left: 0, bottom: 10 }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255,255,255,0.1)"
+            />
+
+            <XAxis
+              dataKey="activity"
+              angle={-45}
+              textAnchor="end"
+              height={100}
+              tick={{ fontSize: 12, fill: "#ccc" }}
+            />
+
+            <YAxis
+              label={{
+                value: "Hours",
+                angle: -90,
+                position: "insideLeft",
+                fill: "#aaa",
+              }}
+              domain={[0, "dataMax + 0.5"]}
+              tick={{ fill: "#ccc" }}
+            />
+
+            {/* MINIMAL TOOLTIP: Just the number */}
+            <Tooltip
+              formatter={(value) => `${Number(value).toFixed(2)}`}
+              contentStyle={{
+                backgroundColor: "rgba(0, 0, 0, 0.9)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                borderRadius: "8px",
+                fontSize: "12px",
+                padding: "4px 8px",
+              }}
+              labelStyle={{ display: "none" }}
+              cursor={false}
+            />
+
+            <Legend />
+
+            <Bar
+              dataKey="average_duration_hours"
+              fill="#574bff"
+              name="Average duration (hrs)"
+              radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 }

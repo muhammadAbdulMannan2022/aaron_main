@@ -114,7 +114,103 @@ export const dashboard = createApi({
           ? variants.map((v) => `variants=${v}`).join("&")
           : "variants=";
 
-        return `/api/project/cycle-time/${projectId}/?start_date=${
+        return `/api/project/average-cycle-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    medianCycleTiem: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+          dashboardId,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/median-cycle-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    minimumCycleTime: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+          dashboardId,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/minimum-cycle-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    averageIdleTime: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+          dashboardId,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/average-idle-time/${projectId}/?start_date=${
+          startTime || ""
+        }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
+          minCycleTime || ""
+        }&max_cycle_time=${maxCycleTime || ""}`;
+      },
+    }),
+    largestBottleneck: builder.query({
+      query: (data) => {
+        const {
+          projectId,
+          startTime,
+          endTime,
+          variants = [],
+          minCycleTime,
+          maxCycleTime,
+          dashboardId,
+        } = data;
+
+        // build variants query like variants=1&variants=2...
+        const variantsQuery = variants.length
+          ? variants.map((v) => `variants=${v}`).join("&")
+          : "variants=";
+
+        return `/api/project/largest-bottleneck/${projectId}/?start_date=${
           startTime || ""
         }&end_date=${endTime || ""}&${variantsQuery}&min_cycle_time=${
           minCycleTime || ""
@@ -692,4 +788,9 @@ export const {
   useLazyCaseThroughPutRateQuery,
   useLazyIdleTimeAndRatioQuery,
   useLazyCostPerCaseQuery,
+  // new
+  useLazyMedianCycleTiemQuery,
+  useLazyMinimumCycleTimeQuery,
+  useLazyAverageIdleTimeQuery,
+  useLazyLargestBottleneckQuery,
 } = dashboard;

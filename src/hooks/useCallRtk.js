@@ -22,6 +22,10 @@ import {
   useLazyCaseThroughPutRateQuery,
   useLazyIdleTimeAndRatioQuery,
   useLazyCostPerCaseQuery,
+  useLazyMedianCycleTiemQuery,
+  useLazyMinimumCycleTimeQuery,
+  useLazyAverageIdleTimeQuery,
+  useLazyLargestBottleneckQuery,
 } from "../../redux/api/dashboard";
 
 export const useCallRtk = () => {
@@ -64,6 +68,12 @@ export const useCallRtk = () => {
     useLazyCaseThroughPutRateQuery();
   const [idleTimeRatio, idleTimeRatioState] = useLazyIdleTimeAndRatioQuery();
   const [costPerCase, costPerCaseState] = useLazyCostPerCaseQuery();
+  // all new
+  const [medianCycle, medianCycleState] = useLazyMedianCycleTiemQuery();
+  const [minCycle, minCycleState] = useLazyMinimumCycleTimeQuery();
+  const [idleTime, idleTimeState] = useLazyAverageIdleTimeQuery();
+  const [largestBottleneck, largestBottleneckNe] =
+    useLazyLargestBottleneckQuery();
 
   // Map endpoint names to functions + state
   // Example: mapping KPI names dynamically to your hooks
@@ -109,7 +119,7 @@ export const useCallRtk = () => {
       fn: casesTopVariant,
       state: casesTopVariantState,
     },
-    "largest bottleneck": { fn: maxStepInCase, state: maxStepInCaseState },
+    "max steps in a case": { fn: maxStepInCase, state: maxStepInCaseState },
     "average deviation from happy path": {
       fn: happyPathDeviation,
       state: happyPathDeviationState,
@@ -147,6 +157,22 @@ export const useCallRtk = () => {
     "activity frequency distribution": {
       fn: activityFrequency,
       state: activityFrequencyState,
+    },
+    "median cycle time": {
+      fn: medianCycle,
+      state: medianCycleState,
+    },
+    "minimum cycle time": {
+      fn: minCycle,
+      state: minCycleState,
+    },
+    "average idle time": {
+      fn: idleTime,
+      state: idleTimeState,
+    },
+    "largest bottleneck": {
+      fn: largestBottleneck,
+      state: largestBottleneckNe,
     },
   };
 

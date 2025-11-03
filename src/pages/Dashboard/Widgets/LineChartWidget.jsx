@@ -118,13 +118,14 @@ export default function LineChartWidget({
               </ResponsiveContainer>
             </div>
           )}
+        {console.log(rtk_data)}
         {title === "Case Throughput Rate" &&
           Array.isArray(rtk_data?.Throughput_Distribution) &&
           rtk_data.Throughput_Distribution.length > 0 && (
-            <ResponsiveContainer width="100%">
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart
                 data={rtk_data.Throughput_Distribution}
-                margin={{ top: 20, right: 0, left: 0, bottom: 20 }}
+                margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                 <XAxis
@@ -132,7 +133,7 @@ export default function LineChartWidget({
                   tick={{ fill: "var(--color-main-text)" }}
                   angle={-45}
                   textAnchor="end"
-                  height={70}
+                  height={80}
                 />
                 <YAxis
                   tick={{ fill: "var(--color-main-text)" }}
@@ -152,10 +153,20 @@ export default function LineChartWidget({
                 <Legend />
                 <Line
                   type="monotone"
-                  dataKey="count"
-                  name="Throughput Count"
+                  dataKey="completed"
+                  name="Throughput (Completed)"
                   stroke="#00bcd4"
                   strokeWidth={2}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="dropouts"
+                  name="Dropouts"
+                  stroke="#ff5252"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
                   activeDot={{ r: 6 }}
                 />
               </LineChart>
