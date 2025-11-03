@@ -44,7 +44,11 @@ export const dashboard = createApi({
       query: (data) => ({
         url: `/api/project/happy-path/${data.projectId}/`,
         method: "PATCH",
-        body: { id: data.id, average_time_minutes: data.average_time_minutes },
+        body: {
+          id: data.id,
+          average_time_minutes: data.average_time_minutes,
+          projectId: data.projectId,
+        },
       }),
       invalidatesTags: ["happypath"],
     }),

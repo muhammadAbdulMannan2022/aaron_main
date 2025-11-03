@@ -358,18 +358,25 @@ export default function InvoiceFlow() {
   // Load Data
   useEffect(() => {
     if (happyPath?.happy_paths?.length) {
-      const formatted = happyPath.happy_paths.map((step) => ({
-        id: step.id.toString(),
-        serial_number: step.serial_number,
-        label: step.activity_name,
-        activity_name: step.activity_name,
-        average_time_minutes: parseFloat(step.average_time_minutes),
-        status: "active",
-        owner: "System",
-        descriptions: [
-          `${step.activity_name} — ${step.average_time_minutes} mins`,
-        ],
-      }));
+      const formatted = happyPath.happy_paths.map((step) => {
+        let des = [];
+        if (step.description) {
+          des = [...step.description];
+        }
+        return {
+          id: step.id.toString(),
+          serial_number: step.serial_number,
+          label: step.activity_name,
+          activity_name: step.activity_name,
+          average_time_minutes: parseFloat(step.average_time_minutes),
+          status: "active",
+          owner: "System",
+          descriptions: [
+            ...des,
+            `${step.activity_name} — ${step.average_time_minutes} mins`,
+          ],
+        };
+      });
       setIdealPath(formatted);
     }
 

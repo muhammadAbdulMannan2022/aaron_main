@@ -58,6 +58,7 @@ export function HappyPathSetup({ isOpen, onClose }) {
   /*  Edit modal handlers                                               */
   /* ------------------------------------------------------------------ */
   const handleEditDuration = (step) => {
+    console.log(step);
     setEditingStep(step);
     setTempHours(step.hours);
     setTempMinutes(Math.round(step.minutes));
