@@ -452,6 +452,12 @@ const buildEdges = (steps) => {
 };
 
 /* --------------------------------------------------------------- */
+/*  MEMOIZED TYPES - defined outside component to prevent re-renders */
+/* --------------------------------------------------------------- */
+const nodeTypes = { custom: CustomNode };
+const edgeTypes = { curvedLoop: CurvedLoopEdge };
+
+/* --------------------------------------------------------------- */
 /*  MAIN COMPONENT                                                 */
 /* --------------------------------------------------------------- */
 export default function AiSupport() {
@@ -513,6 +519,7 @@ export default function AiSupport() {
 
   const onNodeClick = useCallback((_, node) => {
     setSelectedNode(node.data);
+    console.log(node, "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
     setDescriptions(node.data.descriptions || []);
   }, []);
 
@@ -553,10 +560,9 @@ export default function AiSupport() {
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
-          nodeTypes={{ custom: CustomNode }}
-          edgeTypes={{ curvedLoop: CurvedLoopEdge }}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           fitView
           maxZoom={2}
           minZoom={0.5}
@@ -581,17 +587,32 @@ export default function AiSupport() {
           Set Costs
         </button>
 
-        {/* ---------- Selected-node panel ---------- */}
+        {/* ---------- Selected-node panel (NOW WITH FULL DESCRIPTION) ---------- */}
         {selectedNode && (
-          <div className="absolute top-4 left-4 bg-[#1a1a1a] p-4 rounded-lg shadow-xl max-w-xs text-white">
-            <h3 className="font-bold text-lg">{selectedNode.label}</h3>
-            <p className="text-sm text-gray-400">
+          <div className="absolute top-4 left-4 bg-[#1a1a1a] p-5 rounded-lg shadow-xl max-w-md text-white z-50">
+            <h3 className="font-bold text-lg mb-2">{selectedNode.label}</h3>
+
+            <p className="text-sm text-gray-400 mb-1">
               Avg: <strong>{selectedNode.value} min</strong>
             </p>
+
             {selectedNode.costPerHour > 0 && (
-              <p className="text-green-400 text-sm">
+              <p className="text-green-400 text-sm mb-3">
                 Cost: <strong>${selectedNode.costPerHour}/hour</strong>
               </p>
+            )}
+
+            {selectedNode.descriptions?.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-700">
+                <p className="text-xs font-semibold text-gray-300 mb-1">
+                  Details:
+                </p>
+                <ul className="list-disc list-inside text-xs text-gray-300 space-y-0.5">
+                  {selectedNode.descriptions.map((desc, i) => (
+                    <li key={i}>{desc}</li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
         )}
@@ -617,7 +638,7 @@ export default function AiSupport() {
               )}
             </div>
           ))}
-          {descriptions.length > 0 && (
+          {/* {descriptions.length > 0 && (
             <div className="bg-gray-800 p-3 rounded-lg text-sm">
               <strong className="text-gray-400">Details:</strong>
               <ul className="list-disc pl-5 mt-1 text-gray-300">
@@ -626,7 +647,7 @@ export default function AiSupport() {
                 ))}
               </ul>
             </div>
-          )}
+          )} */}
         </div>
         <div className="flex gap-2">
           <input
