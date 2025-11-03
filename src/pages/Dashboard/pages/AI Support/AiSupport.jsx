@@ -1,3 +1,4 @@
+/*  AiSupport – same styling as InvoiceFlow  */
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import ReactFlow, {
   Background,
@@ -16,14 +17,13 @@ import {
 import { Modal } from "../../../../helpers/Modal";
 
 /* --------------------------------------------------------------- */
-/*  COST EDITOR PANEL – edit all steps at once                     */
+/*  COST EDITOR PANEL – unchanged (kept for completeness)         */
 /* --------------------------------------------------------------- */
 const CostEditorPanel = ({ nodes, onClose }) => {
   const [costs, setCosts] = useState({});
   const [defineCost, { isLoading }] = useDefineCostMutation();
   const projectId = localStorage.getItem("currentProjectId");
 
-  // Initialize costs from node.data.cost_per_h
   useEffect(() => {
     if (!nodes) return;
     const init = {};
@@ -190,27 +190,116 @@ const CostEditorPanel = ({ nodes, onClose }) => {
 };
 
 /* --------------------------------------------------------------- */
-/*  CUSTOM NODE – shows cost badge only if cost > 0                */
+/*  CURVED LOOP EDGE – same side → same side                     */
+/* --------------------------------------------------------------- */
+const CurvedLoopEdge = ({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  markerEnd,
+  data,
+}) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const loopCount = data?.loopCount || 0;
+  const side = data?.side || "right"; // left | right
+  const baseOffset = data?.offset || 60;
+
+  const direction = side === "left" ? -1 : 1;
+  const offset = baseOffset * direction;
+
+  const controlX = sourceX + offset * 2.5;
+  const midY1 = sourceY - Math.abs(offset);
+  const midY2 = targetY - Math.abs(offset);
+
+  const path = `
+    M ${sourceX} ${sourceY}
+    C ${controlX} ${midY1}, ${controlX} ${midY2}, ${targetX} ${targetY}
+  `;
+
+  const tooltipX = (sourceX + targetX) / 2 + offset * 0.8;
+  const tooltipY = Math.min(midY1, midY2) - 30;
+
+  return (
+    <>
+      <path
+        id={id}
+        d={path}
+        stroke="#342BAD"
+        strokeWidth={2}
+        strokeDasharray="5,5"
+        fill="none"
+        markerEnd={markerEnd}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        style={{ cursor: "pointer" }}
+      />
+      {showTooltip && loopCount > 0 && (
+        <foreignObject
+          x={tooltipX - 50}
+          y={tooltipY}
+          width={100}
+          height={40}
+          style={{ overflow: "visible", pointerEvents: "none" }}
+        >
+          <div
+            style={{
+              background: "#1f2937",
+              color: "white",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              whiteSpace: "nowrap",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+              textAlign: "center",
+            }}
+          >
+            Loops: {loopCount}
+          </div>
+        </foreignObject>
+      )}
+    </>
+  );
+};
+
+/* --------------------------------------------------------------- */
+/*  CUSTOM NODE – same look as InvoiceFlow                         */
 /* --------------------------------------------------------------- */
 const CustomNode = ({ data }) => {
-  const { label, value, isDropout, isBottleneck, hasLoop, costPerHour } = data;
+  const {
+    label,
+    value,
+    isDropout,
+    isBottleneck,
+    hasLoop,
+    costPerHour,
+    bottleneck_count,
+    loop_count,
+    dropout_count,
+  } = data;
 
-  const statusColor = isDropout
-    ? "#aa0000"
-    : isBottleneck
-    ? "#8a8a00"
-    : hasLoop
-    ? "#342BAD"
-    : "#000000";
+  const highlightStyles = useMemo(() => {
+    if (isBottleneck) return { border: "border-red-500", bg: "bg-red-900" };
+    if (isDropout) return { border: "border-yellow-500", bg: "bg-yellow-900" };
+    if (hasLoop) return { border: "border-purple-500", bg: "bg-purple-900" };
+    return { border: "border-[#342BAD]", bg: "bg-[#0F0F0F]" };
+  }, [isBottleneck, isDropout, hasLoop]);
+
+  const tooltip = useMemo(() => {
+    const p = [];
+    if (bottleneck_count) p.push(`Bottlenecks: ${bottleneck_count}`);
+    if (loop_count) p.push(`Loops: ${loop_count}`);
+    if (dropout_count) p.push(`Dropouts: ${dropout_count}`);
+    return p.join(" | ");
+  }, [bottleneck_count, loop_count, dropout_count]);
 
   return (
     <div
-      className="min-w-64 min-h-5 rounded-md text-gray-200 flex justify-between hover:cursor-pointer z-20 border"
-      style={{
-        backgroundColor: statusColor,
-        borderColor: statusColor === "#000000" ? "#342BAD" : statusColor,
-      }}
+      className={`min-w-64 text-gray-200 flex justify-between hover:cursor-pointer z-20 group relative rounded-md drop-shadow-2xl shadow-[#5A595921] border-2 ${highlightStyles.border} ${highlightStyles.bg}`}
     >
+      {/* Handles – top / bottom */}
       <Handle
         type="target"
         position={Position.Top}
@@ -223,39 +312,147 @@ const CustomNode = ({ data }) => {
         id="bottom"
         style={{ background: "#555" }}
       />
+
+      {/* Left handles – exactly on edge */}
       <Handle
         type="source"
-        position={Position.Right}
-        id="right"
-        style={{ background: "#555" }}
+        position={Position.Left}
+        id="left"
+        style={{
+          background: "#555",
+          left: -8,
+          top: "50%",
+          transform: "translateY(-50%)",
+          opacity: 0,
+        }}
       />
       <Handle
         type="target"
         position={Position.Left}
-        id="left"
-        style={{ background: "#555" }}
+        id="left-target"
+        style={{
+          background: "#555",
+          left: -8,
+          top: "50%",
+          transform: "translateY(-50%)",
+          opacity: 0,
+        }}
       />
 
-      <div className="flex justify-center w-full">
-        <div className="py-2 px-4 flex items-center justify-center">
-          <h1 className="text-sm font-bold text-center">{label}</h1>
+      {/* Right handles – exactly on edge */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="right"
+        style={{
+          background: "#555",
+          right: -8,
+          top: "50%",
+          transform: "translateY(-50%)",
+          opacity: 0,
+        }}
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        id="right-target"
+        style={{
+          background: "#555",
+          right: -8,
+          top: "50%",
+          transform: "translateY(-50%)",
+          opacity: 0,
+        }}
+      />
+
+      {/* Body */}
+      <div className="flex justify-center w-full mx-5">
+        <div className="py-2 px-4">
+          <h1 className="text-sm font-bold">{label}</h1>
+          {/* Cost badge */}
+          {costPerHour > 0 && (
+            <div className="mt-1 text-xs text-green-400">${costPerHour}/h</div>
+          )}
         </div>
       </div>
 
-      {/* Show badge only if costPerHour > 0 */}
-      {/* {costPerHour > 0 && (
-        <div className="absolute top-1 right-1 bg-green-600 text-xs px-2 py-0.5 rounded-full">
-          ${costPerHour}/h
+      {/* Hover tooltip */}
+      {tooltip && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+          {tooltip}
         </div>
-      )} */}
+      )}
     </div>
   );
 };
 
-const nodeTypes = { custom: CustomNode };
+/* --------------------------------------------------------------- */
+/*  EDGE BUILDER – normal flow + same-side loops                  */
+/* --------------------------------------------------------------- */
+const buildEdges = (steps) => {
+  const edges = [];
+  const seen = new Set();
+
+  /* ---- Normal flow (top → bottom) ---- */
+  for (let i = 0; i < steps.length - 1; i++) {
+    const src = steps[i].id;
+    const tgt = steps[i + 1].id;
+    const id = `flow-${src}-${tgt}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+
+    edges.push({
+      id,
+      source: src,
+      target: tgt,
+      sourceHandle: "bottom",
+      targetHandle: "top",
+      style: { stroke: "#6b7280", strokeWidth: 2 },
+      markerEnd: { type: "arrowclosed", color: "#6b7280" },
+    });
+  }
+
+  /* ---- Loop edges (same side → same side) ---- */
+  let loopIdx = 0;
+  steps.forEach((step) => {
+    if (
+      !step.hasLoop ||
+      !step.loopConnections?.from ||
+      !step.loopConnections?.to
+    )
+      return;
+
+    const from = step.loopConnections.from;
+    const to = step.loopConnections.to;
+    const id = `loop-${from}-${to}-${loopIdx}`;
+    if (seen.has(id)) return;
+    seen.add(id);
+
+    const side = loopIdx % 2 === 0 ? "left" : "right";
+
+    edges.push({
+      id,
+      source: from,
+      target: to,
+      sourceHandle: side,
+      targetHandle: `${side}-target`,
+      type: "curvedLoop",
+      data: {
+        loopCount: step.loop_count || 0,
+        offset: 50 + loopIdx * 4,
+        side,
+      },
+      style: { stroke: "#342BAD", strokeWidth: 2, strokeDasharray: "5,5" },
+      markerEnd: { type: "arrowclosed", color: "#342BAD" },
+    });
+    loopIdx++;
+  });
+
+  return edges;
+};
 
 /* --------------------------------------------------------------- */
-/*  MAIN COMPONENT                                                  */
+/*  MAIN COMPONENT                                                 */
 /* --------------------------------------------------------------- */
 export default function AiSupport() {
   const projectId = localStorage.getItem("currentProjectId");
@@ -272,40 +469,39 @@ export default function AiSupport() {
   const [showCostEditor, setShowCostEditor] = useState(false);
   const chatRef = useRef(null);
 
+  /* ---- Scroll chat to bottom ---- */
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
   }, [chatMessages, descriptions]);
 
-  /* ------------------- VERTICAL LAYOUT ------------------- */
+  /* ---- Build nodes & edges from API ---- */
   const { flowNodes, flowEdges } = useMemo(() => {
     if (!data?.process_flow_nodes) return { flowNodes: [], flowEdges: [] };
 
     const VERTICAL_SPACING = 180;
     const START_Y = 100;
 
-    const nodes = data.process_flow_nodes.map((node, idx) => ({
-      id: node.id,
+    const nodes = data.process_flow_nodes.map((n, i) => ({
+      id: n.id,
       type: "custom",
-      position: { x: 350, y: START_Y + idx * VERTICAL_SPACING },
+      position: { x: 350, y: START_Y + i * VERTICAL_SPACING },
       data: {
-        label: node.label,
-        value: node.value,
-        isDropout: node.isDropout,
-        isBottleneck: node.isBottleneck,
-        hasLoop: node.hasLoop,
-        costPerHour: node.cost_per_h || 0, // Use cost_per_h
-        descriptions: node.descriptions,
-        cost_per_h: node.cost_per_h, // Pass raw for editor
+        label: n.label,
+        value: n.value,
+        isDropout: n.isDropout,
+        isBottleneck: n.isBottleneck,
+        hasLoop: n.hasLoop,
+        costPerHour: n.cost_per_h ? parseFloat(n.cost_per_h) : 0,
+        descriptions: n.descriptions,
+        cost_per_h: n.cost_per_h,
+        bottleneck_count: n.bottleneck_count || 0,
+        loop_count: n.loop_count || 0,
+        dropout_count: n.dropout_count || 0,
+        loopConnections: n.loopConnections,
       },
     }));
 
-    const edges = nodes.slice(0, -1).map((n, i) => ({
-      id: `e${i}`,
-      source: n.id,
-      target: nodes[i + 1].id,
-      animated: n.data.hasLoop,
-      style: { stroke: n.data.hasLoop ? "#ffaa00" : "#666" },
-    }));
+    const edges = buildEdges(nodes.map((n) => ({ ...n.data, id: n.id })));
 
     return { flowNodes: nodes, flowEdges: edges };
   }, [data]);
@@ -316,10 +512,8 @@ export default function AiSupport() {
   }, [flowNodes, flowEdges, setNodes, setEdges]);
 
   const onNodeClick = useCallback((_, node) => {
-    const d = node.data;
-    setSelectedNode(d);
-    setDescriptions(d.descriptions || []);
-    // console.log(d, "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+    setSelectedNode(node.data);
+    setDescriptions(node.data.descriptions || []);
   }, []);
 
   const handleChat = (e) => {
@@ -361,12 +555,13 @@ export default function AiSupport() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
-          nodeTypes={nodeTypes}
+          nodeTypes={{ custom: CustomNode }}
+          edgeTypes={{ curvedLoop: CurvedLoopEdge }}
           fitView
           maxZoom={2}
           minZoom={0.5}
         >
-          <Background color="#333" gap={16} />
+          <Background color="#414040" gap={16} />
           <Controls />
         </ReactFlow>
 
@@ -433,17 +628,23 @@ export default function AiSupport() {
             </div>
           )}
         </div>
-        <form onSubmit={handleChat} className="flex gap-2">
+        <div className="flex gap-2">
           <input
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") handleChat(e);
+            }}
             placeholder="Ask about this flow..."
             className="flex-1 bg-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#574bff]"
           />
-          <button className="bg-[#574bff] px-4 py-2 rounded hover:bg-[#675dfa] transition text-white font-medium">
+          <button
+            onClick={handleChat}
+            className="bg-[#574bff] px-4 py-2 rounded hover:bg-[#675dfa] transition text-white font-medium"
+          >
             Send
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );
