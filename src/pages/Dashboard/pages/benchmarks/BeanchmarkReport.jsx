@@ -20,7 +20,7 @@ export default function BeanchmarkReportPage() {
   const [loadingFile, setIsLoading] = useState(false);
 
   /* --------------------------------------------------- */
-  /* PDF export (unchanged – works with the new shape)   */
+  /* PDF export */
   /* --------------------------------------------------- */
   const handleExportPDF = async () => {
     if (!data) {
@@ -30,7 +30,7 @@ export default function BeanchmarkReportPage() {
 
     setIsLoading(true);
     try {
-      const res = await getPdf(data).unwrap(); // returns raw PDF text
+      const res = await getPdf(data).unwrap();
       const blob = new Blob([res], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
 
@@ -53,7 +53,7 @@ export default function BeanchmarkReportPage() {
   };
 
   /* --------------------------------------------------- */
-  /* Loading UI                                          */
+  /* Loading UI */
   /* --------------------------------------------------- */
   if (isLoading) {
     return (
@@ -64,7 +64,7 @@ export default function BeanchmarkReportPage() {
   }
 
   /* --------------------------------------------------- */
-  /* Data extraction (safe)                              */
+  /* Safe Data Extraction */
   /* --------------------------------------------------- */
   const report = data || {};
   const kpis = report.KPI_Benchmark ?? [];
@@ -72,7 +72,7 @@ export default function BeanchmarkReportPage() {
   const analysis = report.Analysis_Report ?? {};
 
   /* --------------------------------------------------- */
-  /* Render                                              */
+  /* Render */
   /* --------------------------------------------------- */
   return (
     <div
@@ -105,7 +105,7 @@ export default function BeanchmarkReportPage() {
           disabled={isPdfLoading || loadingFile || !data}
           className="flex items-center gap-2 px-4 py-2 rounded-md transition-colors font-medium text-sm hover:cursor-pointer disabled:opacity-50"
           style={{
-            backgroundColor: "var(--color-user-main-color)",
+            backgroundColor: "#574bff",
             color: "var(--color-text-primary)",
           }}
         >
@@ -131,7 +131,6 @@ export default function BeanchmarkReportPage() {
           </p>
         </section>
 
-        {/* KPI Table – now matches the real JSON fields */}
         <section>
           <h2
             className="text-lg font-medium mb-4"
@@ -146,20 +145,32 @@ export default function BeanchmarkReportPage() {
                   className="border-b"
                   style={{ borderColor: "var(--color-gray-button-bg)" }}
                 >
-                  {[
-                    "Metric",
-                    "Team 1 (team json)",
-                    "Team 2 (team json)",
-                    "Status (Team 1 vs Team 2)",
-                  ].map((head) => (
-                    <th
-                      key={head}
-                      className="px-4 py-3 text-left text-sm font-medium"
-                      style={{ color: "var(--color-text-notActive)" }}
-                    >
-                      {head}
-                    </th>
-                  ))}
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium"
+                    style={{ color: "var(--color-text-notActive)" }}
+                  >
+                    Metric
+                  </th>
+                  {/* Dynamic Team 1 Header */}
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium"
+                    style={{ color: "var(--color-text-notActive)" }}
+                  >
+                    {kpis[0]?.Team_1_Label || "Team 1"}
+                  </th>
+                  {/* Dynamic Team 2 Header */}
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium"
+                    style={{ color: "var(--color-text-notActive)" }}
+                  >
+                    {kpis[0]?.Team_2_Label || "Team 2"}
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium"
+                    style={{ color: "var(--color-text-notActive)" }}
+                  >
+                    Evaluation
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -175,27 +186,43 @@ export default function BeanchmarkReportPage() {
                     >
                       {item.Metric}
                     </td>
+                    {/* Team 1 Value Only */}
                     <td
                       className="px-4 py-3 text-sm"
                       style={{ color: "var(--color-dark-text)" }}
                     >
-                      {typeof item["Team 1 (team json)"] === "number"
-                        ? item["Team 1 (team json)"].toLocaleString()
-                        : item["Team 1 (team json)"]}
+                      {typeof item.Team_1_Value === "number"
+                        ? item.Team_1_Value.toLocaleString(undefined, {
+                            minimumFractionDigits: 1,
+                            maximumFractionDigits: 2,
+                          })
+                        : item.Team_1_Value}
                     </td>
+                    {/* Team 2 Value Only */}
                     <td
                       className="px-4 py-3 text-sm"
                       style={{ color: "var(--color-dark-text)" }}
                     >
-                      {typeof item["Team 2 (team json)"] === "number"
-                        ? item["Team 2 (team json)"].toLocaleString()
-                        : item["Team 2 (team json)"]}
+                      {typeof item.Team_2_Value === "number"
+                        ? item.Team_2_Value.toLocaleString(undefined, {
+                            minimumFractionDigits: 1,
+                            maximumFractionDigits: 2,
+                          })
+                        : item.Team_2_Value}
                     </td>
+                    {/* Status */}
                     <td
-                      className="px-4 py-3 text-sm"
-                      style={{ color: "var(--color-dark-text)" }}
+                      className="px-4 py-3 text-sm font-medium"
+                      style={{
+                        color:
+                          item.Status === "Equal"
+                            ? "var(--color-info)"
+                            : item.Status.includes("higher")
+                            ? "var(--color-success)"
+                            : "var(--color-warning)",
+                      }}
                     >
-                      {item["Status (Team 1 vs Team 2)"]}
+                      {item.Status}
                     </td>
                   </tr>
                 ))}
@@ -204,16 +231,19 @@ export default function BeanchmarkReportPage() {
           </div>
         </section>
 
-        {/* Analysis Sections – nested object handling */}
+        {/* Analysis Sections – Improved */}
         {[
-          ["loop_analysis", "Loops Analysis"],
-          ["bottleneck_analysis", "Bottlenecks Analysis"],
-          ["dropout_analysis", "Dropout Analysis"],
-          ["happy_path", "Happy Path (Benchmark Reference)"],
-          ["recommendation_to_action", "Recommendation to Action + Simulation"],
-          ["method_notes", "Method Notes"],
-          ["appendix", "Appendix"],
-        ].map(([key, title]) => (
+          { key: "loop_analysis", title: "Loops Analysis" },
+          { key: "bottleneck_analysis", title: "Bottlenecks Analysis" },
+          { key: "dropout_analysis", title: "Dropout Analysis" },
+          { key: "happy_path", title: "Happy Path (Benchmark Reference)" },
+          {
+            key: "recommendation_to_action",
+            title: "Recommendation to Action + Simulation",
+          },
+          { key: "method_notes", title: "Method Notes" },
+          { key: "appendix", title: "Appendix" },
+        ].map(({ key, title }) => (
           <section key={key}>
             <h2
               className="text-lg font-medium mb-4"
