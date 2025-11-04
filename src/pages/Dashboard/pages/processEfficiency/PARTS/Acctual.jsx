@@ -277,6 +277,7 @@ const buildEdges = (steps, filter, prefix = "", color = "#6b7280") => {
     prefix !== "ideal-"
   ) {
     let loopIndex = 0;
+
     steps.forEach((step) => {
       if (
         step.hasLoop &&
@@ -417,7 +418,30 @@ export default function InvoiceFlow() {
 
   const onNodeClick = useCallback(
     (_, node) => {
-      setDescriptionsToShow(node.data.step.descriptions || ["No description"]);
+      const result = [];
+      // console.log(node.data.step);
+      if ("avg_duration_h" in node.data.step)
+        result.push(
+          `Average Duration (h): ${Number(
+            node.data.step.avg_duration_h
+          ).toFixed(5)}`
+        );
+
+      if ("bottleneck_count" in node.data.step)
+        result.push(
+          `Bottleneck Count: ${Number(node.data.step.bottleneck_count).toFixed(
+            5
+          )}`
+        );
+
+      if ("cost_per_h" in node.data.step)
+        result.push(
+          `Cost per Hour: ${Number(node.data.step.cost_per_h).toFixed(5)}`
+        );
+
+      setDescriptionsToShow(
+        [...result, ...node.data.step.descriptions] || ["No description"]
+      );
     },
     [setDescriptionsToShow]
   );

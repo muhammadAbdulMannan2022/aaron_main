@@ -6,9 +6,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    port: 7006
+    port: 7006,
   },
   optimizeDeps: {
-    include: ['@dnd-kit/core', 'react-resizable'], // Explicitly include problematic dependencies
+    include: ["@dnd-kit/core", "react-resizable"], // Explicitly include problematic dependencies
   },
 });
