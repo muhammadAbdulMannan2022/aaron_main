@@ -14,14 +14,13 @@ const pricingPlans = [
     duration: "Month",
     description: "Perfect for growing teams with moderate automation needs.",
     features: [
-      "50 process uploads",
-      "5,000 chatbot inquiries/month",
+      "5 process uploads",
+      "150 chatbot inquiries/month",
       "Email support",
-      "Basic analytics",
     ],
-    buttonText: "Subscribe Now",
-    planType: "small",
+    buttonText: "Get Started",
     highlight: false,
+    planType: "small",
   },
   {
     title: "Medium Enterprise",
@@ -29,15 +28,13 @@ const pricingPlans = [
     duration: "Month",
     description: "Ideal for mid-sized companies scaling automation.",
     features: [
-      "250 process uploads",
-      "25,000 chatbot inquiries/month",
+      "25 process uploads",
+      "500 chatbot inquiries/month",
       "Priority email & chat support",
-      "Advanced analytics + export",
-      "API access",
     ],
-    buttonText: "Subscribe Now",
-    planType: "medium",
+    buttonText: "Get Started",
     highlight: true,
+    planType: "medium",
   },
   {
     title: "Individual Offer",
@@ -46,14 +43,13 @@ const pricingPlans = [
     description: "Custom solutions for large-scale or unique needs.",
     features: [
       "Unlimited processes",
-      "Dedicated support manager",
-      "Custom integrations",
-      "SLA & uptime guarantee",
+      "Unlimited chatbot inquiries",
+      "Priority email & chat support",
       "On-premise option",
     ],
     buttonText: "Contact Sales",
-    planType: "custom",
     highlight: false,
+    planType: "custom",
   },
 ];
 
@@ -98,27 +94,15 @@ export default function PricingPlan() {
       if (planType === "small") {
         payload = {
           email: profileData.email,
-          amount: 200,
-          currency: "eur",
-          plan_data: {
-            processes: 50,
-            chatbot_inq: 5000,
-            duration_months: 1,
-          },
+          plan_type: "small",
         };
       } else if (planType === "medium") {
         payload = {
           email: profileData.email,
-          amount: 750,
-          currency: "eur",
-          plan_data: {
-            processes: 250,
-            chatbot_inq: 25000,
-            duration_months: 1,
-          },
+          plan_type: "medium",
         };
       }
-
+      console.log(payload, planType);
       const res = await subscribeNow(payload).unwrap();
       if (res.checkout_url) {
         window.location.href = res.checkout_url;
@@ -143,7 +127,7 @@ export default function PricingPlan() {
   return (
     <div
       onClick={() => setError(null)}
-      className="h-full flex-1  text-[var(--color-text-primary)] py-12 pt-28 md:pt-20 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-between relative overflow-hidden "
+      className="h-full flex-1  text-[var(--color-text-primary)] py-12 pt-28 md:pt-20 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-between relative overflow-auto "
     >
       {/* Background Accent */}
       <div className="absolute inset-0  pointer-events-none" />
@@ -151,7 +135,7 @@ export default function PricingPlan() {
       {/* Membership Status */}
       <div className="w-full max-w-6xl mb-12">
         <div className=" backdrop-blur-sm border border-[var(--color-button-outline)] rounded-xl p-6 shadow-xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center text-center md:text-left">
             <div>
               <p className="text-[var(--color-dark-text)] text-sm mb-1">
                 Subscription
@@ -174,7 +158,7 @@ export default function PricingPlan() {
                 </button>
               )}
             </div>
-            <div className="text-right">
+            <div className="md:text-right">
               <p className="text-[var(--color-dark-text)] text-sm mb-1">
                 Renews On
               </p>

@@ -125,7 +125,7 @@ export function ProcessEfficiencyLayout() {
             <aside
               className={`w-80 shadow-md shadow-gray-700 bg-main-bg border-l border-sidebar-border transform transition-transform duration-200 ease-in-out ${
                 rightSidebarOpen ? "translate-x-0" : "translate-x-full"
-              } lg:translate-x-0 lg:block fixed lg:static right-0 z-50 lg:z-auto h-auto`}
+              } lg:translate-x-0 lg:block fixed lg:static right-0 lg:z-auto z-[999] h-full`}
             >
               <div className="flex flex-col min-h-0">
                 <div className="lg:hidden flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
@@ -143,7 +143,17 @@ export function ProcessEfficiencyLayout() {
                         className="text-white border border-gray-button-bg p-2 rounded-md"
                         key={i}
                       >
-                        <p>{data}</p>
+                        <p>
+                          {data === "Cost per hour: 0.0" ? (
+                            <span className="text-red-400">
+                              Kinkdly define the cost on Simulation
+                            </span>
+                          ) : data === "Estimated cost per case: 0.0" ? (
+                            ""
+                          ) : (
+                            data
+                          )}
+                        </p>
                       </div>
                     ))
                   ) : (

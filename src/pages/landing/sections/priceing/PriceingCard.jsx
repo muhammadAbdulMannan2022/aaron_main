@@ -11,7 +11,7 @@ function PricingCard({
 }) {
   return (
     <div
-      className={`bg-gradient-to-bl h-full from-[#272727] to-[#000000] border flex flex-col  justify-between border-gray-800 rounded-lg p-8 relative transform`}
+      className={`bg-gradient-to-bl h-full min-h-[500px] from-[#272727] to-[#000000] border flex flex-col  justify-between border-gray-800 rounded-lg p-8 relative transform`}
     >
       <div>
         <img src="/priceing.png" alt="" className="absolute top-0 right-0" />
