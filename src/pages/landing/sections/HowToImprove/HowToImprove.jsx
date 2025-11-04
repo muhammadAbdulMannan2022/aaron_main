@@ -27,9 +27,9 @@ export default function HowToImprove() {
             continuously improve workflows, reduce costs, and drive measurable
             results across your organization.
           </p>
-          <button className="bg-outer-button-bg text-white py-3 px-6 rounded-lg hover:bg-outer-button-bg/80 transition-colors duration-200 w-fit hover:cursor-pointer">
+          {/* <button className="bg-outer-button-bg text-white py-3 px-6 rounded-lg hover:bg-outer-button-bg/80 transition-colors duration-200 w-fit hover:cursor-pointer">
             Learn More
-          </button>
+          </button> */}
         </div>
       </div>
     </section>

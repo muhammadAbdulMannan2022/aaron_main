@@ -1,6 +1,5 @@
 import { Rocket, Square } from "lucide-react";
 import { useState } from "react";
-import { FaUserAlt } from "react-icons/fa";
 import PricingCard from "../landing/sections/priceing/PriceingCard";
 import {
   useCancelSubscriptionMutation,
@@ -10,151 +9,185 @@ import {
 
 const pricingPlans = [
   {
-    title: "Demo",
-    price: "$0",
-    duration: "30days",
-    description: "Perfect for using in a personal website or a client project.",
+    title: "Small Enterprise",
+    price: "200 €",
+    duration: "Month",
+    description: "Perfect for growing teams with moderate automation needs.",
     features: [
-      "Don't just watch the future-Claim your free access now",
-      "full access to all feature",
-      "Lifetime access",
-      "One user",
-      "5 diffrent process uploads",
-      "15 inquiries to ChatBot",
+      "50 process uploads",
+      "5,000 chatbot inquiries/month",
+      "Email support",
+      "Basic analytics",
     ],
-    buttonText: "Start your demo",
-    isCustomizable: false,
+    buttonText: "Subscribe Now",
+    planType: "small",
+    highlight: false,
   },
   {
-    title: "Premium",
-    price: "$250",
-    duration: "Yearly",
-    buttonText: "Calculate Model Now",
-    isCustomizable: true,
+    title: "Medium Enterprise",
+    price: "750 €",
+    duration: "Month",
+    description: "Ideal for mid-sized companies scaling automation.",
+    features: [
+      "250 process uploads",
+      "25,000 chatbot inquiries/month",
+      "Priority email & chat support",
+      "Advanced analytics + export",
+      "API access",
+    ],
+    buttonText: "Subscribe Now",
+    planType: "medium",
+    highlight: true,
+  },
+  {
+    title: "Individual Offer",
+    price: "Contact Us",
+    duration: "",
+    description: "Custom solutions for large-scale or unique needs.",
+    features: [
+      "Unlimited processes",
+      "Dedicated support manager",
+      "Custom integrations",
+      "SLA & uptime guarantee",
+      "On-premise option",
+    ],
+    buttonText: "Contact Sales",
+    planType: "custom",
+    highlight: false,
   },
 ];
 
 export default function PricingPlan() {
-  const [users, setUsers] = useState(10);
-  const [processes, setProcesses] = useState(5);
-  const [inquiries, setInquiries] = useState(5000);
-  //  rtk
+  // RTK Query
   const [error, setError] = useState(null);
-  const [subscribeNow, { isLoading, isSuccess }] = useSubscribeNowMutation();
+  const [subscribeNow, { isLoading: isSubscribing }] =
+    useSubscribeNowMutation();
   const [cancelSubscription, { isLoading: isCancelLoading }] =
     useCancelSubscriptionMutation();
   const { data: profileData, isLoading: isProfileDataLoading } =
     useGetProfileDataQuery();
 
-  const premiumPrice = `$${Math.round(
-    users * 10 + processes * 20 + inquiries * 0.01
-  )}`;
+  // Customizable state (commented but preserved)
+  // const [users, setUsers] = useState(10);
+  // const [processes, setProcesses] = useState(5);
+  // const [inquiries, setInquiries] = useState(5000);
 
   const cancelSub = async () => {
     try {
-      const res = await cancelSubscription();
-      console.log(res);
-    } catch (error) {
-      console.log(error);
+      await cancelSubscription().unwrap();
+    } catch (err) {
+      setError(err?.data?.error || "Failed to cancel subscription.");
     }
   };
-  const handleSubscribeNow = async (type) => {
-    if (!profileData) return;
+
+  const handleSubscribeNow = async (planType) => {
+    if (!profileData?.email) {
+      setError("Please log in to subscribe.");
+      return;
+    }
 
     try {
       let payload;
-      if (type !== "free") {
+
+      if (planType === "custom") {
+        window.location.href =
+          "mailto:sales@yourcompany.com?subject=Custom%20Enterprise%20Plan";
+        return;
+      }
+
+      if (planType === "small") {
         payload = {
           email: profileData.email,
-          amount: Math.round(users * 10 + processes * 20 + inquiries * 0.01),
-          currency: "usd",
+          amount: 200,
+          currency: "eur",
           plan_data: {
-            processes: processes,
-            chatbot_inq: inquiries,
-            duration_months: 12,
+            processes: 50,
+            chatbot_inq: 5000,
+            duration_months: 1,
           },
         };
-      } else {
+      } else if (planType === "medium") {
         payload = {
           email: profileData.email,
-          amount: 0,
-          currency: "usd",
+          amount: 750,
+          currency: "eur",
           plan_data: {
-            processes: 1,
-            chatbot_inq: 4,
+            processes: 250,
+            chatbot_inq: 25000,
             duration_months: 1,
           },
         };
       }
 
       const res = await subscribeNow(payload).unwrap();
-
       if (res.checkout_url) {
         window.location.href = res.checkout_url;
-      } else {
-        throw new Error("No checkout URL found");
       }
     } catch (err) {
-      console.error(err);
-
-      // Handle backend JSON error shape
-      if (err?.data?.error) {
-        setError(err.data.error);
-      } else if (err?.error) {
-        setError(err.error);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+      const msg =
+        err?.data?.error ||
+        err?.error ||
+        "Subscription failed. Please try again.";
+      setError(msg);
     }
   };
 
-  if (isProfileDataLoading) return <div>Loading...</div>;
+  if (isProfileDataLoading) {
+    return (
+      <div className="h-full flex items-center justify-center text-[var(--color-main-text)]">
+        Loading your profile...
+      </div>
+    );
+  }
 
   return (
     <div
       onClick={() => setError(null)}
-      className="h-full flex-1 overflow-y-auto text-[var(--color-text-primary)] py-12 pt-28 md:pt-20 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-b from-[var(--color-main-bg)] to-[#1a1a33]"
+      className="h-full flex-1  text-[var(--color-text-primary)] py-12 pt-28 md:pt-20 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center relative overflow-hidden "
     >
-      {/* Membership Section */}
-      <div className="text-[var(--color-main-text)] py-8 px-4 flex flex-col items-center w-full max-w-6xl">
-        {/* Table container */}
-        <div className="border border-[var(--color-button-outline)] rounded-lg overflow-hidden w-full text-center md:text-left">
-          <div className="grid grid-cols-1 md:grid-cols-3">
-            <div className="p-4">
-              <p className="text-[var(--color-dark-text)] text-sm mb-2">
-                Subscription duration
+      {/* Background Accent */}
+      <div className="absolute inset-0  pointer-events-none" />
+
+      {/* Membership Status */}
+      <div className="w-full max-w-6xl mb-12">
+        <div className=" backdrop-blur-sm border border-[var(--color-button-outline)] rounded-xl p-6 shadow-xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+            <div>
+              <p className="text-[var(--color-dark-text)] text-sm mb-1">
+                Subscription
               </p>
-              <p className="font-medium">
-                {profileData && profileData.subscription_status}
+              <p className="font-semibold text-[var(--color-main-text)]">
+                {profileData?.subscription_status || "Free Plan"}
               </p>
             </div>
-            <div className="p-4 flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center">
               <p className="text-[var(--color-dark-text)] text-sm mb-2">
-                Membership {profileData.is_subscribed ? "" : "(Freebie)"}
+                Membership {profileData?.is_subscribed ? "" : "(Free)"}
               </p>
-              {profileData.is_subscribed && (
+              {profileData?.is_subscribed && (
                 <button
                   onClick={cancelSub}
                   disabled={isCancelLoading}
-                  className="bg-[#574bff] hover:bg-[#574bff]/80 text-white px-4 py-1 rounded transition hover:cursor-pointer disabled:text-gray-500"
+                  className="bg-red-500/20 hover:bg-red-500/30 hover:cursor-pointer text-red-400 px-5 py-1.5 rounded-lg text-sm font-medium transition disabled:opacity-50"
                 >
-                  Cancel
+                  {isCancelLoading ? "Cancelling..." : "Cancel Subscription"}
                 </button>
               )}
             </div>
-            <div className="p-4 flex flex-col items-end">
-              <p className="text-[var(--color-dark-text)] text-sm mb-2">
-                Renewal Date
+            <div className="text-right">
+              <p className="text-[var(--color-dark-text)] text-sm mb-1">
+                Renews On
               </p>
-              <p className="font-medium">
-                {profileData.subsciption_expires_on &&
-                  new Date(
-                    profileData.subsciption_expires_on.split("T")[0]
-                  ).toLocaleDateString("en-US", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+              <p className="font-semibold text-[var(--color-main-text)]">
+                {profileData?.subsciption_expires_on
+                  ? new Date(
+                      profileData.subsciption_expires_on.split("T")[0]
+                    ).toLocaleDateString("en-US", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
+                  : "—"}
               </p>
             </div>
           </div>
@@ -162,139 +195,84 @@ export default function PricingPlan() {
       </div>
 
       {/* Pricing Section */}
-      <div className="flex items-center justify-center flex-col">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2">Our Pricing Plan</h2>
-          <p className="text-[var(--color-text-notActive)] mb-8">
-            Find your best package here
+      <div className="w-full max-w-6xl">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-main-text)] mb-3">
+            Choose Your Enterprise Plan
+          </h2>
+          <p className="text-[var(--color-text-notActive)]">
+            Transparent pricing for teams of all sizes
           </p>
-          {error && (
-            <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500 text-red-400 rounded-lg text-center max-w-lg">
-              {error}
-            </div>
-          )}
         </div>
 
-        <div className="flex flex-col md:flex-row items-stretch gap-8 w-full mx-auto">
+        {error && (
+          <div className="mb-8 max-w-2xl mx-auto px-5 py-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-center text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* 3 Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {pricingPlans.map((plan, index) => (
-            <div key={index} className="relative flex-1">
-              {plan.isCustomizable ? (
-                <div className="bg-gradient-to-bl from-[#272727] to-[#000000] border border-gray-800 rounded-lg p-8 h-full flex flex-col">
-                  <img
-                    src="/priceing.png"
-                    alt=""
-                    className="absolute top-0 right-0"
-                  />
-                  <div className="mb-6 text-center">
-                    <h3 className="text-[#5d52fc] text-lg font-semibold mb-2">
-                      {plan.title}
-                    </h3>
-                    <div className="flex items-baseline my-5 justify-center">
-                      <span className="text-4xl font-bold text-white">
-                        {premiumPrice}
-                      </span>
-                      <span className="text-[#5d52fc] ml-2">
-                        /{plan.duration}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="space-y-4 flex-1">
-                    {/* <div>
-                      <label className="block text-gray-300 text-sm">
-                        Users: {users}
-                      </label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="100"
-                        value={users}
-                        onChange={(e) => setUsers(parseInt(e.target.value))}
-                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
-    [&::-webkit-slider-thumb]:w-4
-    [&::-webkit-slider-thumb]:h-4
-    [&::-webkit-slider-thumb]:rounded-full
-    [&::-webkit-slider-thumb]:bg-[#5d52fc]
-    [&::-webkit-slider-thumb]:cursor-pointer
-    [&::-moz-range-thumb]:appearance-none
-    [&::-moz-range-thumb]:w-4
-    [&::-moz-range-thumb]:h-4
-    [&::-moz-range-thumb]:rounded-full
-    [&::-moz-range-thumb]:bg-[#5d52fc]
-    [&::-moz-range-thumb]:cursor-pointer"
-                      />
-                    </div> */}
-                    <div>
-                      <label className="block text-gray-300 text-sm">
-                        Processes: {processes}
-                      </label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="50"
-                        value={processes}
-                        onChange={(e) => setProcesses(parseInt(e.target.value))}
-                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
-    [&::-webkit-slider-thumb]:w-4
-    [&::-webkit-slider-thumb]:h-4
-    [&::-webkit-slider-thumb]:rounded-full
-    [&::-webkit-slider-thumb]:bg-[#5d52fc]
-    [&::-webkit-slider-thumb]:cursor-pointer
-    [&::-moz-range-thumb]:appearance-none
-    [&::-moz-range-thumb]:w-4
-    [&::-moz-range-thumb]:h-4
-    [&::-moz-range-thumb]:rounded-full
-    [&::-moz-range-thumb]:bg-[#5d52fc]
-    [&::-moz-range-thumb]:cursor-pointer"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 text-sm">
-                        Chatbot Inquiries: {inquiries}
-                      </label>
-                      <input
-                        type="range"
-                        min="1000"
-                        max="100000"
-                        step="1000"
-                        value={inquiries}
-                        onChange={(e) => setInquiries(parseInt(e.target.value))}
-                        className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none
-    [&::-webkit-slider-thumb]:w-4
-    [&::-webkit-slider-thumb]:h-4
-    [&::-webkit-slider-thumb]:rounded-full
-    [&::-webkit-slider-thumb]:bg-[#5d52fc]
-    [&::-webkit-slider-thumb]:cursor-pointer
-    [&::-moz-range-thumb]:appearance-none
-    [&::-moz-range-thumb]:w-4
-    [&::-moz-range-thumb]:h-4
-    [&::-moz-range-thumb]:rounded-full
-    [&::-moz-range-thumb]:bg-[#5d52fc]
-    [&::-moz-range-thumb]:cursor-pointer"
-                      />
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleSubscribeNow("premium")}
-                    className="w-full py-3 hover:cursor-pointer px-6 bg-transparent border border-[#342BAD] text-[#5d52fc] rounded-lg hover:bg-[#342BAD] hover:text-white transition-colors mt-8"
-                  >
-                    {plan.buttonText}
-                  </button>
-                </div>
-              ) : (
-                <PricingCard
-                  title={plan.title}
-                  price={plan.price}
-                  duration={plan.duration}
-                  description={plan.description}
-                  features={plan.features}
-                  buttonText={plan.buttonText}
-                  onClick={() => handleSubscribeNow("free")}
-                />
+            <div
+              key={index}
+              className={`relative group ${
+                plan.highlight ? "md:scale-105 md:-translate-y-4" : ""
+              } transition-all duration-300`}
+            >
+              {/* Glow for popular */}
+              {plan.highlight && (
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#5d52fc] to-[#342BAD] rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity" />
               )}
+
+              {/* Popular Badge */}
+              {plan.highlight && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                  <span className="bg-gradient-to-r from-[#5d52fc] to-[#342BAD] text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
+                    RECOMMENDED
+                  </span>
+                </div>
+              )}
+
+              <PricingCard
+                title={plan.title}
+                price={plan.price}
+                duration={plan.duration}
+                description={plan.description}
+                features={plan.features}
+                buttonText={isSubscribing ? "Processing..." : plan.buttonText}
+                onClick={() => handleSubscribeNow(plan.planType)}
+              />
             </div>
           ))}
         </div>
       </div>
+
+      {/* OLD CUSTOMIZABLE VERSION (COMMENTED) */}
+      {/*
+        <div className="mt-16 w-full max-w-4xl">
+          <div className="bg-gradient-to-bl from-[#272727] to-[#000000] border border-gray-800 rounded-lg p-8">
+            <h3 className="text-[#5d52fc] text-lg font-semibold mb-2 text-center">Premium (Custom)</h3>
+            <div className="flex items-baseline justify-center my-5">
+              <span className="text-4xl font-bold text-white">{premiumPrice}</span>
+              <span className="text-[#5d52fc] ml-2">/Yearly</span>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-300 text-sm">Processes: {processes}</label>
+                <input type="range" min="1" max="50" value={processes} onChange={(e) => setProcesses(+e.target.value)} className="..." />
+              </div>
+              <div>
+                <label className="block text-gray-300 text-sm">Chatbot Inquiries: {inquiries}</label>
+                <input type="range" min="1000" max="100000" step="1000" value={inquiries} onChange={(e) => setInquiries(+e.target.value)} className="..." />
+              </div>
+            </div>
+            <button onClick={() => handleSubscribeNow("premium")} className="w-full mt-8 py-3 ...">
+              Calculate Model Now
+            </button>
+          </div>
+        </div>
+      */}
     </div>
   );
 }
