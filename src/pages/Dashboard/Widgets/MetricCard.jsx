@@ -66,9 +66,12 @@ export default function MetricCard({
             {(title === "Total Number of Cases" ||
               title === "Total Completed Cases" ||
               title === "total completed cases") && (
-              <div className="rounded-2xl w-fit items-center justify-center border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow">
+              <div className="rounded-2xl w-fit items-center justify-center  p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div key={key} className="w-fit">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {key.replace(/_/g, " ")}
+                    </p>
                     <p
                       className={`${
                         title === "Total Completed Cases"
@@ -101,19 +104,28 @@ export default function MetricCard({
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div
                     key={key}
-                    className="rounded-2xl w-[200px] border border-border p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow"
+                    className="group relative w-[200px] rounded-2xl border border-border/50 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md p-5 
+               shadow-lg shadow-black/5 ring-1 ring-white/10 
+               hover:shadow-xl hover:shadow-black/10 hover:ring-white/20 
+               hover:-translate-y-1 transition-all duration-300 ease-out"
                   >
-                    <p className="text-xs font-medium text-muted-foreground">
+                    {/* Optional subtle glow on hover */}
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 
+                    bg-gradient-to-tr from-white/10 to-transparent transition-opacity"
+                    />
+
+                    <p className="text-xs font-semibold tracking-wider text-muted-foreground/80 uppercase">
                       {key.replace(/_/g, " ")}
                     </p>
-                    <p className="text-xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
+
+                    <p className="mt-2 text-2xl font-bold text-[var(--color-main-text)] drop-shadow-sm">
                       {(() => {
                         if (typeof value !== "number") return value;
 
                         if (key.includes("Percentage")) {
                           return `${value.toFixed(2)}%`;
                         } else if (key.toLowerCase().includes("seconds")) {
-                          // seconds to hours
                           const hours = value / 3600;
                           return `${hours.toFixed(2)} h`;
                         } else if (key.toLowerCase().includes("hours")) {
