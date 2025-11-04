@@ -69,7 +69,7 @@ export default function MetricCard({
               <div className="rounded-2xl w-fit items-center justify-center  p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow">
                 {Object.entries(rtk_data).map(([key, value]) => (
                   <div key={key} className="w-fit">
-                    <p className="text-xs font-medium text-muted-foreground">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
                       {key.replace(/_/g, " ")}
                     </p>
                     <p
@@ -77,7 +77,7 @@ export default function MetricCard({
                         title === "Total Completed Cases"
                           ? " text-center"
                           : "text-xl"
-                      } text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80`}
+                      } `}
                     >
                       {typeof value === "number"
                         ? value.toLocaleString()

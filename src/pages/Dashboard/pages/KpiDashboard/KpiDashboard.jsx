@@ -22,6 +22,7 @@ import {
   useCreateNewDashboardMutation,
   useDeleteDashboardMutation,
   useGetDashboardsQuery,
+  useTotalCaseCountQuery,
   useUpdateDashboardMutation,
 } from "../../../../../redux/api/dashboard";
 import { useCallRtk } from "../../../../hooks/useCallRtk";
@@ -121,6 +122,26 @@ export default function KpiDashboard() {
     refetch,
     isLoading: isDashboardsLoading,
   } = useGetDashboardsQuery(projectId, { skip: !projectId });
+
+  const {
+    data: totalCountData,
+    isLoading,
+    refetch: refetchTotal,
+  } = useTotalCaseCountQuery(
+    {
+      projectId,
+      dashboardId,
+      startTime: selectedDateRange[0],
+      endTime: selectedDateRange[1],
+      variants: selectedVarients,
+      minCycleTime: cycleTime[0],
+      maxCycleTime: cycleTime[1],
+    },
+    {
+      skip: !projectId || !dashboardId,
+    }
+  );
+
   const [createNewDashboard, { isLoading: isCreating }] =
     useCreateNewDashboardMutation();
   const [updateDashboard, { isLoading: isUpdating }] =
@@ -180,6 +201,16 @@ export default function KpiDashboard() {
     setIsDataLoading(true);
     let fetchedData = { ...widgetData }; // Preserve existing data
     const prevWidgets = prevWidgetsRef.current;
+    // update count
+    refetchTotal({
+      projectId,
+      dashboardId,
+      startTime: selectedDateRange[0],
+      endTime: selectedDateRange[1],
+      variants: selectedVarients,
+      minCycleTime: cycleTime[0],
+      maxCycleTime: cycleTime[1],
+    });
 
     // If filters or projectId have changed, fetch data for all widgets
     if (haveFiltersChanged()) {
@@ -396,6 +427,16 @@ export default function KpiDashboard() {
                 <Filter size={16} />
                 <span>Filters</span>
               </button>
+              {totalCountData && (
+                <div className="bg-[#574bff] h-12 min-w-[150px] px-4 flex flex-col justify-center rounded-md">
+                  <span className="text-white text-xs font-bold">
+                    Total Cases Analyzed
+                  </span>
+                  <span className="text-gray-300 font-bold text-base">
+                    {totalCountData.Total_Unique_Cases}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-3">

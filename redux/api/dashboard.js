@@ -797,4 +797,5 @@ export const {
   useLazyMinimumCycleTimeQuery,
   useLazyAverageIdleTimeQuery,
   useLazyLargestBottleneckQuery,
+  useTotalCaseCountQuery,
 } = dashboard;
