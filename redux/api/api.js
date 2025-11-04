@@ -165,6 +165,14 @@ export const api = createApi({
         body: data,
       }),
     }),
+    // simulation
+    simulateTheFlow: builder.mutation({
+      query: (data) => ({
+        url: `/api/project/simulation/${data.id}/`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 // 👇 these are auto-generated hooks
@@ -195,4 +203,6 @@ export const {
   useGetBanchmarkPdfMutation,
   // change password
   useChangePasswordWhenLoggedInMutation,
+  // simulate
+  useSimulateTheFlowMutation,
 } = api;

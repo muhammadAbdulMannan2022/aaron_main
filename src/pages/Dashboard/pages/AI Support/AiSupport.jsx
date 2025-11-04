@@ -15,6 +15,7 @@ import {
   useGetOrginalPathQuery,
 } from "../../../../../redux/api/dashboard";
 import { Modal } from "../../../../helpers/Modal";
+import { useSimulateTheFlowMutation } from "../../../../../redux/api/api";
 
 /* --------------------------------------------------------------- */
 /*  COST EDITOR PANEL – unchanged (kept for completeness)         */
@@ -203,7 +204,7 @@ const CurvedLoopEdge = ({
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const loopCount = data?.loopCount || 0;
-  const side = data?.side || "right"; // left | right
+  const side = data?.side || "right";
   const baseOffset = data?.offset || 60;
 
   const direction = side === "left" ? -1 : 1;
@@ -299,7 +300,6 @@ const CustomNode = ({ data }) => {
     <div
       className={`min-w-64 text-gray-200 flex justify-between hover:cursor-pointer z-20 group relative rounded-md drop-shadow-2xl shadow-[#5A595921] border-2 ${highlightStyles.border} ${highlightStyles.bg}`}
     >
-      {/* Handles – top / bottom */}
       <Handle
         type="target"
         position={Position.Top}
@@ -313,7 +313,6 @@ const CustomNode = ({ data }) => {
         style={{ background: "#555" }}
       />
 
-      {/* Left handles – exactly on edge */}
       <Handle
         type="source"
         position={Position.Left}
@@ -339,7 +338,6 @@ const CustomNode = ({ data }) => {
         }}
       />
 
-      {/* Right handles – exactly on edge */}
       <Handle
         type="source"
         position={Position.Right}
@@ -365,18 +363,15 @@ const CustomNode = ({ data }) => {
         }}
       />
 
-      {/* Body */}
       <div className="flex justify-center w-full mx-5">
         <div className="py-2 px-4">
           <h1 className="text-sm font-bold">{label}</h1>
-          {/* Cost badge */}
           {costPerHour > 0 && (
             <div className="mt-1 text-xs text-green-400">${costPerHour}/h</div>
           )}
         </div>
       </div>
 
-      {/* Hover tooltip */}
       {tooltip && (
         <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
           {tooltip}
@@ -393,7 +388,7 @@ const buildEdges = (steps) => {
   const edges = [];
   const seen = new Set();
 
-  /* ---- Normal flow (top → bottom) ---- */
+  // Normal flow
   for (let i = 0; i < steps.length - 1; i++) {
     const src = steps[i].id;
     const tgt = steps[i + 1].id;
@@ -412,7 +407,7 @@ const buildEdges = (steps) => {
     });
   }
 
-  /* ---- Loop edges (same side → same side) ---- */
+  // Loop edges
   let loopIdx = 0;
   steps.forEach((step) => {
     if (
@@ -452,98 +447,149 @@ const buildEdges = (steps) => {
 };
 
 /* --------------------------------------------------------------- */
-/*  MEMOIZED TYPES - defined outside component to prevent re-renders */
+/*  MEMOIZED TYPES                                                 */
 /* --------------------------------------------------------------- */
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = { curvedLoop: CurvedLoopEdge };
+
+/* --------------------------------------------------------------- */
+/*  NORMALIZE NODES – Critical: IDs as strings + keep ALL fields  */
+/* --------------------------------------------------------------- */
+const normalizeNodes = (raw = []) =>
+  raw.map((n, i) => {
+    const id = String(n.id); // ← ALWAYS string
+    return {
+      id,
+      type: "custom",
+      position: { x: 350, y: 100 + i * 180 },
+      data: {
+        id,
+        label: n.label,
+        value: parseFloat(n.value) || 0,
+        isDropout: !!n.isDropout,
+        isBottleneck: !!n.isBottleneck,
+        hasLoop: !!n.hasLoop,
+        costPerHour: n.cost_per_h ? parseFloat(n.cost_per_h) : 0,
+        descriptions: n.descriptions || [],
+        cost_per_h: n.cost_per_h,
+        bottleneck_count: n.bottleneck_count || 0,
+        loop_count: n.loop_count || 0,
+        dropout_count: n.dropout_count || 0,
+        loopConnections: n.loopConnections || null,
+        avg_duration_h: n.avg_duration_h,
+        estimated_cost: n.estimated_cost,
+        status: n.status,
+        owner: n.owner,
+        extras: n.extras || [],
+      },
+    };
+  });
 
 /* --------------------------------------------------------------- */
 /*  MAIN COMPONENT                                                 */
 /* --------------------------------------------------------------- */
 export default function AiSupport() {
   const projectId = localStorage.getItem("currentProjectId");
+
+  // Queries
   const { data, isLoading } = useGetOrginalPathQuery(projectId, {
     skip: !projectId,
   });
+  const [simulate, { isLoading: isSimulateLoading }] =
+    useSimulateTheFlowMutation();
 
+  // State
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
-  const [descriptions, setDescriptions] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
   const [showCostEditor, setShowCostEditor] = useState(false);
   const chatRef = useRef(null);
 
-  /* ---- Scroll chat to bottom ---- */
+  // Scroll chat
   useEffect(() => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
-  }, [chatMessages, descriptions]);
+  }, [chatMessages]);
 
-  /* ---- Build nodes & edges from API ---- */
+  // Initial flow (memoized)
   const { flowNodes, flowEdges } = useMemo(() => {
     if (!data?.process_flow_nodes) return { flowNodes: [], flowEdges: [] };
-
-    const VERTICAL_SPACING = 180;
-    const START_Y = 100;
-
-    const nodes = data.process_flow_nodes.map((n, i) => ({
-      id: n.id,
-      type: "custom",
-      position: { x: 350, y: START_Y + i * VERTICAL_SPACING },
-      data: {
-        label: n.label,
-        value: n.value,
-        isDropout: n.isDropout,
-        isBottleneck: n.isBottleneck,
-        hasLoop: n.hasLoop,
-        costPerHour: n.cost_per_h ? parseFloat(n.cost_per_h) : 0,
-        descriptions: n.descriptions,
-        cost_per_h: n.cost_per_h,
-        bottleneck_count: n.bottleneck_count || 0,
-        loop_count: n.loop_count || 0,
-        dropout_count: n.dropout_count || 0,
-        loopConnections: n.loopConnections,
-      },
-    }));
-
+    const nodes = normalizeNodes(data.process_flow_nodes);
     const edges = buildEdges(nodes.map((n) => ({ ...n.data, id: n.id })));
-
     return { flowNodes: nodes, flowEdges: edges };
   }, [data]);
 
+  // Apply initial flow
   useEffect(() => {
     setNodes(flowNodes);
     setEdges(flowEdges);
+    setSelectedNode(null);
   }, [flowNodes, flowEdges, setNodes, setEdges]);
 
+  // Node click
   const onNodeClick = useCallback((_, node) => {
     setSelectedNode(node.data);
-    console.log(node, "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-    setDescriptions(node.data.descriptions || []);
   }, []);
 
-  const handleChat = (e) => {
+  // Chat + Simulate
+  const handleChat = async (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    setChatMessages((m) => [...m, { text: chatInput, sender: "user" }]);
-    setChatMessages((m) => [
-      ...m,
-      {
-        text: `**AI**: You asked about **${chatInput}**.\n\n${
-          selectedNode?.label || "Select a node"
-        } takes **${selectedNode?.value || "?"} min**.\n\n${
-          selectedNode?.costPerHour > 0
-            ? `Cost: **$${selectedNode.costPerHour}/hour**`
-            : "No cost set yet."
-        }`,
-        sender: "ai",
-      },
-    ]);
+    const userMsg = chatInput.trim();
+    setChatMessages((m) => [...m, { text: userMsg, sender: "user" }]);
     setChatInput("");
+
+    const payload = {
+      id: projectId,
+      text: userMsg,
+      selected: selectedNode
+        ? { id: selectedNode.id, label: selectedNode.label }
+        : null,
+    };
+
+    try {
+      const result = await simulate(payload).unwrap();
+
+      // CORRECT PATH: simulation_result.process_flow_nodes
+      const newRaw = result.simulation_result?.process_flow_nodes || [];
+      const newNodes = normalizeNodes(newRaw);
+      const newEdges = buildEdges(
+        newNodes.map((n) => ({ ...n.data, id: n.id }))
+      );
+
+      setNodes(newNodes);
+      setEdges(newEdges);
+
+      // Preserve selection
+      setSelectedNode((prev) =>
+        prev && newNodes.some((n) => n.id === prev.id) ? prev : null
+      );
+
+      // AI response
+      const cycle = result.simulation_result?.global_metrics?.Cycle_Time;
+      const avg = cycle?.Average ?? "N/A";
+      const steps = newNodes.length;
+
+      const aiText =
+        result.aiResponse ||
+        `**AI**: Flow updated – **${steps}** steps, average cycle time **${avg}**`;
+
+      setChatMessages((m) => [...m, { text: aiText, sender: "ai" }]);
+    } catch (err) {
+      console.error("Simulation failed:", err);
+      setChatMessages((m) => [
+        ...m,
+        {
+          text: "**AI**: Sorry, something went wrong. Please try again.",
+          sender: "ai",
+        },
+      ]);
+    }
   };
 
+  // Loading UI
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full text-white text-xl">
@@ -554,12 +600,13 @@ export default function AiSupport() {
 
   return (
     <div className="flex w-full h-full relative">
-      {/* ---------- Flow (vertical) ---------- */}
+      {/* Flow */}
       <div className="flex-1 relative">
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
@@ -571,7 +618,7 @@ export default function AiSupport() {
           <Controls />
         </ReactFlow>
 
-        {/* ---------- Cost Editor Modal ---------- */}
+        {/* Cost Editor */}
         <Modal isOpen={showCostEditor} onClose={() => setShowCostEditor(false)}>
           <CostEditorPanel
             nodes={flowNodes}
@@ -579,37 +626,34 @@ export default function AiSupport() {
           />
         </Modal>
 
-        {/* ---------- Open Cost Editor button ---------- */}
+        {/* Set Costs Button */}
         <button
           onClick={() => setShowCostEditor(true)}
-          className="absolute top-4 right-4 bg-[#574bff] text-white px-4 py-2 rounded hover:bg-[#675dfa] transition font-medium hover:cursor-pointer"
+          className="absolute top-4 right-4 bg-[#574bff] text-white px-4 py-2 rounded hover:bg-[#675dfa] transition font-medium"
         >
           Set Costs
         </button>
 
-        {/* ---------- Selected-node panel (NOW WITH FULL DESCRIPTION) ---------- */}
+        {/* Selected Node Panel */}
         {selectedNode && (
           <div className="absolute top-4 left-4 bg-[#1a1a1a] p-5 rounded-lg shadow-xl max-w-md text-white z-50">
             <h3 className="font-bold text-lg mb-2">{selectedNode.label}</h3>
-
             <p className="text-sm text-gray-400 mb-1">
               Avg: <strong>{selectedNode.value} min</strong>
             </p>
-
             {selectedNode.costPerHour > 0 && (
               <p className="text-green-400 text-sm mb-3">
                 Cost: <strong>${selectedNode.costPerHour}/hour</strong>
               </p>
             )}
-
             {selectedNode.descriptions?.length > 0 && (
               <div className="mt-3 pt-3 border-t border-gray-700">
                 <p className="text-xs font-semibold text-gray-300 mb-1">
                   Details:
                 </p>
                 <ul className="list-disc list-inside text-xs text-gray-300 space-y-0.5">
-                  {selectedNode.descriptions.map((desc, i) => (
-                    <li key={i}>{desc}</li>
+                  {selectedNode.descriptions.map((d, i) => (
+                    <li key={i}>{d}</li>
                   ))}
                 </ul>
               </div>
@@ -618,10 +662,14 @@ export default function AiSupport() {
         )}
       </div>
 
-      {/* ---------- AI Chat Sidebar ---------- */}
+      {/* AI Chat Sidebar */}
       <div className="w-80 bg-[#0f0f0f] border-l border-gray-700 p-4 flex flex-col">
         <h2 className="text-xl font-bold text-white mb-3">AI Assistant</h2>
-        <div ref={chatRef} className="flex-1 overflow-y-auto mb-3 space-y-3">
+
+        <div
+          ref={chatRef}
+          className="flex-1 overflow-y-auto mb-3 space-y-3 pr-2"
+        >
           {chatMessages.map((msg, i) => (
             <div
               key={i}
@@ -638,34 +686,29 @@ export default function AiSupport() {
               )}
             </div>
           ))}
-          {/* {descriptions.length > 0 && (
-            <div className="bg-gray-800 p-3 rounded-lg text-sm">
-              <strong className="text-gray-400">Details:</strong>
-              <ul className="list-disc pl-5 mt-1 text-gray-300">
-                {descriptions.map((d, i) => (
-                  <li key={i}>{d}</li>
-                ))}
-              </ul>
+          {isSimulateLoading && (
+            <div className="bg-gray-700 text-gray-300 p-3 rounded-lg text-sm">
+              <span className="animate-pulse">Thinking...</span>
             </div>
-          )} */}
+          )}
         </div>
-        <div className="flex gap-2">
+
+        <form onSubmit={handleChat} className="flex gap-2">
           <input
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") handleChat(e);
-            }}
+            disabled={isSimulateLoading}
             placeholder="Ask about this flow..."
-            className="flex-1 bg-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#574bff]"
+            className="flex-1 bg-gray-700 text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#574bff] disabled:opacity-50"
           />
           <button
-            onClick={handleChat}
-            className="bg-[#574bff] px-4 py-2 rounded hover:bg-[#675dfa] transition text-white font-medium"
+            type="submit"
+            disabled={isSimulateLoading || !chatInput.trim()}
+            className="bg-[#574bff] px-4 py-2 rounded hover:bg-[#675dfa] transition text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Send
+            {isSimulateLoading ? "..." : "Send"}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

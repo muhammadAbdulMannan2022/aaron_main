@@ -48,14 +48,14 @@ export default function MetricCard({
                         key={key}
                         className="rounded-2xl w-[200px]  p-4 bg-card shadow-sm bg-white/10 backdrop-blur-sm hover:shadow-md transition-shadow"
                       >
-                        <p className="text-xs font-medium text-muted-foreground">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
                           {key.replace(/_/g, " ")}
                         </p>
-                        <p className="text-xl font-semibold text-foreground mt-1 text-[var(--color-main-text)]">
+                        <p className="font-semibold text-foreground mt-1 text-2xl text-white">
                           {typeof value === "number"
                             ? value.toLocaleString()
                             : value}{" "}
-                          h
+                          <span className="text-sm text-main-icon">h</span>
                         </p>
                       </div>
                     )
@@ -77,7 +77,7 @@ export default function MetricCard({
                         title === "Total Completed Cases"
                           ? " text-center"
                           : "text-xl"
-                      } font-semibold text-foreground mt-1 text-[var(--color-main-text)]`}
+                      } text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80`}
                     >
                       {typeof value === "number"
                         ? value.toLocaleString()
@@ -89,7 +89,6 @@ export default function MetricCard({
             )}
             {(title === "Total Idle Time / Idle Time Ratio" ||
               title === "Total Loops / Loops Ratio" ||
-              title === "Median / Average Steps per Case" ||
               title === "Dropout Rate" ||
               title === "Number of Process Variants" ||
               title === "Top 5 Process Variants (Count & %)" ||
@@ -100,43 +99,40 @@ export default function MetricCard({
               title === "Cases Following Top Variant" ||
               title === "Max Steps in a Case" ||
               title === "minimum cycle time") && (
-              <div className="flex flex-wrap gap-2 justify-center">
-                {Object.entries(rtk_data).map(([key, value]) => (
-                  <div
-                    key={key}
-                    className="group relative w-[200px] rounded-2xl border border-border/50 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md p-5 
-               shadow-lg shadow-black/5 ring-1 ring-white/10 
-               hover:shadow-xl hover:shadow-black/10 hover:ring-white/20 
-               hover:-translate-y-1 transition-all duration-300 ease-out"
-                  >
-                    {/* Optional subtle glow on hover */}
-                    <div
-                      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 
-                    bg-gradient-to-tr from-white/10 to-transparent transition-opacity"
-                    />
+              <div className="relative p-6 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden w-fit">
+                {/* Subtle brand glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#574bff]/20 via-transparent to-transparent opacity-40"></div>
+                <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-[#574bff]/10 rounded-full blur-3xl animate-pulse"></div>
 
-                    <p className="text-xs font-semibold tracking-wider text-muted-foreground/80 uppercase">
-                      {key.replace(/_/g, " ")}
-                    </p>
+                <div className="relative z-10 space-y-4">
+                  {/* Title */}
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
+                    {title}
+                  </p>
 
-                    <p className="mt-2 text-2xl font-bold text-[var(--color-main-text)] drop-shadow-sm">
-                      {(() => {
-                        if (typeof value !== "number") return value;
-
-                        if (key.includes("Percentage")) {
-                          return `${value.toFixed(2)}%`;
-                        } else if (key.toLowerCase().includes("seconds")) {
-                          const hours = value / 3600;
-                          return `${hours.toFixed(2)} h`;
-                        } else if (key.toLowerCase().includes("hours")) {
-                          return `${value.toFixed(2)} h`;
-                        } else {
-                          return value.toLocaleString();
-                        }
-                      })()}
-                    </p>
+                  {/* Key-Value Rows */}
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                    {Object.entries({
+                      Average_Steps_Per_Case: 6.31,
+                      Median_Steps_Per_Case: 6,
+                      Total_Cases: 5000,
+                      Total_Steps: 31570,
+                    }).map(([key, value]) => (
+                      <div key={key} className="flex flex-col">
+                        <p className="text-xs font-medium text-gray-400">
+                          {key.replace(/_/g, " ")}
+                        </p>
+                        <p className="text-lg font-bold text-white mt-0.5">
+                          {typeof value === "number"
+                            ? key.includes("Average")
+                              ? value.toFixed(2)
+                              : value.toLocaleString()
+                            : value}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
             )}
             {title === "Cost per Case" && rtk_data && (
@@ -392,6 +388,43 @@ export default function MetricCard({
                       <p className="text-sm">No bottleneck data available.</p>
                     </div>
                   ))}
+              </div>
+            )}
+            {title === "Median / Average Steps per Case" && rtk_data && (
+              <div className="relative p-6 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden w-fit">
+                {/* Subtle brand glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#574bff]/20 via-transparent to-transparent opacity-40"></div>
+                <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-[#574bff]/10 rounded-full blur-3xl animate-pulse"></div>
+
+                <div className="relative z-10 space-y-4">
+                  {/* Title */}
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
+                    Process Efficiency Metrics
+                  </p>
+
+                  {/* Key-Value Rows */}
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                    {Object.entries({
+                      Average_Steps_Per_Case: 6.31,
+                      Median_Steps_Per_Case: 6,
+                      Total_Cases: 5000,
+                      Total_Steps: 31570,
+                    }).map(([key, value]) => (
+                      <div key={key} className="flex flex-col">
+                        <p className="text-xs font-medium text-gray-400">
+                          {key.replace(/_/g, " ")}
+                        </p>
+                        <p className="text-lg font-bold text-white mt-0.5">
+                          {typeof value === "number"
+                            ? key.includes("Average")
+                              ? value.toFixed(2)
+                              : value.toLocaleString()
+                            : value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
