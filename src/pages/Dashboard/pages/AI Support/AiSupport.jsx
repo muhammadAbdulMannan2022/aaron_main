@@ -544,9 +544,7 @@ export default function AiSupport() {
     const payload = {
       id: projectId,
       text: userMsg,
-      selected: selectedNode
-        ? { id: selectedNode.id, label: selectedNode.label }
-        : null,
+      selected: selectedNode ? selectedNode.label : null,
     };
 
     try {
@@ -669,11 +667,15 @@ export default function AiSupport() {
         <div
           ref={chatRef}
           className="flex-1 overflow-y-auto mb-3 space-y-3 pr-2"
+          style={{
+            scrollbarWidth: "thin", // Firefox
+            scrollbarColor: "#1F2937 #374151", // thumb = gray-800, track = gray-700
+          }}
         >
           {chatMessages.map((msg, i) => (
             <div
               key={i}
-              className={`p-3 rounded-lg max-w-[85%] ${
+              className={`p-3 rounded-lg max-w-[85%] w-fit ${
                 msg.sender === "user"
                   ? "bg-[#574bff] text-white ml-auto"
                   : "bg-gray-700 text-gray-200"
