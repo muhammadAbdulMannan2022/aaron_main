@@ -143,7 +143,7 @@ export default function PricingPlan() {
   return (
     <div
       onClick={() => setError(null)}
-      className="h-full flex-1  text-[var(--color-text-primary)] py-12 pt-28 md:pt-20 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center relative overflow-hidden "
+      className="h-full flex-1  text-[var(--color-text-primary)] py-12 pt-28 md:pt-20 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-between relative overflow-hidden "
     >
       {/* Background Accent */}
       <div className="absolute inset-0  pointer-events-none" />
@@ -193,23 +193,21 @@ export default function PricingPlan() {
           </div>
         </div>
       </div>
-
+      {error && (
+        <div className="mb-8 max-w-2xl mx-auto px-5 py-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-center text-sm">
+          {error}
+        </div>
+      )}
       {/* Pricing Section */}
       <div className="w-full max-w-6xl">
-        <div className="text-center mb-12">
+        {/* <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-main-text)] mb-3">
             Choose Your Enterprise Plan
           </h2>
           <p className="text-[var(--color-text-notActive)]">
             Transparent pricing for teams of all sizes
           </p>
-        </div>
-
-        {error && (
-          <div className="mb-8 max-w-2xl mx-auto px-5 py-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-center text-sm">
-            {error}
-          </div>
-        )}
+        </div> */}
 
         {/* 3 Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
