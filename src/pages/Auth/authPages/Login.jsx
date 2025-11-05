@@ -79,7 +79,7 @@ export default function Login() {
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="lg:hidden text-center mb-8 flex flex-col items-center justify-center">
-          <img src="/logo.png" className="h-12 w-auto" alt="Logo" />
+          <img src="/logo.svg" className="h-12 w-auto" alt="Logo" />
         </div>
 
         {/* Error */}

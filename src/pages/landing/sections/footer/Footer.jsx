@@ -14,7 +14,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Logo and Address */}
           <div className="md:col-span-1">
-            <img src="/logo.png" alt="Alevio" className="mb-5 h-12" />
+            <img src="/logo.svg" alt="Alevio" className="mb-5 h-12" />
             <p className="text-gray-400 text-sm leading-relaxed">
               Villa No. 45, Street 12, Khalifa City,
               <br />

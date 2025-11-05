@@ -202,10 +202,11 @@ const CurvedLoopEdge = ({
   markerEnd,
   data,
 }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-  const loopCount = data?.loopCount || 0;
-  const side = data?.side || "right";
-  const baseOffset = data?.offset || 60;
+  const [mousePos, setMousePos] = useState(null);
+
+  const frequency = data?.frequency ?? 0;
+  const side = data?.side ?? "right";
+  const baseOffset = data?.offset ?? 60;
 
   const direction = side === "left" ? -1 : 1;
   const offset = baseOffset * direction;
@@ -219,8 +220,21 @@ const CurvedLoopEdge = ({
     C ${controlX} ${midY1}, ${controlX} ${midY2}, ${targetX} ${targetY}
   `;
 
-  const tooltipX = (sourceX + targetX) / 2 + offset * 0.8;
-  const tooltipY = Math.min(midY1, midY2) - 30;
+  const handleMouseMove = (e) => {
+    const svg = e.currentTarget.ownerSVGElement;
+    if (!svg) return;
+
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+
+    const cursor = pt.matrixTransform(svg.getScreenCTM()?.inverse());
+    setMousePos({ x: cursor.x, y: cursor.y });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos(null);
+  };
 
   return (
     <>
@@ -228,36 +242,49 @@ const CurvedLoopEdge = ({
         id={id}
         d={path}
         stroke="#342BAD"
-        strokeWidth={2}
+        strokeWidth={4}
         strokeDasharray="5,5"
         fill="none"
         markerEnd={markerEnd}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
         style={{ cursor: "pointer" }}
       />
-      {showTooltip && loopCount > 0 && (
+
+      {/* Tooltip follows mouse */}
+      {mousePos && frequency > 0 && (
         <foreignObject
-          x={tooltipX - 50}
-          y={tooltipY}
-          width={100}
-          height={40}
-          style={{ overflow: "visible", pointerEvents: "none" }}
+          x={0}
+          y={0}
+          width="100%"
+          height="100%"
+          style={{ pointerEvents: "none", overflow: "visible" }}
         >
           <div
             style={{
+              position: "absolute",
+              left: mousePos.x + 12,
+              top: mousePos.y - 10,
+              transform: "translateY(-50%)",
               background: "#1f2937",
               color: "white",
-              padding: "6px 10px",
-              borderRadius: "6px",
+              padding: "8px 12px",
+              borderRadius: "8px",
               fontSize: "12px",
               fontWeight: "bold",
               whiteSpace: "nowrap",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-              textAlign: "center",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.5)",
+              border: "1px solid #342BAD",
+              pointerEvents: "none",
+              zIndex: 9999,
             }}
           >
-            Loops: {loopCount}
+            <div>Loops: {frequency}</div>
+            {data?.loopType && (
+              <div style={{ fontSize: "10px", opacity: 0.8, marginTop: "2px" }}>
+                {data.loopType === "self" ? "Self-loop" : `→ ${data.loopWith}`}
+              </div>
+            )}
           </div>
         </foreignObject>
       )}
@@ -388,7 +415,7 @@ const buildEdges = (steps) => {
   const edges = [];
   const seen = new Set();
 
-  // Normal flow
+  /* ---------- normal top-to-bottom flow ---------- */
   for (let i = 0; i < steps.length - 1; i++) {
     const src = steps[i].id;
     const tgt = steps[i + 1].id;
@@ -407,40 +434,41 @@ const buildEdges = (steps) => {
     });
   }
 
-  // Loop edges
+  /* ---------- loop edges (side-to-side) ---------- */
   let loopIdx = 0;
   steps.forEach((step) => {
-    if (
-      !step.hasLoop ||
-      !step.loopConnections?.from ||
-      !step.loopConnections?.to
-    )
-      return;
+    if (!step.hasLoop || !Array.isArray(step.loopConnections)) return;
 
-    const from = step.loopConnections.from;
-    const to = step.loopConnections.to;
-    const id = `loop-${from}-${to}-${loopIdx}`;
-    if (seen.has(id)) return;
-    seen.add(id);
+    step.loopConnections.forEach((loop) => {
+      const from = String(loop.from);
+      const to = String(loop.to);
+      const id = `loop-${from}-${to}-${loopIdx}`;
+      if (seen.has(id)) return;
+      seen.add(id);
 
-    const side = loopIdx % 2 === 0 ? "left" : "right";
+      const isLeft = loopIdx % 2 === 0;
+      const frequency = loop.frequency ?? 0;
 
-    edges.push({
-      id,
-      source: from,
-      target: to,
-      sourceHandle: side,
-      targetHandle: `${side}-target`,
-      type: "curvedLoop",
-      data: {
-        loopCount: step.loop_count || 0,
-        offset: 50 + loopIdx * 4,
-        side,
-      },
-      style: { stroke: "#342BAD", strokeWidth: 2, strokeDasharray: "5,5" },
-      markerEnd: { type: "arrowclosed", color: "#342BAD" },
+      edges.push({
+        id,
+        source: from,
+        target: to,
+        sourceHandle: isLeft ? "left" : "right",
+        targetHandle: isLeft ? "left-target" : "right-target",
+        type: "curvedLoop",
+        data: {
+          frequency, // ← shown in tooltip
+          offset: 60 + loopIdx * 5, // avoid overlap
+          side: isLeft ? "left" : "right",
+          loopType: loop.loop_type,
+          loopWith: loop.loop_with,
+        },
+        style: { stroke: "#342BAD", strokeWidth: 2, strokeDasharray: "5,5" },
+        markerEnd: { type: "arrowclosed", color: "#342BAD" },
+      });
+
+      loopIdx++;
     });
-    loopIdx++;
   });
 
   return edges;

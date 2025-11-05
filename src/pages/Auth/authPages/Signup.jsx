@@ -68,7 +68,7 @@ export default function Signup() {
         {/* Mobile Logo */}
         <div className="lg:hidden text-center mb-8 flex flex-col items-center justify-center">
           <img
-            src="/logo.png"
+            src="/logo.svg"
             className="h-12 w-auto"
             height={48}
             width={180}

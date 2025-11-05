@@ -50,7 +50,7 @@ export default function Navbar() {
             <div className="flex-shrink-0">
               <a href="#home" className="text-xl font-bold text-foreground">
                 <img
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="Alevio"
                   height={40}
                   width={120}
@@ -126,7 +126,7 @@ export default function Navbar() {
               >
                 <FaX className="text-text-primary" />
               </button>
-              <img src="/logo.png" width={100} height={20} alt="" />
+              <img src="/logo.svg" width={100} height={20} alt="" />
             </div>
 
             {/* Nav Items */}

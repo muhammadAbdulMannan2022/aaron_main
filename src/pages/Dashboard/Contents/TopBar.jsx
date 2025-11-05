@@ -31,7 +31,7 @@ const TopBar = () => {
     <div className="w-full bg-[#0f0f0f] text-main-text flex justify-between items-center py-3 px-5 md:px-12">
       <div>
         <img
-          src="/logo.png"
+          src="/logo.svg"
           className="h-10 w-auto"
           height={40}
           width={150}
@@ -57,7 +57,7 @@ const TopBar = () => {
               {/* {console.log(profile)} */}
               <img
                 className="w-full h-full object-cover"
-                src={!loading ? baseUrl + profile.upload_logo : ""}
+                src={!loading ? baseUrl + profile.upload_logo : "/user.jpg"}
                 alt={!loading ? profile.first_name : ""}
               />
             </div>

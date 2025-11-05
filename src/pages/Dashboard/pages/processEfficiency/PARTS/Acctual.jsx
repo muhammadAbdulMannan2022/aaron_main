@@ -25,16 +25,13 @@ const CurvedLoopEdge = ({
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const loopCount = data?.loopCount || 0;
-  const side = data?.side || "right"; // 'left' or 'right'
+  const side = data?.side || "right";
   const baseOffset = data?.offset || 60;
 
   const direction = side === "left" ? -1 : 1;
   const offset = baseOffset * direction;
 
-  // Wider curve for side-to-side clarity
   const controlX = sourceX + offset * 2.5;
-
-  // Vertical control points above nodes
   const midY1 = sourceY - Math.abs(offset);
   const midY2 = targetY - Math.abs(offset);
 
@@ -43,9 +40,8 @@ const CurvedLoopEdge = ({
     C ${controlX} ${midY1}, ${controlX} ${midY2}, ${targetX} ${targetY}
   `;
 
-  // Tooltip positioned in the middle of the curve
-  const tooltipX = (sourceX + targetX) / 2 + offset * 0.8;
-  const tooltipY = Math.min(midY1, midY2) - 30;
+  const tooltipX = (sourceX + targetX) / 2 + offset * 1;
+  const tooltipY = Math.min(midY1, midY2);
 
   return (
     <>
@@ -53,7 +49,7 @@ const CurvedLoopEdge = ({
         id={id}
         d={path}
         stroke="#342BAD"
-        strokeWidth={2}
+        strokeWidth={4}
         strokeDasharray="5,5"
         fill="none"
         markerEnd={markerEnd}
@@ -63,26 +59,32 @@ const CurvedLoopEdge = ({
       />
       {showTooltip && loopCount > 0 && (
         <foreignObject
-          x={tooltipX - 50}
+          x={tooltipX - 70}
           y={tooltipY}
-          width={100}
-          height={40}
+          width={140}
+          height={50}
           style={{ overflow: "visible", pointerEvents: "none" }}
         >
           <div
             style={{
               background: "#1f2937",
               color: "white",
-              padding: "6px 10px",
-              borderRadius: "6px",
+              padding: "8px 12px",
+              borderRadius: "8px",
               fontSize: "12px",
               fontWeight: "bold",
               whiteSpace: "nowrap",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
               textAlign: "center",
+              border: "1px solid #342BAD",
             }}
           >
-            Loops: {loopCount}
+            <div>Loops: {loopCount}</div>
+            {data?.loopType && (
+              <div style={{ fontSize: "10px", opacity: 0.8 }}>
+                {data.loopType === "self" ? "Self-loop" : `→ ${data.loopWith}`}
+              </div>
+            )}
           </div>
         </foreignObject>
       )}
@@ -271,7 +273,7 @@ const buildEdges = (steps, filter, prefix = "", color = "#6b7280") => {
     });
   }
 
-  // Loop edges (side to side)
+  // Loop edges (side to side) — only for actual path
   if (
     (filter === "loops" || filter === "actual" || filter === "happy_path") &&
     prefix !== "ideal-"
@@ -279,39 +281,42 @@ const buildEdges = (steps, filter, prefix = "", color = "#6b7280") => {
     let loopIndex = 0;
 
     steps.forEach((step) => {
-      if (
-        step.hasLoop &&
-        step.loopConnections?.from &&
-        step.loopConnections?.to
-      ) {
-        const fromId = `${prefix}${step.loopConnections.from}`;
-        const toId = `${prefix}${step.loopConnections.to}`;
-        const id = `${prefix}loop-${fromId}-${toId}`;
+      if (step.hasLoop && Array.isArray(step.loopConnections)) {
+        step.loopConnections.forEach((loop) => {
+          const fromId = `${prefix}${loop.from}`;
+          const toId = `${prefix}${loop.to}`;
+          const id = `${prefix}loop-${fromId}-${toId}`;
 
-        if (seen.has(id)) return;
-        seen.add(id);
+          if (seen.has(id)) return;
+          seen.add(id);
 
-        const isLeft = loopIndex % 2 === 0;
-        edges.push({
-          id,
-          source: fromId,
-          target: toId,
-          sourceHandle: isLeft ? "left" : "right",
-          targetHandle: isLeft ? "left-target" : "right-target",
-          type: "curvedLoop",
-          data: {
-            loopCount: step.loop_count || 0,
-            offset: 50 + loopIndex * 5,
-            side: isLeft ? "left" : "right",
-          },
-          style: {
-            stroke: "#342BAD",
-            strokeWidth: 2,
-            strokeDasharray: "5,5",
-          },
-          markerEnd: { type: "arrowclosed", color: "#342BAD" },
+          const isLeft = loopIndex % 2 === 0;
+          const frequency = loop.frequency || 0;
+
+          edges.push({
+            id,
+            source: fromId,
+            target: toId,
+            sourceHandle: isLeft ? "left" : "right",
+            targetHandle: isLeft ? "left-target" : "right-target",
+            type: "curvedLoop",
+            data: {
+              loopCount: frequency, // ← Use frequency here
+              offset: 6 + loopIndex * 5,
+              side: isLeft ? "left" : "right",
+              loopType: loop.loop_type,
+              loopWith: loop.loop_with,
+            },
+            style: {
+              stroke: "#342BAD",
+              strokeWidth: 2,
+              strokeDasharray: "5,5",
+            },
+            markerEnd: { type: "arrowclosed", color: "#342BAD" },
+          });
+
+          loopIndex++;
         });
-        loopIndex++;
       }
     });
   }
