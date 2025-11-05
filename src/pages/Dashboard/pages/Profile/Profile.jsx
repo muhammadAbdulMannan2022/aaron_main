@@ -41,28 +41,33 @@ function Profile() {
                 {/* Profile Image */}
                 <div className="relative mb-6">
                   <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
-                    <img
-                      src={
-                        profileData.profile_picture
-                          ? baseUrl + profileData.profile_picture
-                          : "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1"
-                      }
-                      alt={
-                        profileData.first_name ? profileData.first_name : "img"
-                      }
-                      className="w-full h-full object-cover"
-                    />
+                    {profileData && (
+                      <img
+                        src={
+                          profileData.profile_picture
+                            ? baseUrl + profileData.profile_picture
+                            : "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1"
+                        }
+                        alt={
+                          profileData.first_name
+                            ? profileData.first_name
+                            : "img"
+                        }
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </div>
                 </div>
 
                 {/* Name and Title */}
                 <h2 className="text-3xl md:text-4xl font-bold mb-2 text-[#574bff]">
-                  {getValue(
-                    profileData?.first_name + " " + profileData?.last_name
-                  )}
+                  {profileData &&
+                    getValue(
+                      profileData?.first_name + " " + profileData?.last_name
+                    )}
                 </h2>
                 <p className="text-lg font-medium" style={{ color: "#ACC0D8" }}>
-                  {profileData.profession && profileData.profession}
+                  {profileData?.profession && profileData.profession}
                   {/* Product Designer */}
                 </p>
               </div>
@@ -79,19 +84,19 @@ function Profile() {
                       style={{ color: "#ACC0D8" }}
                     />
                     <span className="text-[#ACC0D8]">
-                      {getValue(profileData?.company_name)}
+                      {profileData && getValue(profileData?.company_name)}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text- py-1">
                     <Phone size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">
-                      {getValue(profileData?.phone_number)}
+                      {profileData && getValue(profileData?.phone_number)}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm py-1">
                     <Mail size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">
-                      {getValue(profileData.email)}
+                      {profileData && getValue(profileData.email)}
                     </span>
                   </div>
                 </div>
@@ -99,21 +104,22 @@ function Profile() {
                   <div className="flex items-center gap-3 text-sm py-1">
                     <Calendar size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">
-                      {getValue(profileData.age)} {profileData.age && "yrs"}
+                      {profileData && getValue(profileData.age)}{" "}
+                      {profileData && profileData.age && "yrs"}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-sm py-1">
                     <User size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">
-                      {getValue(profileData.gender)}
+                      {profileData && getValue(profileData.gender)}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3 text-sm lg:col-span-1 sm:col-span-2 py-1">
                     <MapPin size={16} style={{ color: "#ACC0D8" }} />
                     <span className="text-[#ACC0D8]">
-                      {getValue(profileData.location)},
-                      {profileData.country && profileData.country}
+                      {profileData && getValue(profileData.location)},
+                      {profileData?.country && profileData.country}
                     </span>
                   </div>
                 </div>
@@ -124,10 +130,10 @@ function Profile() {
                 <p className="text-gray-300 leading-relaxed">
                   My name is{" "}
                   <span className="text-[#574bff]">
-                    {getValue(profileData.first_name)}{" "}
-                    {getValue(profileData.last_name)}
+                    {profileData && getValue(profileData.first_name)}{" "}
+                    {profileData && getValue(profileData.last_name)}
                   </span>
-                  . {getValue(profileData.about_yourself)}
+                  . {profileData && getValue(profileData.about_yourself)}
                 </p>
               </div>
 
@@ -137,7 +143,7 @@ function Profile() {
                   PROFESSIONAL BACKGROUND
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
-                  {getValue(profileData.professional_background)}
+                  {profileData && getValue(profileData.professional_background)}
                 </p>
               </div>
             </div>

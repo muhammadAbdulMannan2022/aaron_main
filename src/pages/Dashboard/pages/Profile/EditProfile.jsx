@@ -63,7 +63,7 @@ function EditPrifile() {
         personalEmail: profileData.email || "",
         aboutYourself: profileData.about_yourself || "",
         professionalBackground: profileData.professional_background || "",
-        companyName: profileData.company_name || "", // ← NEW: Populate from API
+        companyName: profileData?.company_name || "", // ← NEW: Populate from API
       });
     }
   }, [profileData]);

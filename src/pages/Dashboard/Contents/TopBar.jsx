@@ -43,10 +43,10 @@ const TopBar = () => {
           {/* Placeholder for image - replace with your image */}
           <div className="hidden md:block text-end">
             <p className="text-[#5B6269] text-sm">
-              {!loading && profile.company_name}
+              {!loading && profile?.company_name}
             </p>
             <p className="text-[#5B6269] text-sm">
-              {!loading && profile.email}
+              {!loading && profile?.email}
             </p>
           </div>
           <div
@@ -57,8 +57,8 @@ const TopBar = () => {
               {/* {console.log(profile)} */}
               <img
                 className="w-full h-full object-cover"
-                src={!loading ? baseUrl + profile.upload_logo : "/user.jpg"}
-                alt={!loading ? profile.first_name : ""}
+                src={!loading ? baseUrl + profile?.upload_logo : "/user.jpg"}
+                alt={!loading ? profile?.first_name : ""}
               />
             </div>
             <div>

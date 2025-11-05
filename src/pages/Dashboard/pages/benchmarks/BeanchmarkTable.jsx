@@ -81,57 +81,58 @@ export default function BenchmarkTable() {
               </tr>
             </thead>
             <tbody>
-              {onlyOrginalProjects.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-text-notActive">
-                      {item.process}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-text-notActive">
-                      {new Date(item.created_at).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-[#574bff] underline">
-                      <a target="_blank" href={item.csv_file}>
-                        File
-                      </a>
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-text-notActive">
-                      {item.related_project
-                        ? `id: ${item.related_project}`
-                        : "No file"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {item?.related_project ? (
-                      <button
-                        onClick={() => handleReport(item)}
-                        className="text-[#574bff] hover:text-[#574bff]/80 hover:cursor-pointer text-sm font-medium transition-colors"
-                      >
-                        Report
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleStart(item)}
-                        className="text-[#574bff] hover:text-[#574bff]/80 hover:cursor-pointer text-sm font-medium transition-colors"
-                      >
-                        Start
-                      </button>
-                    )}
-                  </td>
-                  {/* <td className="px-6 py-4">
+              {onlyOrginalProjects &&
+                onlyOrginalProjects.map((item, index) => (
+                  <tr
+                    key={item.id}
+                    className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-text-notActive">
+                        {item.process}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-text-notActive">
+                        {new Date(item.created_at).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-[#574bff] underline">
+                        <a target="_blank" href={item.csv_file}>
+                          File
+                        </a>
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-text-notActive">
+                        {item.related_project
+                          ? `id: ${item.related_project}`
+                          : "No file"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {item?.related_project ? (
+                        <button
+                          onClick={() => handleReport(item)}
+                          className="text-[#574bff] hover:text-[#574bff]/80 hover:cursor-pointer text-sm font-medium transition-colors"
+                        >
+                          Report
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleStart(item)}
+                          className="text-[#574bff] hover:text-[#574bff]/80 hover:cursor-pointer text-sm font-medium transition-colors"
+                        >
+                          Start
+                        </button>
+                      )}
+                    </td>
+                    {/* <td className="px-6 py-4">
                     <button
                       onClick={() => handleDelete(item)}
                       className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-800 transition-colors hover:cursor-pointer"
@@ -139,8 +140,8 @@ export default function BenchmarkTable() {
                       <FiTrash2 className="w-4 h-4 text-red-700" />
                     </button>
                   </td> */}
-                </tr>
-              ))}
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

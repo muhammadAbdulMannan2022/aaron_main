@@ -38,9 +38,9 @@ const Sidebar = () => {
       <div className="px-4">
         <div className="flex items-center justify-center mb-8">
           <img
-            src={!loading ? baseUrl + profile.upload_logo : "/logo.jpg"}
+            src={!loading ? baseUrl + profile?.upload_logo : "/logo.jpg"}
             className="max-w-full max-h-40"
-            alt={!loading ? profile.first_name : ""}
+            alt={!loading ? profile?.first_name : ""}
           />
         </div>
 
