@@ -191,7 +191,7 @@ const CostEditorPanel = ({ nodes, onClose }) => {
 };
 
 /* --------------------------------------------------------------- */
-/*  CURVED LOOP EDGE – same side → same side                     */
+/*  CURVED LOOP EDGE – tooltip follows the mouse inside the SVG   */
 /* --------------------------------------------------------------- */
 const CurvedLoopEdge = ({
   id,
@@ -202,12 +202,12 @@ const CurvedLoopEdge = ({
   markerEnd,
   data,
 }) => {
+  const edgeRef = useRef(null);
   const [mousePos, setMousePos] = useState(null);
 
   const frequency = data?.frequency ?? 0;
   const side = data?.side ?? "right";
   const baseOffset = data?.offset ?? 60;
-
   const direction = side === "left" ? -1 : 1;
   const offset = baseOffset * direction;
 
@@ -220,8 +220,10 @@ const CurvedLoopEdge = ({
     C ${controlX} ${midY1}, ${controlX} ${midY2}, ${targetX} ${targetY}
   `;
 
-  const handleMouseMove = (e) => {
-    const svg = e.currentTarget.ownerSVGElement;
+  const handleMouseMove = useCallback((e) => {
+    if (!edgeRef.current) return;
+
+    const svg = edgeRef.current.ownerSVGElement;
     if (!svg) return;
 
     const pt = svg.createSVGPoint();
@@ -230,20 +232,19 @@ const CurvedLoopEdge = ({
 
     const cursor = pt.matrixTransform(svg.getScreenCTM()?.inverse());
     setMousePos({ x: cursor.x, y: cursor.y });
-  };
+  }, []);
 
-  const handleMouseLeave = () => {
-    setMousePos(null);
-  };
+  const handleMouseLeave = useCallback(() => setMousePos(null), []);
 
   return (
     <>
       <path
+        ref={edgeRef}
         id={id}
         d={path}
         stroke="#342BAD"
         strokeWidth={4}
-        strokeDasharray="5,5"
+        strokeDasharray="10,2"
         fill="none"
         markerEnd={markerEnd}
         onMouseMove={handleMouseMove}
@@ -251,42 +252,42 @@ const CurvedLoopEdge = ({
         style={{ cursor: "pointer" }}
       />
 
-      {/* Tooltip follows mouse */}
+      {/* Tooltip – always inside the SVG, follows the cursor */}
       {mousePos && frequency > 0 && (
-        <foreignObject
-          x={0}
-          y={0}
-          width="100%"
-          height="100%"
-          style={{ pointerEvents: "none", overflow: "visible" }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              left: mousePos.x + 12,
-              top: mousePos.y - 10,
-              transform: "translateY(-50%)",
-              background: "#1f2937",
-              color: "white",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              fontSize: "12px",
-              fontWeight: "bold",
-              whiteSpace: "nowrap",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.5)",
-              border: "1px solid #342BAD",
-              pointerEvents: "none",
-              zIndex: 9999,
-            }}
+        <g pointerEvents="none">
+          <foreignObject
+            x={mousePos.x + 12}
+            y={mousePos.y - 20}
+            width={200}
+            height={60}
+            style={{ overflow: "visible" }}
           >
-            <div>Loops: {frequency}</div>
-            {data?.loopType && (
-              <div style={{ fontSize: "10px", opacity: 0.8, marginTop: "2px" }}>
-                {data.loopType === "self" ? "Self-loop" : `→ ${data.loopWith}`}
-              </div>
-            )}
-          </div>
-        </foreignObject>
+            <div
+              style={{
+                background: "#1f2937",
+                color: "white",
+                padding: "6px 10px",
+                borderRadius: "6px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                whiteSpace: "nowrap",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+                border: "1px solid #342BAD",
+              }}
+            >
+              <div>Loops: {frequency}</div>
+              {data?.loopType && (
+                <div
+                  style={{ fontSize: "10px", opacity: 0.8, marginTop: "1px" }}
+                >
+                  {data.loopType === "self"
+                    ? "Self-loop"
+                    : `to ${data.loopWith}`}
+                </div>
+              )}
+            </div>
+          </foreignObject>
+        </g>
       )}
     </>
   );
@@ -457,8 +458,8 @@ const buildEdges = (steps) => {
         targetHandle: isLeft ? "left-target" : "right-target",
         type: "curvedLoop",
         data: {
-          frequency, // ← shown in tooltip
-          offset: 60 + loopIdx * 5, // avoid overlap
+          frequency,
+          offset: 60 + loopIdx * 5,
           side: isLeft ? "left" : "right",
           loopType: loop.loop_type,
           loopWith: loop.loop_with,
@@ -485,7 +486,7 @@ const edgeTypes = { curvedLoop: CurvedLoopEdge };
 /* --------------------------------------------------------------- */
 const normalizeNodes = (raw = []) =>
   raw.map((n, i) => {
-    const id = String(n.id); // ← ALWAYS string
+    const id = String(n.id);
     return {
       id,
       type: "custom",
@@ -500,9 +501,9 @@ const normalizeNodes = (raw = []) =>
         costPerHour: n.cost_per_h ? parseFloat(n.cost_per_h) : 0,
         descriptions: n.descriptions || [],
         cost_per_h: n.cost_per_h,
-        bottleneck_count: n.bottleneck_count || 0,
+        bottleneck_count: n.bottleneck_occurrence_event_count || 0,
         loop_count: n.loop_count || 0,
-        dropout_count: n.dropout_count || 0,
+        dropout_count: n.dropout_case_count || 0,
         loopConnections: n.loopConnections || null,
         avg_duration_h: n.avg_duration_h,
         estimated_cost: n.estimated_cost,
@@ -593,14 +594,43 @@ export default function AiSupport() {
         prev && newNodes.some((n) => n.id === prev.id) ? prev : null
       );
 
-      // AI response
+      // === SIMULATION SUMMARY FORMATTING ===
+      console.log(result.simulation_result?.global_metrics?.Simulation_Summary);
+      let summaryMarkdown = "";
+      if (result.simulation_result?.global_metrics?.Simulation_Summary) {
+        const s = result.simulation_result.global_metrics.Simulation_Summary;
+
+        const fmt = (v) =>
+          typeof v === "number"
+            ? v.toLocaleString(undefined, { maximumFractionDigits: 2 })
+            : "N/A";
+
+        // Use the **exact** values the backend returns
+        const timeImpPct = s["Estimated_Time_Improvement_%"] ?? 0; // already a %
+        const costSavUSD = s.Estimated_Cost_Savings_USD ?? 0; // $ amount
+        const costSavPct = s["Estimated_Cost_Savings_%"] ?? 0; // already a %
+
+        summaryMarkdown = `
+**Summary** – Cycle: **${fmt(s.Original_Cycle_Time_Hours)}h to ${fmt(
+          s.Adjusted_Cycle_Time_Hours
+        )}h** (Down **${fmt(timeImpPct)}%**)  
+**Cost**: **$${fmt(s.Original_Process_Cost_USD)} to $${fmt(
+          s.Simulated_Process_Cost_USD
+        )}** (saves **$${fmt(costSavUSD)}** / **${fmt(costSavPct)}%**)
+`;
+      }
+
+      // === DEFAULT AI TEXT ===
       const cycle = result.simulation_result?.global_metrics?.Cycle_Time;
       const avg = cycle?.Average ?? "N/A";
       const steps = newNodes.length;
 
-      const aiText =
-        result.aiResponse ||
-        `**AI**: Flow updated – **${steps}** steps, average cycle time **${avg}**`;
+      const defaultAiText = `**AI**: Flow updated – **${steps}** steps, average cycle time **${avg}**`;
+
+      // === FINAL AI RESPONSE ===
+      const aiText = result.aiResponse
+        ? `${result.aiResponse}\n\n${summaryMarkdown}`
+        : `${defaultAiText}\n\n${summaryMarkdown}`;
 
       setChatMessages((m) => [...m, { text: aiText, sender: "ai" }]);
     } catch (err) {
@@ -662,7 +692,7 @@ export default function AiSupport() {
 
         {/* Selected Node Panel */}
         {selectedNode && (
-          <div className="absolute top-4 left-4 bg-[#1a1a1a] p-5 rounded-lg shadow-xl max-w-md text-white z-50">
+          <div className="absolute top-4 left-4 bg-[#1a1a1a] p-5 rounded-lg shadow-xl max-w-[300px] text-white z-50">
             <h3 className="font-bold text-lg mb-2">{selectedNode.label}</h3>
             <p className="text-sm text-gray-400 mb-1">
               Avg: <strong>{selectedNode.value} min</strong>
@@ -696,8 +726,8 @@ export default function AiSupport() {
           ref={chatRef}
           className="flex-1 overflow-y-auto mb-3 space-y-3 pr-2"
           style={{
-            scrollbarWidth: "thin", // Firefox
-            scrollbarColor: "#1F2937 #374151", // thumb = gray-800, track = gray-700
+            scrollbarWidth: "thin",
+            scrollbarColor: "#1F2937 #374151",
           }}
         >
           {chatMessages.map((msg, i) => (

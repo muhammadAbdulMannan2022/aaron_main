@@ -1,4 +1,11 @@
-import { useState, useCallback, useMemo, useEffect, useContext } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
 import ReactFlow, {
   Background,
   Controls,
@@ -23,11 +30,12 @@ const CurvedLoopEdge = ({
   markerEnd,
   data,
 }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-  const loopCount = data?.loopCount || 0;
-  const side = data?.side || "right";
-  const baseOffset = data?.offset || 60;
+  const pathRef = useRef(null);
+  const [mousePos, setMousePos] = useState(null);
 
+  const loopCount = data?.loopCount ?? 0;
+  const side = data?.side ?? "right";
+  const baseOffset = data?.offset ?? 60;
   const direction = side === "left" ? -1 : 1;
   const offset = baseOffset * direction;
 
@@ -40,12 +48,26 @@ const CurvedLoopEdge = ({
     C ${controlX} ${midY1}, ${controlX} ${midY2}, ${targetX} ${targetY}
   `;
 
-  const tooltipX = (sourceX + targetX) / 2 + offset * 1;
-  const tooltipY = Math.min(midY1, midY2);
+  const handleMouseMove = useCallback((e) => {
+    if (!pathRef.current) return;
+    const svg = pathRef.current.ownerSVGElement;
+    if (!svg) return;
+
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+
+    const cursor = pt.matrixTransform(svg.getScreenCTM()?.inverse());
+    setMousePos({ x: cursor.x, y: cursor.y });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => setMousePos(null), []);
 
   return (
     <>
+      {/* Edge path */}
       <path
+        ref={pathRef}
         id={id}
         d={path}
         stroke="#342BAD"
@@ -53,40 +75,48 @@ const CurvedLoopEdge = ({
         strokeDasharray="5,5"
         fill="none"
         markerEnd={markerEnd}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
         style={{ cursor: "pointer" }}
       />
-      {showTooltip && loopCount > 0 && (
-        <foreignObject
-          x={tooltipX - 70}
-          y={tooltipY}
-          width={140}
-          height={50}
-          style={{ overflow: "visible", pointerEvents: "none" }}
-        >
-          <div
-            style={{
-              background: "#1f2937",
-              color: "white",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              fontSize: "12px",
-              fontWeight: "bold",
-              whiteSpace: "nowrap",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-              textAlign: "center",
-              border: "1px solid #342BAD",
-            }}
+
+      {/* Tooltip – follows the cursor */}
+      {mousePos && loopCount > 0 && (
+        <g pointerEvents="none">
+          <foreignObject
+            x={mousePos.x + 12}
+            y={mousePos.y - 28}
+            width={160}
+            height={60}
+            style={{ overflow: "visible" }}
           >
-            <div>Loops: {loopCount}</div>
-            {data?.loopType && (
-              <div style={{ fontSize: "10px", opacity: 0.8 }}>
-                {data.loopType === "self" ? "Self-loop" : `→ ${data.loopWith}`}
-              </div>
-            )}
-          </div>
-        </foreignObject>
+            <div
+              style={{
+                background: "#1f2937",
+                color: "white",
+                padding: "6px 10px",
+                borderRadius: "6px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                whiteSpace: "nowrap",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+                border: "1px solid #342BAD",
+                textAlign: "center",
+              }}
+            >
+              <div>Loops: {loopCount}</div>
+              {data?.loopType && (
+                <div
+                  style={{ fontSize: "10px", opacity: 0.8, marginTop: "1px" }}
+                >
+                  {data.loopType === "self"
+                    ? "Self-loop"
+                    : `to ${data.loopWith}`}
+                </div>
+              )}
+            </div>
+          </foreignObject>
+        </g>
       )}
     </>
   );
@@ -130,10 +160,11 @@ const CustomNode = ({ data, filter, isActualPath = true }) => {
   const tooltipContent = useMemo(() => {
     if (!step) return "";
     const parts = [];
-    if (step.bottleneck_count > 0)
-      parts.push(`Bottlenecks: ${step.bottleneck_count}`);
+    if (step.bottleneck_occurrence_event_count > 0)
+      parts.push(`Bottlenecks: ${step.bottleneck_occurrence_event_count}`);
     if (step.loop_count > 0) parts.push(`Loops: ${step.loop_count}`);
-    if (step.dropout_count > 0) parts.push(`Dropouts: ${step.dropout_count}`);
+    if (step.dropout_case_count > 0)
+      parts.push(`Dropouts: ${step.dropout_case_count}`);
     return parts.join(" | ");
   }, [step]);
 

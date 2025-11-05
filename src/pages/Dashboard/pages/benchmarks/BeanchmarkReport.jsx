@@ -166,7 +166,7 @@ export default function BeanchmarkReportPage() {
                     {kpis[0]?.Team_2_Label || "Team 2"}
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium"
+                    className="px-4 py-3 text-center text-sm font-medium w-1/4"
                     style={{ color: "var(--color-text-notActive)" }}
                   >
                     Evaluation
@@ -212,7 +212,7 @@ export default function BeanchmarkReportPage() {
                     </td>
                     {/* Status */}
                     <td
-                      className="px-4 py-3 text-sm font-medium"
+                      className="px-4 py-3 text-sm font-medium text-center"
                       style={{
                         color:
                           item.Status === "Equal"
