@@ -141,7 +141,7 @@ export default function PricingPlan() {
                 Subscription
               </p>
               <p className="font-semibold text-[var(--color-main-text)]">
-                {profileData?.subscription_status || "Free Plan"}
+                {profileData?.subsciption_plan_name || "Free Plan"}
               </p>
             </div>
             <div className="flex flex-col items-center justify-center">
@@ -151,16 +151,26 @@ export default function PricingPlan() {
               {profileData?.is_subscribed && (
                 <button
                   onClick={cancelSub}
-                  disabled={isCancelLoading}
+                  disabled={
+                    isCancelLoading ||
+                    profileData?.subscription_status == "pending_cancellation"
+                  }
                   className="bg-red-500/20 hover:bg-red-500/30 hover:cursor-pointer text-red-400 px-5 py-1.5 rounded-lg text-sm font-medium transition disabled:opacity-50"
                 >
-                  {isCancelLoading ? "Cancelling..." : "Cancel Subscription"}
+                  {isCancelLoading
+                    ? "Cancelling..."
+                    : profileData?.subscription_status !==
+                      "pending_cancellation"
+                    ? "Cancel Subscription"
+                    : profileData?.subscription_status}
                 </button>
               )}
             </div>
             <div className="md:text-right">
               <p className="text-[var(--color-dark-text)] text-sm mb-1">
-                Renews On
+                {profileData?.subscription_status === "pending_cancellation"
+                  ? "Ends on"
+                  : "Renews On"}
               </p>
               <p className="font-semibold text-[var(--color-main-text)]">
                 {profileData?.subsciption_expires_on

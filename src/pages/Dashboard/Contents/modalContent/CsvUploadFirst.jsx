@@ -78,6 +78,7 @@ export function CsvUploadFormVariant({
       setError(
         error?.data?.message ||
           error?.data?.Massage ||
+          error?.data?.detail ||
           error?.Massage ||
           "Failed to submit the form. Please try again."
       );
@@ -102,7 +103,7 @@ export function CsvUploadFormVariant({
       </div>
 
       {error && <p className="text-red-600 text-sm text-center">{error}</p>}
-      {(isTeamError || isDepartmentError || isSubmitError) && (
+      {(isTeamError || isDepartmentError || (isSubmitError && !error)) && (
         <p className="text-red-600 text-sm text-center">
           An error occurred while fetching data. Please try again later.
         </p>
