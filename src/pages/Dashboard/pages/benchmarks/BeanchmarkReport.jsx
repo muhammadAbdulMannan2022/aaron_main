@@ -230,7 +230,10 @@ export default function BeanchmarkReportPage() {
             </table>
           </div>
         </section>
-
+        <p className="text-base text-gray-600 ms-3">
+          <span className="font-bold">NOTE: </span>the lower the value is the
+          better the team works
+        </p>
         {/* Analysis Sections – Improved */}
         {[
           { key: "loop_analysis", title: "Loops Analysis" },

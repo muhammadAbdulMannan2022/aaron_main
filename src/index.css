@@ -150,3 +150,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .react-flow__panel {
   display: none;
 }
+/* In your global CSS or styled-components */
+.slick-dots li button:before {
+  color: #5d52fc !important;
+  opacity: 0.4;
+  font-size: 10px;
+}
+.slick-dots li.slick-active button:before {
+  color: #5d52fc !important;
+  opacity: 1;
+}
