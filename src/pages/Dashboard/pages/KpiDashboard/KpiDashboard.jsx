@@ -368,6 +368,14 @@ export default function KpiDashboard() {
     }
   };
 
+  const clearFilter = () => {
+    //     const [selectedDateRange, setSelectedDateRange] = useState(["", ""]);
+    // const [selectedVarients, setSelectedVarients] = useState([]);
+    // const [cycleTime, setCycleTime] = useState(["", ""]);
+    setSelectedDateRange(["", ""]);
+    setSelectedVarients([]);
+    setCycleTime(["", ""]);
+  };
   if (isDashboardsLoading) return <div>Loading...</div>;
 
   return (
@@ -435,6 +443,14 @@ export default function KpiDashboard() {
                   <span className="text-gray-300 font-bold text-base">
                     {totalCountData.Total_Unique_Cases}
                   </span>
+                </div>
+              )}
+              {(selectedDateRange || selectedVarients || cycleTime) && (
+                <div
+                  onClick={() => clearFilter()}
+                  className="bg-[#574bff] h-12 hover:cursor-pointer px-4 flex flex-col justify-center rounded-md"
+                >
+                  <p>Clear filters</p>
                 </div>
               )}
             </div>
