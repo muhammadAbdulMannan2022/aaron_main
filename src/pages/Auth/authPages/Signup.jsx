@@ -15,7 +15,8 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); // 👈 local error
+  const [errorMessage, setErrorMessage] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState(""); // New
 
   const [signup, { isLoading: isSignUpLoading }] = useSignupMutation();
   const [socialLogin, { isLoading: isSocialLoading }] =
@@ -23,12 +24,37 @@ export default function Signup() {
 
   const navigate = useNavigate();
 
+  // Strong password regex
+  const strongPasswordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+
+  const validatePassword = (pwd) => {
+    if (!pwd) {
+      setPasswordStrength("");
+      return;
+    }
+    if (strongPasswordRegex.test(pwd)) {
+      setPasswordStrength("strong");
+    } else {
+      setPasswordStrength("weak");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
+    // Check password match
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
+      return;
+    }
+
+    // Check password strength
+    if (!strongPasswordRegex.test(password)) {
+      setErrorMessage(
+        "Password is too weak. Use uppercase, lowercase, number, and special character."
+      );
       return;
     }
 
@@ -58,8 +84,14 @@ export default function Signup() {
   };
 
   const handleInputChange = (setter) => (e) => {
-    setter(e.target.value);
+    const value = e.target.value;
+    setter(value);
     if (errorMessage) setErrorMessage("");
+
+    // Live validate password
+    if (setter === setPassword) {
+      validatePassword(value);
+    }
   };
 
   return (
@@ -67,13 +99,7 @@ export default function Signup() {
       <div className="w-full max-w-md space-y-6">
         {/* Mobile Logo */}
         <div className="lg:hidden text-center mb-8 flex flex-col items-center justify-center">
-          <img
-            src="/logo.svg"
-            className="h-12 w-auto"
-            height={48}
-            width={180}
-            alt="Logo"
-          />
+          <img src="/logo.svg" className="h-12 w-auto" alt="Logo" />
         </div>
 
         {/* Error Message */}
@@ -122,7 +148,6 @@ export default function Signup() {
                 style={{
                   backgroundColor: "var(--color-gray-button-bg)",
                   color: "var(--color-text-primary)",
-                  borderColor: "var(--color-gray-button-bg)",
                 }}
                 required
               />
@@ -150,12 +175,11 @@ export default function Signup() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={handleInputChange(setPassword)}
-                placeholder="Enter your password"
-                className="w-full pl-10 pr-3 py-3 rounded-lg border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                placeholder="Enter strong password"
+                className="w-full pl-10 pr-10 py-3 rounded-lg border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 style={{
                   backgroundColor: "var(--color-gray-button-bg)",
                   color: "var(--color-text-primary)",
-                  borderColor: "var(--color-gray-button-bg)",
                 }}
                 required
               />
@@ -176,6 +200,29 @@ export default function Signup() {
                   />
                 )}
               </button>
+            </div>
+            {/* Password Hint */}
+            <div className="flex items-center gap-2">
+              <p
+                className="text-xs mt-1"
+                style={{ color: "var(--color-text-notActive)" }}
+              >
+                Min 8 chars, 1 uppercase, 1 number, 1 special (!@#$%^&*)
+              </p>
+              {/* Password Strength Indicator */}
+              {passwordStrength && (
+                <div className="text-center text-sm">
+                  {passwordStrength === "strong" ? (
+                    <span className="text-green-500 font-medium">
+                      Strong password
+                    </span>
+                  ) : (
+                    <span className="text-orange-500 font-medium">
+                      Weak password
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -200,12 +247,11 @@ export default function Signup() {
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={handleInputChange(setConfirmPassword)}
-                placeholder="Re-enter your password"
-                className="w-full pl-10 pr-3 py-3 rounded-lg border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                placeholder="Re-enter password"
+                className="w-full pl-10 pr-10 py-3 rounded-lg border-0 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 style={{
                   backgroundColor: "var(--color-gray-button-bg)",
                   color: "var(--color-text-primary)",
-                  borderColor: "var(--color-gray-button-bg)",
                 }}
                 required
               />
@@ -233,7 +279,7 @@ export default function Signup() {
           <button
             type="submit"
             disabled={isSignUpLoading || isSocialLoading}
-            className="w-full hover:cursor-pointer py-3 px-4 rounded-lg font-medium text-white transition-all hover:opacity-90 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full hover:cursor-pointer py-3 px-4 rounded-lg font-medium text-white transition-all hover:opacity-90 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50"
             style={{ backgroundColor: "var(--color-auth-button-bg)" }}
           >
             {isSignUpLoading || isSocialLoading
@@ -259,7 +305,7 @@ export default function Signup() {
         <button
           onClick={handleGoogleSignup}
           disabled={isSignUpLoading || isSocialLoading}
-          className="w-full hover:cursor-pointer py-3 px-4 rounded-lg border font-medium transition-all hover:opacity-90 focus:ring-2 focus:ring-gray-500 focus:outline-none flex items-center justify-center gap-3"
+          className="w-full hover:cursor-pointer py-3 px-4 rounded-lg border font-medium transition-all hover:opacity-90 focus:ring-2 focus:ring-gray-500 focus:outline-none flex items-center justify-center gap-3 disabled:opacity-50"
           style={{
             backgroundColor: "var(--color-gray-button-bg)",
             borderColor: "var(--color-gray-button-bg)",

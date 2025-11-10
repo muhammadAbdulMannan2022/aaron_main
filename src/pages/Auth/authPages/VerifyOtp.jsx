@@ -1,56 +1,43 @@
 import React, { useState, useEffect } from "react";
-import { data, Link, useLocation, useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import {
   useResendOtpMutation,
   useVerifyForgotOtpMutation,
   useVerifyOtpMutation,
 } from "../../../../redux/auth/auth";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function ActivationCode() {
   const [otp, setOtp] = useState(["", "", "", ""]);
-  const [activeInput, setActiveInput] = useState(0);
   const navigate = useNavigate();
-
   const location = useLocation().state || {};
 
-  const [
-    sendOtp,
-    { isLoading: isVerifyLoading, isError: isVerifyError, error: verifyError },
-  ] = useVerifyOtpMutation();
-  const [
-    resendOtp,
-    { isLoading: isResendLoading, isError: isResendError, error: resendError },
-  ] = useResendOtpMutation();
+  const [sendOtp, { isLoading: isVerifyLoading }] = useVerifyOtpMutation();
+  const [resendOtp, { isLoading: isResendLoading }] = useResendOtpMutation();
+  const [verifyForgotOtp] = useVerifyForgotOtpMutation();
 
-  const [
-    verifyForgotOtp,
-    {
-      isLoading: isVerifyForgotLoading,
-      isError: isVerifyForgotError,
-      error: verifyForgotError,
-    },
-  ] = useVerifyForgotOtpMutation();
-
+  // Handle input change
   const handleChange = (e, index) => {
-    const value = e.target.value.replace(/[^0-9]/g, ""); // Allow only numbers
+    const value = e.target.value.replace(/[^0-9]/g, "");
     if (value.length <= 1) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
 
-      // Move to next input if value is entered
       if (value && index < 3) {
         document.getElementById(`otp-input-${index + 1}`).focus();
       }
     }
   };
 
+  // Handle backspace
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       document.getElementById(`otp-input-${index - 1}`).focus();
     }
   };
 
+  // Handle paste
   const handlePaste = (e) => {
     e.preventDefault();
     const pasteData = e.clipboardData
@@ -63,60 +50,68 @@ export default function ActivationCode() {
     }
   };
 
+  // Submit OTP
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (otp.join("").length < 4) {
-      console.log("otp must me 4 digits");
-    }
-    if (!location.email) {
-      if (location.form === "signup") {
-        navigate("/auth/signup");
-      } else {
-        navigate("/auth/forgot");
-      }
+
+    const otpCode = otp.join("");
+    if (otpCode.length < 4) {
+      toast.warn("Please enter a 4-digit code.");
       return;
     }
+
+    if (!location.email) {
+      navigate(location.form === "signup" ? "/auth/signup" : "/auth/forgot");
+      return;
+    }
+
     try {
+      let res;
       if (location.from === "signup") {
-        const res = await sendOtp({ otp: otp.join(""), email: location.email });
-        console.log("OTP sent successfully:", res);
-        console.log(location);
+        res = await sendOtp({ otp: otpCode, email: location.email });
+      } else {
+        res = await verifyForgotOtp({ otp: otpCode, email: location.email });
+      }
+
+      // RTK Query: error is in `res.error`
+      if (res.error) {
+        const message =
+          res.error?.data?.Message ||
+          res.error?.data?.message ||
+          "Invalid OTP. Please try again.";
+        toast.error(message);
+        return;
+      }
+
+      // Success
+      if (location.from === "signup") {
+        toast.success("Account activated! Please log in.");
         navigate("/auth/login");
       } else {
-        const res = await verifyForgotOtp({
-          otp: otp.join(""),
-          email: location.email,
-        });
-        if (res.data.reset_token) {
-          localStorage.setItem("reset_token", res.data.reset_token);
-          console.log("Forgot OTP verified successfully:", res);
-          navigate("/auth/change-pass");
-        }
+        localStorage.setItem("reset_token", res.data.reset_token);
+        toast.success("OTP verified! Set your new password.");
+        navigate("/auth/change-pass");
       }
-    } catch (error) {
-      console.log("Error verifying OTP:", error);
+    } catch (err) {
+      toast.error("Something went wrong. Try again later.");
     }
   };
 
+  // Auto-focus first input
   useEffect(() => {
-    document.getElementById("otp-input-0").focus();
+    document.getElementById("otp-input-0")?.focus();
   }, []);
 
   return (
     <div className="w-full flex items-center justify-center p-6 lg:p-8 h-full">
+      <ToastContainer />
       <div className="w-full max-w-md space-y-6">
         {/* Mobile Logo */}
         <div className="lg:hidden text-center mb-8 flex flex-col items-center justify-center">
-          <img
-            src="/logo.svg"
-            className="h-12 w-auto"
-            height={48}
-            width={180}
-            alt=""
-          />
+          <img src="/logo.svg" className="h-12 w-auto" alt="Logo" />
         </div>
 
-        {/* Activation Code Header */}
+        {/* Header */}
         <div className="text-center hidden md:block">
           <h1
             className="text-2xl lg:text-3xl font-bold mb-2"
@@ -125,38 +120,12 @@ export default function ActivationCode() {
             Activation Code
           </h1>
           <p className="text-sm text-text-primary">
-            We have sent you an activation code. An email has been sent to your
-            email address containing a code to reset your password.
+            We have sent you an activation code. Check your email.
           </p>
         </div>
 
-        {/* Error and Loading States */}
-        {isVerifyError && (
-          <div className="text-red-500 text-sm text-center">
-            {verifyError?.data?.message ||
-              "An error occurred during OTP verification. Please try again."}
-          </div>
-        )}
-        {isVerifyLoading && (
-          <div className="text-blue-500 text-sm text-center">
-            Verifying OTP...
-          </div>
-        )}
-        {isResendError && (
-          <div className="text-red-500 text-sm text-center">
-            {resendError?.data?.message ||
-              "An error occurred while resending OTP. Please try again."}
-          </div>
-        )}
-        {isResendLoading && (
-          <div className="text-blue-500 text-sm text-center">
-            Resending OTP...
-          </div>
-        )}
-
         {/* OTP Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* OTP Input Fields */}
           <div className="text-center">
             <label
               className="block text-sm font-medium mb-4"
@@ -164,6 +133,7 @@ export default function ActivationCode() {
             >
               Enter verification code
             </label>
+
             <div className="flex justify-center gap-3 mb-4">
               {otp.map((digit, index) => (
                 <input
@@ -181,30 +151,40 @@ export default function ActivationCode() {
                     color: "var(--color-text-primary)",
                   }}
                   required
-                  autoFocus={index === 0}
                   placeholder="*"
                 />
               ))}
             </div>
+
             <p
-              className="text-sm mb-4 "
+              className="text-sm mb-4"
               style={{ color: "var(--color-text-notActive)" }}
             >
-              if you didn't receive a code!{" "}
+              Didn't receive a code?{" "}
               <button
+                type="button" // This prevents form submit
                 onClick={async (e) => {
                   e.preventDefault();
                   if (!location.email) return;
+
                   try {
                     const res = await resendOtp({ email: location.email });
-                    console.log("OTP sent successfully:", res);
-                  } catch (error) {
-                    console.log(error);
+                    if (res.error) {
+                      toast.error(
+                        res.error?.data?.message ||
+                          "Failed to resend OTP. Try again."
+                      );
+                    } else {
+                      toast.success("New OTP sent! Check your email.");
+                    }
+                  } catch (err) {
+                    toast.error("Network error. Please try again.");
                   }
                 }}
-                className="text-button-outline hover:underline hover:cursor-pointer disabled:cursor-not-allowed"
+                disabled={isResendLoading}
+                className="text-button-outline hover:underline disabled:cursor-not-allowed disabled:opacity-50"
               >
-                click here...
+                {isResendLoading ? "Sending..." : "Resend"}
               </button>
             </p>
           </div>
@@ -212,10 +192,11 @@ export default function ActivationCode() {
           {/* Confirm Button */}
           <button
             type="submit"
-            className="w-full hover:cursor-pointer py-3 px-4 rounded-lg font-medium text-white transition-all hover:opacity-90 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            disabled={isVerifyLoading}
+            className="w-full py-3 px-4 rounded-lg font-medium text-white transition-all hover:opacity-90 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50"
             style={{ backgroundColor: "var(--color-auth-button-bg)" }}
           >
-            Confirm
+            {isVerifyLoading ? "Verifying..." : "Confirm"}
           </button>
         </form>
       </div>

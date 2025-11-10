@@ -32,15 +32,14 @@ export default function MetricCard({
           style={{ color: "var(--color-main-text)" }}
         >
           {title}
-
         </h3> */}
         {rtk_data && (
           <div className="" style={{ color: "var(--color-text-primary)" }}>
             {(title === "Cycle Time" ||
-              title === "median cycle time" ||
-              title === "average idle time") && (
+              title === "Median Cycle Time" ||
+              title === "Average Idle Time") && (
               <div className="flex flex-wrap gap-2 justify-center">
-                {console.log(rtk_data)}
+                {/* {console.log(rtk_data)} */}
                 {Object.entries(rtk_data).map(
                   ([key, value]) =>
                     key !== "Total_Cases" && (
@@ -91,12 +90,11 @@ export default function MetricCard({
               title === "Total Loops / Loops Ratio" ||
               title === "Number of Process Variants" ||
               title === "Top 5 Process Variants (Count & %)" ||
-              title === "Largest Bottleneck" ||
               title === "First Pass Rate" ||
               title === "Longest Waiting Time Step" ||
               title === "Variant Complexity Index" ||
               title === "Cases Following Top Variant" ||
-              title === "Max Steps in a Case" ||
+              title === "max steps in a case" ||
               title === "minimum cycle time") && (
               <div className="relative p-6 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden w-fit">
                 {/* Subtle brand glow */}
@@ -161,6 +159,52 @@ export default function MetricCard({
                             </p>
                           </div>
                         )
+                      )}
+                    <div>
+                      <p className="text-xs font-medium text-gray-400">
+                        {"Dropout_Rate_Percentage".replace(/_/g, " ")}
+                      </p>
+                      <p className="text-lg font-bold text-white mt-0.5">
+                        {rtk_data?.Dropout_Rate_Percentage &&
+                          rtk_data?.Dropout_Rate_Percentage}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {title === "Average Deviation from Happy Path" && (
+              <div className="relative p-6 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden w-fit">
+                {/* Subtle brand glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#574bff]/20 via-transparent to-transparent opacity-40"></div>
+                <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-[#574bff]/10 rounded-full blur-3xl animate-pulse"></div>
+
+                <div className="relative z-10 space-y-4">
+                  {/* Title */}
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
+                    {title}
+                  </p>
+                  {/* {console.log(rtk_data, "kkkkkkkkkkkkkkkkkkkkkkkk")} */}
+
+                  {/* Key-Value Rows */}
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                    {rtk_data &&
+                      Object.entries(rtk_data).map(
+                        ([key, value]) =>
+                          key !== "Deviation_Activity_Distribution" && (
+                            <div key={key} className="flex flex-col">
+                              <p className="text-xs font-medium text-gray-400">
+                                {key.replace(/_/g, " ")}
+                              </p>
+                              <p className="text-lg font-bold text-white mt-0.5">
+                                {typeof value === "number"
+                                  ? key.includes("Average")
+                                    ? value.toFixed(2)
+                                    : value.toLocaleString()
+                                  : value}
+                              </p>
+                            </div>
+                          )
                       )}
                     <div>
                       <p className="text-xs font-medium text-gray-400">
@@ -308,7 +352,7 @@ export default function MetricCard({
                 </div>
               </div>
             )}
-            {title === "largest bottleneck" && rtk_data && (
+            {title === "Largest Bottleneck" && rtk_data && (
               <div className="space-y-4">
                 {/* Glassmorphic #1 Bottleneck Card */}
                 {rtk_data.Top_Bottlenecks?.[0] && (

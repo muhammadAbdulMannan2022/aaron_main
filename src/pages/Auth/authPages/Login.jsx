@@ -39,6 +39,9 @@ export default function Login() {
       navigate("/dashboard");
     } catch (error) {
       setErrorMessage(error?.data?.Message || "Login failed. Try again!");
+      if (error?.data?.Message === "Please verify OTP") {
+        navigate("/auth/otp", { state: { email, from: "signup" } });
+      }
       console.log(error, "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
     }
   };
