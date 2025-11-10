@@ -35,6 +35,9 @@ export default function DonutChart({
 
   const getColor = (index) => COLORSforPy[index % COLORSforPy.length];
 
+  /* --------------------------------------------------------------- */
+  /*  Idle / Loops data (unchanged)                                   */
+  /* --------------------------------------------------------------- */
   useEffect(() => {
     if (rtk_data?.["Idle_Time_Ratio_Percentage"] !== undefined) {
       const idleValue = rtk_data["Idle_Time_Ratio_Percentage"];
@@ -53,7 +56,6 @@ export default function DonutChart({
     }
     if (rtk_data?.["Loops_Ratio_Percentage"] !== undefined) {
       const idleValue = rtk_data["Loops_Ratio_Percentage"];
-      console.log(idleValue, "sdlkjlajlfdfjlksajfgasjdljdljsadaflkasj");
       setLoopsData([
         {
           name: "Loop",
@@ -67,8 +69,19 @@ export default function DonutChart({
         },
       ]);
     }
-  }, [rtk_data]); // <-- run whenever rtk_data changes
+  }, [rtk_data]);
+
   const COLORS = ["#4841A8", "#4CAF50"];
+
+  /* --------------------------------------------------------------- */
+  /*  Helper – log the data that will be drawn                        */
+  /* --------------------------------------------------------------- */
+  if (title === "Happy-Path Compliance Rate") {
+    console.log(
+      "Happy-Path Compliance Rate – rendering data:",
+      rtk_data?.Pie_Chart_Data
+    );
+  }
 
   return (
     <div
@@ -87,15 +100,15 @@ export default function DonutChart({
         </h3>
       )}
 
-      {/* 👇 chart area should flex to fill */}
+      {/* ----------------------------------------------------------- */}
+      {/*  CHART AREA – flex to fill remaining height                 */}
+      {/* ----------------------------------------------------------- */}
       <div className="relative flex-1 flex flex-row items-center justify-center">
+        {/* ---------- 1. Total Idle Time / Idle Time Ratio ---------- */}
         {title === "Total Idle Time / Idle Time Ratio" && rtk_data && (
           <div className="p-5 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-xl">
             <div className="flex items-center gap-6">
-              {/* CHART CONTAINER WITH FIXED HEIGHT */}
               <div className="relative w-44 h-44">
-                {" "}
-                {/* ← THIS IS KEY */}
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -119,8 +132,8 @@ export default function DonutChart({
                       endAngle={-270}
                       paddingAngle={2}
                     >
-                      <Cell fill="#574bff" /> {/* BRAND: Idle */}
-                      <Cell fill="#10b981" /> {/* Active */}
+                      <Cell fill="#574bff" />
+                      <Cell fill="#10b981" />
                     </Pie>
 
                     <Tooltip
@@ -133,12 +146,12 @@ export default function DonutChart({
                         padding: "6px 10px",
                         backdropFilter: "blur(8px)",
                       }}
-                      itemStyle={{ color: "#fff", fontWeight: "500" }} // ← Value text
-                      labelStyle={{ color: "#ccc", fontSize: "11px" }} // ← Label (name)
+                      itemStyle={{ color: "#fff", fontWeight: "500" }}
+                      labelStyle={{ color: "#ccc", fontSize: "11px" }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
-                {/* Center Label */}
+
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white">
@@ -149,7 +162,6 @@ export default function DonutChart({
                 </div>
               </div>
 
-              {/* Text */}
               <div className="flex flex-col justify-center">
                 <div className="text-sm text-gray-400 font-medium">
                   Idle Time Ratio
@@ -171,9 +183,10 @@ export default function DonutChart({
             </div>
           </div>
         )}
+
+        {/* ---------- 2. Total Loops / Loops Ratio ---------- */}
         {title === "Total Loops / Loops Ratio" && (
           <div className="flex items-center gap-4 w-full h-full">
-            {/* responsive container fills available parent space */}
             <div className="flex-1 min-h-[5rem] h-[12rem]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -207,7 +220,7 @@ export default function DonutChart({
           </div>
         )}
 
-        {/* {console.log(title)} */}
+        {/* ---------- 3. Activity Frequency Distribution ---------- */}
         {title === "Activity Frequency Distribution" &&
           Array.isArray(rtk_data?.Distribution) &&
           rtk_data.Distribution.length > 0 && (
@@ -222,15 +235,84 @@ export default function DonutChart({
                   label
                 >
                   {rtk_data.Distribution.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={getColor(index)} // custom color per slice
-                    />
+                    <Cell key={`cell-${index}`} fill={getColor(index)} />
                   ))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
           )}
+
+        {/* ----------------------------------------------------------- */}
+        {/*  NEW BLOCK – Happy-Path Compliance Rate (responsive)        */}
+        {/* ----------------------------------------------------------- */}
+        {title === "Happy-Path Compliance Rate" && (
+          <div className="flex items-center w-full h-full gap-4 md:gap-6">
+            {/* ---- DONUT (always visible) ---- */}
+            <div className="relative flex-1 min-h-[10rem] md:min-h-[12rem] h-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={rtk_data?.Pie_Chart_Data || []}
+                    dataKey="value"
+                    nameKey="label"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="55%" // donut
+                    outerRadius="80%"
+                    paddingAngle={2}
+                    // label={({ value }) => `${value}%`}
+                  >
+                    {(rtk_data?.Pie_Chart_Data || []).map((_, i) => (
+                      <Cell
+                        key={`cell-${i}`}
+                        fill={i === 0 ? "#10b981" : "#ef4444"} // green / red
+                      />
+                    ))}
+                  </Pie>
+
+                  <Tooltip
+                    formatter={(value, name, props) => [
+                      `${props.payload.count} cases`,
+                      props.payload.label,
+                    ]}
+                    contentStyle={{
+                      backgroundColor: "rgba(0,0,0,0.85)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                      padding: "6px 10px",
+                    }}
+                    itemStyle={{ color: "#fff", fontWeight: "500" }}
+                    labelStyle={{ color: "#ccc", fontSize: "11px" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* ---- STATS – hidden on xs, shown on md+ ---- */}
+            <div className="hidden md:flex flex-col justify-center shrink-0 text-right">
+              <div className="text-sm text-gray-400">Compliance Rate</div>
+              <div className="text-2xl font-bold text-white">
+                {rtk_data?.Compliance_Rate_Percentage?.toFixed(1)}%
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                <span className="font-medium text-[#10b981]">
+                  {rtk_data?.Compliant_Cases_Count ?? 0}
+                </span>{" "}
+                compliant
+              </div>
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-[#ef4444]">
+                  {rtk_data?.Non_Compliant_Cases_Count ?? 0}
+                </span>{" "}
+                non-compliant
+              </div>
+              <div className="text-xs text-gray-500">
+                of {rtk_data?.Total_Cases_Analyzed ?? 0} cases
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

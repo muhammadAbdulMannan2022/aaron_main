@@ -89,7 +89,6 @@ export default function MetricCard({
             )}
             {(title === "Total Idle Time / Idle Time Ratio" ||
               title === "Total Loops / Loops Ratio" ||
-              title === "Dropout Rate" ||
               title === "Number of Process Variants" ||
               title === "Top 5 Process Variants (Count & %)" ||
               title === "Largest Bottleneck" ||
@@ -131,6 +130,51 @@ export default function MetricCard({
                 </div>
               </div>
             )}
+            {title === "Dropout Rate" && (
+              <div className="relative p-6 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden w-fit">
+                {/* Subtle brand glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#574bff]/20 via-transparent to-transparent opacity-40"></div>
+                <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-[#574bff]/10 rounded-full blur-3xl animate-pulse"></div>
+
+                <div className="relative z-10 space-y-4">
+                  {/* Title */}
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
+                    {title}
+                  </p>
+                  {/* {console.log(rtk_data, "kkkkkkkkkkkkkkkkkkkkkkkk")} */}
+
+                  {/* Key-Value Rows */}
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                    {rtk_data?.Dropout_Activity_Counts &&
+                      Object.entries(rtk_data?.Dropout_Activity_Counts).map(
+                        ([key, value]) => (
+                          <div key={key} className="flex flex-col">
+                            <p className="text-xs font-medium text-gray-400">
+                              {key.replace(/_/g, " ")}
+                            </p>
+                            <p className="text-lg font-bold text-white mt-0.5">
+                              {typeof value === "number"
+                                ? key.includes("Average")
+                                  ? value.toFixed(2)
+                                  : value.toLocaleString()
+                                : value}
+                            </p>
+                          </div>
+                        )
+                      )}
+                    <div>
+                      <p className="text-xs font-medium text-gray-400">
+                        {"Dropout_Rate_Percentage".replace(/_/g, " ")}
+                      </p>
+                      <p className="text-lg font-bold text-white mt-0.5">
+                        {rtk_data?.Dropout_Rate_Percentage &&
+                          rtk_data?.Dropout_Rate_Percentage}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             {title === "Cost per Case" && rtk_data && (
               <div className="p-4 rounded-xl border border-border bg-white/10 backdrop-blur-sm bg-card shadow-sm">
                 {/* Header info */}
@@ -145,10 +189,10 @@ export default function MetricCard({
                     </span>
                   </p>
                 </div>
+                {/* {console.log(rtk_data, "klhdlgfsajldjfgjsalfglsja")} */}
 
                 {/* Conditional Table */}
-                {Array.isArray(rtk_data.activities_cost_breakdown) &&
-                rtk_data.activities_cost_breakdown.length > 0 ? (
+                {Array.isArray(rtk_data) && rtk_data.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="min-w-full border-collapse border border-border rounded-lg overflow-hidden text-sm">
                       <thead className="bg-muted text-muted-foreground">
@@ -156,34 +200,26 @@ export default function MetricCard({
                           <th className="border border-border px-3 py-2 text-left">
                             Activity Name
                           </th>
-                          <th className="border border-border px-3 py-2 text-right">
-                            Occurrences
-                          </th>
-                          <th className="border border-border px-3 py-2 text-right">
-                            Cost / Occurrence
-                          </th>
+
                           <th className="border border-border px-3 py-2 text-right">
                             Total Cost
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {rtk_data.activities_cost_breakdown.map((item, idx) => (
+                        {rtk_data.map((item, idx) => (
                           <tr
                             key={idx}
                             className="hover:bg-muted/30 transition-colors"
                           >
                             <td className="border border-border px-3 py-2">
-                              {item.activity_name}
+                              {item?.activity_name
+                                ? item?.activity_name
+                                : "N/A"}
                             </td>
-                            <td className="border border-border px-3 py-2 text-right">
-                              {item.occurrences}
-                            </td>
-                            <td className="border border-border px-3 py-2 text-right">
-                              {item.cost_per_occurrence}
-                            </td>
+
                             <td className="border border-border px-3 py-2 text-right font-medium">
-                              {item.total_activity_cost}
+                              {item?.cost_per_h ? item?.cost_per_h : "N/A"} $/h
                             </td>
                           </tr>
                         ))}
