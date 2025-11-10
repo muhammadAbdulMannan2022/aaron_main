@@ -109,15 +109,11 @@ export default function MetricCard({
                   <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
                     {title}
                   </p>
+                  {/* {console.log(rtk_data, "kkkkkkkkkkkkkkkkkkkkkkkk")} */}
 
                   {/* Key-Value Rows */}
                   <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
-                    {Object.entries({
-                      Average_Steps_Per_Case: 6.31,
-                      Median_Steps_Per_Case: 6,
-                      Total_Cases: 5000,
-                      Total_Steps: 31570,
-                    }).map(([key, value]) => (
+                    {Object.entries(rtk_data).map(([key, value]) => (
                       <div key={key} className="flex flex-col">
                         <p className="text-xs font-medium text-gray-400">
                           {key.replace(/_/g, " ")}
@@ -401,15 +397,10 @@ export default function MetricCard({
                   <p className="text-xs font-semibold uppercase tracking-wider text-[#574bff] opacity-80">
                     Process Efficiency Metrics
                   </p>
-
+                  {/* {console.log(rtk_data, "kkkkkkkkkkkkkkkkkkkkkkkkkk")} */}
                   {/* Key-Value Rows */}
                   <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
-                    {Object.entries({
-                      Average_Steps_Per_Case: 6.31,
-                      Median_Steps_Per_Case: 6,
-                      Total_Cases: 5000,
-                      Total_Steps: 31570,
-                    }).map(([key, value]) => (
+                    {Object.entries(rtk_data).map(([key, value]) => (
                       <div key={key} className="flex flex-col">
                         <p className="text-xs font-medium text-gray-400">
                           {key.replace(/_/g, " ")}
